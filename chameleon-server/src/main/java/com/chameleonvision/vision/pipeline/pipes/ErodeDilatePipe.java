@@ -11,9 +11,6 @@ public class ErodeDilatePipe implements Pipe<Mat, Mat> {
     private boolean dilate;
     private Mat kernel;
 
-    private Mat processBuffer = new Mat();
-    private Mat outputMat = new Mat();
-
     public ErodeDilatePipe(boolean erode, boolean dilate, int kernelSize) {
         this.erode = erode;
         this.dilate = dilate;
