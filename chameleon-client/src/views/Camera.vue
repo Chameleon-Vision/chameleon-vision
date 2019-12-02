@@ -82,6 +82,7 @@
                     <v-tab>Threshold</v-tab>
                     <v-tab>Contours</v-tab>
                     <v-tab>Output</v-tab>
+                    <v-tab>3D</v-tab>
                 </v-tabs>
                 <div v-else style="height: 48px"></div>
                 <div style="padding-left:30px">
@@ -141,6 +142,7 @@
     import ThresholdTab from './CameraViewes/ThresholdTab'
     import ContoursTab from './CameraViewes/ContoursTab'
     import OutputTab from './CameraViewes/OutputTab'
+    import pnpTab from './CameraViewes/3D'
     import CVselect from '../components/cv-select'
     import CVicon from '../components/cv-icon'
     import CVinput from '../components/cv-input'
@@ -152,6 +154,7 @@
             ThresholdTab,
             ContoursTab,
             OutputTab,
+            pnpTab,
             CVselect,
             CVicon,
             CVinput
@@ -270,6 +273,8 @@
                             return "ContoursTab";
                         case 3:
                             return "OutputTab";
+                        case 4:
+                            return "pnpTab";
                     }
                     return "";
                 }
