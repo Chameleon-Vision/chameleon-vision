@@ -16,7 +16,7 @@ import java.util.List;
 public class ConfigManager {
     private ConfigManager() {}
 
-    static final Path SettingsPath = Paths.get(ProgramDirectoryUtilities.getProgramDirectory(), "settings");
+    public static final Path SettingsPath = Paths.get(ProgramDirectoryUtilities.getProgramDirectory(), "settings");
     private static final Path settingsFilePath = Paths.get(SettingsPath.toString(), "settings.json");
 
     private static final LinkedHashMap<String, CameraConfig> cameraConfigs = new LinkedHashMap<>();
