@@ -184,6 +184,10 @@ public class Translation2d {
         return String.format("Translation2d(X: %.2f, Y: %.2f)", m_x, m_y);
     }
 
+    public static Translation2d fromRotation2d(Rotation2d rotation) {
+        return new Translation2d(rotation.getCos(), rotation.getSin());
+    }
+
     /**
      * Checks equality between this Translation2d and another object.
      *
