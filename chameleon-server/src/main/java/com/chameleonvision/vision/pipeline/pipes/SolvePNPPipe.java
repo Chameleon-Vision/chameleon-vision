@@ -8,15 +8,19 @@ import org.apache.commons.math3.util.FastMath;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SolvePNPPipe implements Pipe<List<MatOfPoint2f>, List<Pose2d>> {
 
     private MatOfPoint3f objPointsMat = new MatOfPoint3f();
     private Mat rVec = new Mat(), tVec = new Mat();
+    private Mat rodriguez = new Mat();
+    Mat pzero_world = new Mat();
     private MatOfPoint2f imagePoints = new MatOfPoint2f();
     private Mat cameraMatrix = new Mat();
     private MatOfDouble distortionCoefficients = new MatOfDouble();
+    private List<Pose2d> poseList = new ArrayList<>();
 
     public void setObjectCorners(List<Point3> objectCorners) {
         objPointsMat.release();
@@ -38,21 +42,17 @@ public class SolvePNPPipe implements Pipe<List<MatOfPoint2f>, List<Pose2d>> {
 
     @Override
     public Pair<List<Pose2d>, Long> run(List<MatOfPoint2f> objectCornerPoints) {
+        long processStartNanos = System.nanoTime();
+        poseList.clear();
+        for(var corner: objectCornerPoints) {
+            poseList.add(calculatePose(corner));
+        }
+        long processTime = System.nanoTime() - processStartNanos;
+        return Pair.of(poseList, processTime);
+    }
 
-//    }
-
-//    private Pose2d calculatePose(MatOfPoint2f imagePoints, MatOfPoint3f objPointsMat, Mat camMatrix, MatOfDouble distCoeffs) {
-        //        private StandardCVProcess.Pose2d solvePNP(RotatedRect rectangleImageLoc, List< Point3 > realWorldCoordinates) {
-
-        // find the coordinates of the corners
-
-//        rectangleImageLoc.points(points);
-//        var imagePoints = new MatOfPoint2f(points);
-
-//        var objPointsMat = new MatOfPoint3f();
-//        objPointsMat.fromList(realWorldCoordinates);
-
-        Calib3d.solvePnP(objPointsMat, imagePoints, cameraMatrix, distortionCoefficients, rVec, tVec);
+    private Pose2d calculatePose(MatOfPoint2f imageCornerPoints) {
+        Calib3d.solvePnP(objPointsMat, imageCornerPoints, cameraMatrix, distortionCoefficients, rVec, tVec);
 
         // Algorithm from team 5190 Green Hope Falcons
 
@@ -68,18 +68,19 @@ public class SolvePNPPipe implements Pipe<List<MatOfPoint2f>, List<Pose2d>> {
         @SuppressWarnings("SuspiciousNameCombination")
         var angle1 = FastMath.atan2(x, z);
 
-        Calib3d.Rodrigues(rVec, rot);
+        Calib3d.Rodrigues(rVec, rodriguez);
         var rot_inv = new Mat();
-        Core.transpose(rot, rot_inv);
+        Core.transpose(rodriguez, rot_inv);
 
         // This should be pzero_world = numpy.matmul(rot_inv, -tvec)
-        Core.multiply(tVec, new Scalar(-1.0, -1.0, -1.0, -1.0), b);
+        Core.multiply(tVec, new Scalar(tVec.cols()), tVec);
+        pzero_world  = rot_inv.mul(tVec);
 
-        var pzero_world  = rot_inv.mul(b);
         var angle2 = FastMath.atan2(pzero_world.get(0, 0)[0], pzero_world.get(2, 0)[0]);
 
         var targetAngle = -angle1; // radians
         var targetRotation = -angle2; // radians
+        //noinspection UnnecessaryLocalVariable
         var targetDistance = distance; // meters or whatever the calibration was in
 
         var targetLocation = new Translation2d(targetDistance * FastMath.cos(targetAngle), targetDistance * FastMath.sin(targetAngle));
