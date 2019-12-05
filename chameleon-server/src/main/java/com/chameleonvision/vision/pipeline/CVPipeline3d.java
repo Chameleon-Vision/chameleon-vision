@@ -6,14 +6,10 @@ import com.chameleonvision.vision.camera.CameraCapture;
 import com.chameleonvision.vision.camera.CaptureStaticProperties;
 import com.chameleonvision.vision.pipeline.pipes.*;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.math3.util.FastMath;
-import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 
-import java.util.List;
+import java.util.*;
 
 import static com.chameleonvision.vision.pipeline.CVPipeline3d.*;
 
@@ -30,6 +26,8 @@ public class CVPipeline3d extends CVPipeline<CVPipeline3dResult, CVPipeline3dSet
     private SpeckleRejectPipe speckleRejectPipe;
     private GroupContoursPipe groupContoursPipe;
     private SortContoursPipe sortContoursPipe;
+    private SolvePNPPipe solvePNPPipe;
+    private DrawSolvePNPPipe drawSolvePNPPipe;
     private Collect2dTargetsPipe collect2dTargetsPipe;
     private Draw2dContoursPipe.Draw2dContoursSettings draw2dContoursSettings;
     private Draw2dContoursPipe draw2dContoursPipe;
@@ -39,15 +37,15 @@ public class CVPipeline3d extends CVPipeline<CVPipeline3dResult, CVPipeline3dSet
     private CaptureStaticProperties camProps;
     private Scalar hsvLower, hsvUpper;
 
-    public CVPipeline2d() {
-        super(new CVPipeline2dSettings());
+    public CVPipeline3d() {
+        super(new CVPipeline3dSettings());
     }
 
-    public CVPipeline2d(String name) {
-        super(name, new CVPipeline2dSettings());
+    public CVPipeline3d(String name) {
+        super(name, new CVPipeline3dSettings());
     }
 
-    public CVPipeline2d(CVPipeline2dSettings settings) {
+    public CVPipeline3d(CVPipeline3dSettings settings) {
         super(settings);
     }
 
@@ -68,6 +66,8 @@ public class CVPipeline3d extends CVPipeline<CVPipeline3dResult, CVPipeline3dSet
         speckleRejectPipe = new SpeckleRejectPipe(settings.speckle.doubleValue());
         groupContoursPipe = new GroupContoursPipe(settings.targetGroup, settings.targetIntersection);
         sortContoursPipe = new SortContoursPipe(settings.sortMode, camProps, 5);
+        solvePNPPipe = new SolvePNPPipe(settings);
+        drawSolvePNPPipe = new DrawSolvePNPPipe(settings);
         collect2dTargetsPipe = new Collect2dTargetsPipe(settings.calibrationMode, settings.point,
                 settings.dualTargetCalibrationM, settings.dualTargetCalibrationB, camProps);
         draw2dContoursSettings = new Draw2dContoursPipe.Draw2dContoursSettings();
@@ -86,7 +86,7 @@ public class CVPipeline3d extends CVPipeline<CVPipeline3dResult, CVPipeline3dSet
     private final MemoryManager memManager = new MemoryManager(120, 20000);
 
     @Override
-    public CVPipeline2d.CVPipeline2dResult runPipeline(Mat inputMat) {
+    public CVPipeline3dResult runPipeline(Mat inputMat) {
         long totalPipelineTimeNanos = 0;
         long pipelineStartTimeNanos = System.nanoTime();
 
@@ -117,7 +117,8 @@ public class CVPipeline3d extends CVPipeline<CVPipeline3dResult, CVPipeline3dSet
         filterContoursPipe.setConfig(settings.area, settings.ratio, settings.extent, camProps);
         speckleRejectPipe.setConfig(settings.speckle.doubleValue());
         groupContoursPipe.setConfig(settings.targetGroup, settings.targetIntersection);
-        sortContoursPipe.setConfig(settings.sortMode, camProps, 5);
+        solvePNPPipe.setConfig(settings);
+        sortContoursPipe.setConfig(settings.sortMode, camProps, settings.maxTargets);
         collect2dTargetsPipe.setConfig(settings.calibrationMode, settings.point,
                 settings.dualTargetCalibrationM, settings.dualTargetCalibrationB, camProps);
         draw2dContoursPipe.setConfig(settings.multiple, camProps);
@@ -147,22 +148,70 @@ public class CVPipeline3d extends CVPipeline<CVPipeline3dResult, CVPipeline3dSet
         Pair<List<MatOfPoint>, Long> speckleRejectResult = speckleRejectPipe.run(filterContoursResult.getLeft());
         totalPipelineTimeNanos += speckleRejectResult.getRight();
 
+        // group targets by single/dual
         Pair<List<RotatedRect>, Long> groupContoursResult = groupContoursPipe.run(speckleRejectResult.getLeft());
         totalPipelineTimeNanos += groupContoursResult.getRight();
 
+        // sort the contours by "best-ness" as defined in the config
         Pair<List<RotatedRect>, Long> sortContoursResult = sortContoursPipe.run(groupContoursResult.getLeft());
         totalPipelineTimeNanos += sortContoursResult.getRight();
 
+        // turn the rectangles into targets
         Pair<List<CVPipeline2d.Target2d>, Long> collect2dTargetsResult = collect2dTargetsPipe.run(Pair.of(sortContoursResult.getLeft(), camProps));
         totalPipelineTimeNanos += collect2dTargetsResult.getRight();
+
+        // find the image corner points somehow. for now just the bounding box ig
+
+        List<Pair<MatOfPoint2f, CVPipeline2d.Target2d>> list = new ArrayList<>();
+            // find the corners based on the bounding box
+            // order is left top, left bottom, right bottom, right top
+        collect2dTargetsResult.getLeft().forEach(it -> {
+            var mat = new MatOfPoint2f();
+
+            // extract the corners
+            var points = new Point[4];
+            it.rawPoint.points(points);
+
+            // find the tl/tr/bl/br corners
+            // first, min by left/right
+            Comparator<Point> comparator = Comparator.comparingDouble(point -> point.x);
+            Comparator<Point> comparator2 = Comparator.comparingDouble(point -> point.y);
+            var list_ =Arrays.asList(points);
+            list_.sort(comparator);
+            // of this, we now have left and right
+            // sort to get top and bottom
+            var left = List.of(list_.get(0), list_.get(1));
+            left.sort(comparator2);
+            var right = List.of(list_.get(2), list_.get(3));
+            left.sort(comparator2);
+
+            // tl tr bl br
+            var tl = left.get(0);
+            var tr = right.get(1);
+            var bl = left.get(0);
+            var br = right.get(1);
+
+            mat.fromList(List.of(tl, bl, br, tr));
+            list.add(Pair.of(mat, it));
+            
+        });
+
+        // once we've sorted our targets, perform solvePNP. The number of "best targets" is limited by the above pipe
+        Pair<List<Target3d>, Long> solvePNPResult = solvePNPPipe.run(list);
+        totalPipelineTimeNanos += solvePNPResult.getRight();
+
 
         // takes pair of (Mat of original camera image (8UC3), Mat of HSV thresholded image(8UC1))
         Pair<Mat, Long> outputMatResult = outputMatPipe.run(Pair.of(rotateFlipResult.getLeft(), hsvResult.getLeft()));
         totalPipelineTimeNanos += outputMatResult.getRight();
 
-        // takes pair of (Mat to draw on, List<RotatedRect> of sorted contours)
-        Pair<Mat, Long> draw2dContoursResult = draw2dContoursPipe.run(Pair.of(outputMatResult.getLeft(), sortContoursResult.getLeft()));
-        totalPipelineTimeNanos += draw2dContoursResult.getRight();
+        // draw the targets
+        var draw3dContoursResult = drawSolvePNPPipe.run(Pair.of(outputMatResult.getLeft(), solvePNPResult.getRight()));
+
+
+//        // takes pair of (Mat to draw on, List<RotatedRect> of sorted contours)
+//        Pair<Mat, Long> draw2dContoursResult = draw2dContoursPipe.run(Pair.of(outputMatResult.getLeft(), sortContoursResult.getLeft()));
+//        totalPipelineTimeNanos += draw2dContoursResult.getRight();
 
         if (Main.testMode) {
             pipelineTimeString += String.format("PipeInit: %.2fms, ", pipeInitTimeNanos / 1000000.0);
@@ -177,7 +226,7 @@ public class CVPipeline3d extends CVPipeline<CVPipeline3dResult, CVPipeline3dSet
             pipelineTimeString += String.format("SortContours: %.2fms, ", sortContoursResult.getRight() / 1000000.0);
             pipelineTimeString += String.format("Collect2dTargets: %.2fms, ", collect2dTargetsResult.getRight() / 1000000.0);
             pipelineTimeString += String.format("OutputMat: %.2fms, ", outputMatResult.getRight() / 1000000.0);
-            pipelineTimeString += String.format("Draw2dContours: %.2fms, ", draw2dContoursResult.getRight() / 1000000.0);
+//            pipelineTimeString += String.format("Draw2dContours: %.2fms, ", draw2dContoursResult.getRight() / 1000000.0);
 
             System.out.println(pipelineTimeString);
             double totalPipelineTimeMillis = totalPipelineTimeNanos / 1000000.0;
@@ -190,7 +239,11 @@ public class CVPipeline3d extends CVPipeline<CVPipeline3dResult, CVPipeline3dSet
 
         memManager.run();
 
-        return new CVPipeline2d.CVPipeline2dResult(collect2dTargetsResult.getLeft(), draw2dContoursResult.getLeft(), totalPipelineTimeNanos);
+        return new CVPipeline3dResult(
+
+        )
+
+//        return new CVPipeline3dResult(collect2dTargetsResult.getLeft(), draw2dContoursResult.getLeft(), totalPipelineTimeNanos);
     }
 
     public static class CVPipeline3dResult extends CVPipelineResult<Target3d> {
@@ -201,7 +254,16 @@ public class CVPipeline3d extends CVPipeline<CVPipeline3dResult, CVPipeline3dSet
 
     public static class Target3d extends CVPipeline2d.Target2d {
         public Pose2d cameraRelativePose;
-        public Mat rvec;
-        public Mat tvec;
+        public Mat rVector;
+        public Mat tVector;
+
+        public Target3d(CVPipeline2d.Target2d target) {
+            super.calibratedX = target.calibratedX;
+            super.calibratedY = target.calibratedY;
+            super.pitch = target.pitch;
+            super.area = target.area;
+            super.rawPoint = target.rawPoint;
+            super.yaw = target.yaw;
+        }
     }
 }

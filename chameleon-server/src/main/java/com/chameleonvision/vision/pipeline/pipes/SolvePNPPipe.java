@@ -1,9 +1,13 @@
 package com.chameleonvision.vision.pipeline.pipes;
 
+import com.chameleonvision.vision.pipeline.CVPipeline2d;
+import com.chameleonvision.vision.pipeline.CVPipeline3d;
+import com.chameleonvision.vision.pipeline.CVPipeline3dSettings;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.commons.math3.util.FastMath;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
@@ -11,21 +15,32 @@ import org.opencv.core.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SolvePNPPipe implements Pipe<List<MatOfPoint2f>, List<Pose2d>> {
+public class SolvePNPPipe implements Pipe<List<Pair<MatOfPoint2f, CVPipeline2d.Target2d>>, List<CVPipeline3d.Target3d>> {
 
     private MatOfPoint3f objPointsMat = new MatOfPoint3f();
-    private Mat rVec = new Mat(), tVec = new Mat();
+    private Mat rVec = new Mat(), tVec = new Mat(), scaledTvec = new Mat();
     private Mat rodriguez = new Mat();
     Mat pzero_world = new Mat();
     private MatOfPoint2f imagePoints = new MatOfPoint2f();
     private Mat cameraMatrix = new Mat();
     private MatOfDouble distortionCoefficients = new MatOfDouble();
-    private List<Pose2d> poseList = new ArrayList<>();
+    private List<CVPipeline3d.Target3d> poseList = new ArrayList<>();
+
+    public SolvePNPPipe(CVPipeline3dSettings settings) {
+        super();
+        setCameraCoeffs(settings);
+        setObjectCorners(settings.targetCorners);
+    }
 
     public void setObjectCorners(List<Point3> objectCorners) {
         objPointsMat.release();
         objPointsMat = new MatOfPoint3f();
         objPointsMat.fromList(objectCorners);
+    }
+
+    public void setConfig(CVPipeline3dSettings settings) {
+        setCameraCoeffs(settings);
+        setObjectCorners(settings.targetCorners);
     }
 
     /**
@@ -40,18 +55,32 @@ public class SolvePNPPipe implements Pipe<List<MatOfPoint2f>, List<Pose2d>> {
         distCoeffs.copyTo(distortionCoefficients);
     }
 
+    public void setCameraCoeffs(CVPipeline3dSettings settings) {
+        if(cameraMatrix != settings.cameraMatrix) {
+            cameraMatrix.release();
+            cameraMatrix = settings.cameraMatrix;
+        }
+        if(distortionCoefficients != settings.cameraDistortionCoefficients) {
+            distortionCoefficients.release();
+            distortionCoefficients = settings.cameraDistortionCoefficients;
+        }
+    }
+
     @Override
-    public Pair<List<Pose2d>, Long> run(List<MatOfPoint2f> objectCornerPoints) {
+    public Pair<List<CVPipeline3d.Target3d>, Long> run(List<Pair<MatOfPoint2f, CVPipeline2d.Target2d>> objectCornerPoints) {
         long processStartNanos = System.nanoTime();
         poseList.clear();
         for(var corner: objectCornerPoints) {
-            poseList.add(calculatePose(corner));
+            poseList.add(calculatePose(corner.getLeft(), corner.getRight()));
         }
         long processTime = System.nanoTime() - processStartNanos;
         return Pair.of(poseList, processTime);
     }
 
-    private Pose2d calculatePose(MatOfPoint2f imageCornerPoints) {
+    @SuppressWarnings("FieldCanBeLocal")
+    private Scalar scalar = new Scalar(new double[] { -1, -1, -1 });
+
+    private CVPipeline3d.Target3d calculatePose(MatOfPoint2f imageCornerPoints, CVPipeline2d.Target2d target) {
         Calib3d.solvePnP(objPointsMat, imageCornerPoints, cameraMatrix, distortionCoefficients, rVec, tVec);
 
         // Algorithm from team 5190 Green Hope Falcons
@@ -73,8 +102,8 @@ public class SolvePNPPipe implements Pipe<List<MatOfPoint2f>, List<Pose2d>> {
         Core.transpose(rodriguez, rot_inv);
 
         // This should be pzero_world = numpy.matmul(rot_inv, -tvec)
-        Core.multiply(tVec, new Scalar(tVec.cols()), tVec);
-        pzero_world  = rot_inv.mul(tVec);
+        Core.multiply(tVec, scalar, scaledTvec);
+        pzero_world  = rot_inv.mul(scaledTvec);
 
         var angle2 = FastMath.atan2(pzero_world.get(0, 0)[0], pzero_world.get(2, 0)[0]);
 
@@ -84,7 +113,12 @@ public class SolvePNPPipe implements Pipe<List<MatOfPoint2f>, List<Pose2d>> {
         var targetDistance = distance; // meters or whatever the calibration was in
 
         var targetLocation = new Translation2d(targetDistance * FastMath.cos(targetAngle), targetDistance * FastMath.sin(targetAngle));
-        return new Pose2d(targetLocation, new Rotation2d(targetRotation));
+        var pose = new Pose2d(targetLocation, new Rotation2d(targetRotation));
+        var toRet = new CVPipeline3d.Target3d(target);
+        toRet.cameraRelativePose = pose;
+        toRet.rVector = rVec;
+        toRet.tVector = tVec;
+        return toRet;
     }
 
 }

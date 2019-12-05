@@ -20,7 +20,7 @@ public class SortContoursPipe implements Pipe<List<RotatedRect>, List<RotatedRec
     private static final Comparator<RotatedRect> SortByHighestComparator = (rect1, rect2) -> Double.compare(rect2.center.y, rect1.center.y);
     private static final Comparator<RotatedRect> SortByLowestComparator = SortByHighestComparator.reversed();
 
-    private static final Comparator<RotatedRect> SortByLeftmostComparator = Comparator.comparingDouble(rect -> rect.center.x);
+    public static final Comparator<RotatedRect> SortByLeftmostComparator = Comparator.comparingDouble(rect -> rect.center.x);
     private static final Comparator<RotatedRect> SortByRightmostComparator = SortByLeftmostComparator.reversed();
 
     private SortMode sort;
