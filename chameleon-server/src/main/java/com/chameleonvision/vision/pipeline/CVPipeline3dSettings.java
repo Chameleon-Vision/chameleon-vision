@@ -10,7 +10,7 @@ public class CVPipeline3dSettings extends CVPipeline2dSettings {
     // TODO: (2.1) define 3d-specific pipeline settings
     // add 3d-specific property to ensure serializing/deserializing works
     public int maxTargets = 5;
-    public List<Point3> targetCorners;
-    public Mat cameraMatrix;
-    public MatOfDouble cameraDistortionCoefficients;
+    public List<Point3> targetCorners = List.of();
+    public Mat cameraMatrix = new Mat();
+    public MatOfDouble cameraDistortionCoefficients = new MatOfDouble();
 }
