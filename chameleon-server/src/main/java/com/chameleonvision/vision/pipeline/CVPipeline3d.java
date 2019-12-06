@@ -160,58 +160,20 @@ public class CVPipeline3d extends CVPipeline<CVPipeline3dResult, CVPipeline3dSet
         Pair<List<CVPipeline2d.Target2d>, Long> collect2dTargetsResult = collect2dTargetsPipe.run(Pair.of(sortContoursResult.getLeft(), camProps));
         totalPipelineTimeNanos += collect2dTargetsResult.getRight();
 
-        // find the image corner points somehow. for now just the bounding box ig
-
-        List<Pair<MatOfPoint2f, CVPipeline2d.Target2d>> list = new ArrayList<>();
-            // find the corners based on the bounding box
-            // order is left top, left bottom, right bottom, right top
-        collect2dTargetsResult.getLeft().forEach(it -> {
-            var mat = new MatOfPoint2f();
-
-            // extract the corners
-            var points = new Point[4];
-            it.rawPoint.points(points);
-
-            // find the tl/tr/bl/br corners
-            // first, min by left/right
-            Comparator<Point> comparator = Comparator.comparingDouble(point -> point.x);
-            Comparator<Point> comparator2 = Comparator.comparingDouble(point -> point.y);
-            var list_ =Arrays.asList(points);
-            list_.sort(comparator);
-            // of this, we now have left and right
-            // sort to get top and bottom
-            var left = List.of(list_.get(0), list_.get(1));
-            left.sort(comparator2);
-            var right = List.of(list_.get(2), list_.get(3));
-            left.sort(comparator2);
-
-            // tl tr bl br
-            var tl = left.get(0);
-            var tr = right.get(1);
-            var bl = left.get(0);
-            var br = right.get(1);
-
-            mat.fromList(List.of(tl, bl, br, tr));
-            list.add(Pair.of(mat, it));
-            
-        });
-
         // once we've sorted our targets, perform solvePNP. The number of "best targets" is limited by the above pipe
-        Pair<List<Target3d>, Long> solvePNPResult = solvePNPPipe.run(list);
+        Pair<List<Target3d>, Long> solvePNPResult = solvePNPPipe.run(collect2dTargetsResult.getLeft());
         totalPipelineTimeNanos += solvePNPResult.getRight();
-
 
         // takes pair of (Mat of original camera image (8UC3), Mat of HSV thresholded image(8UC1))
         Pair<Mat, Long> outputMatResult = outputMatPipe.run(Pair.of(rotateFlipResult.getLeft(), hsvResult.getLeft()));
         totalPipelineTimeNanos += outputMatResult.getRight();
 
         // draw the targets
-        var draw3dContoursResult = drawSolvePNPPipe.run(Pair.of(outputMatResult.getLeft(), solvePNPResult.getRight()));
-
+        var draw3dContoursResult = drawSolvePNPPipe.run(Pair.of(outputMatResult.getLeft(), solvePNPResult.getLeft()));
+        totalPipelineTimeNanos += draw3dContoursResult.getRight();
 
 //        // takes pair of (Mat to draw on, List<RotatedRect> of sorted contours)
 //        Pair<Mat, Long> draw2dContoursResult = draw2dContoursPipe.run(Pair.of(outputMatResult.getLeft(), sortContoursResult.getLeft()));
-//        totalPipelineTimeNanos += draw2dContoursResult.getRight();
 
         if (Main.testMode) {
             pipelineTimeString += String.format("PipeInit: %.2fms, ", pipeInitTimeNanos / 1000000.0);
@@ -240,8 +202,8 @@ public class CVPipeline3d extends CVPipeline<CVPipeline3dResult, CVPipeline3dSet
         memManager.run();
 
         return new CVPipeline3dResult(
-
-        )
+            null, null, 0L
+        );
 
 //        return new CVPipeline3dResult(collect2dTargetsResult.getLeft(), draw2dContoursResult.getLeft(), totalPipelineTimeNanos);
     }

@@ -13,9 +13,11 @@ import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
-public class SolvePNPPipe implements Pipe<List<Pair<MatOfPoint2f, CVPipeline2d.Target2d>>, List<CVPipeline3d.Target3d>> {
+public class SolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>, List<CVPipeline3d.Target3d>> {
 
     private MatOfPoint3f objPointsMat = new MatOfPoint3f();
     private Mat rVec = new Mat(), tVec = new Mat(), scaledTvec = new Mat();
@@ -67,14 +69,49 @@ public class SolvePNPPipe implements Pipe<List<Pair<MatOfPoint2f, CVPipeline2d.T
     }
 
     @Override
-    public Pair<List<CVPipeline3d.Target3d>, Long> run(List<Pair<MatOfPoint2f, CVPipeline2d.Target2d>> objectCornerPoints) {
+    public Pair<List<CVPipeline3d.Target3d>, Long> run(List<CVPipeline2d.Target2d> targets) {
         long processStartNanos = System.nanoTime();
         poseList.clear();
-        for(var corner: objectCornerPoints) {
-            poseList.add(calculatePose(corner.getLeft(), corner.getRight()));
+        for(var target: targets) {
+            var corners = findBoundingBoxCorners(target);
+            poseList.add(calculatePose(corners, target));
         }
         long processTime = System.nanoTime() - processStartNanos;
         return Pair.of(poseList, processTime);
+    }
+
+    private MatOfPoint2f findBoundingBoxCorners(CVPipeline2d.Target2d target) {
+
+//        List<Pair<MatOfPoint2f, CVPipeline2d.Target2d>> list = new ArrayList<>();
+//        // find the corners based on the bounding box
+//        // order is left top, left bottom, right bottom, right top
+            var mat2f = new MatOfPoint2f();
+
+            // extract the corners
+            var points = new Point[4];
+            target.rawPoint.points(points);
+
+            // find the tl/tr/bl/br corners
+            // first, min by left/right
+            Comparator<Point> comparator = Comparator.comparingDouble(point -> point.x);
+            Comparator<Point> comparator2 = Comparator.comparingDouble(point -> point.y);
+            var list_ = Arrays.asList(points);
+            list_.sort(comparator);
+            // of this, we now have left and right
+            // sort to get top and bottom
+            var left = new ArrayList<>(List.of(list_.get(0), list_.get(1)));
+            left.sort(comparator2);
+            var right = new ArrayList<>(List.of(list_.get(2), list_.get(3)));
+            right.sort(comparator2);
+
+            // tl tr bl br
+            var tl = left.get(0);
+            var tr = right.get(1);
+            var bl = left.get(0);
+            var br = right.get(1);
+
+            mat2f.fromList(List.of(tl, bl, br, tr));
+            return mat2f;
     }
 
     @SuppressWarnings("FieldCanBeLocal")
