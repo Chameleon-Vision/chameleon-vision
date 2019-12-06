@@ -9,8 +9,8 @@ import java.util.List;
 
 public class CalibrateSolvePNPPipeline extends CVPipeline<DriverVisionPipeline.DriverPipelineResult, CVPipeline3dSettings> {
 
-    private int checkerboardSquaresHigh = 9;
-    private int checkerboardSquaresWide = 6;
+    private int checkerboardSquaresHigh = 7;
+    private int checkerboardSquaresWide = 7;
     private Mat objP = new Mat();//(checkerboardSquaresWide * checkerboardSquaresHigh, 3);
     Size patternSize = new Size(checkerboardSquaresWide, checkerboardSquaresHigh);
     double checkerboardSquareSize = 1; // inches!
@@ -33,7 +33,7 @@ public class CalibrateSolvePNPPipeline extends CVPipeline<DriverVisionPipeline.D
         // we repeat this pattern hight times
         for(int i = 0; i < checkerboardSquaresHigh; i++) {
             // within this we incrament by width
-            for(int j = 0; j < checkerboardSquaresWide; i++) {
+            for(int j = 0; j < checkerboardSquaresWide; j++) {
                 objP.put(i + j, 0, j);
                 objP.put(i + j, 1, i);
             }
@@ -53,17 +53,17 @@ public class CalibrateSolvePNPPipeline extends CVPipeline<DriverVisionPipeline.D
         var checkerboardFound = Calib3d.findChessboardCorners(inputMat, patternSize, calibrationOutput);
         if(!checkerboardFound) return new DriverVisionPipeline.DriverPipelineResult(null, inputMat, 0);
 
+        System.out.println("[SolvePNP] checkerboard found!!");
+
         // cool we found a checkerboard
         // do corner subpixel
         Imgproc.cornerSubPix(inputMat, calibrationOutput, windowSize, zeroZone, criteria);
 
         // draw the chessboard
         Calib3d.drawChessboardCorners(inputMat, patternSize, calibrationOutput, true);
-        new DriverVisionPipeline.DriverPipelineResult(null, inputMat, 0);
+        return new DriverVisionPipeline.DriverPipelineResult(null, inputMat, 0);
 
-        this.objpoints.add(objP);
-        imgpoints.add(calibrationOutput);
-
-        return null;
+//        this.objpoints.add(objP);
+//        imgpoints.add(calibrationOutput);
     }
 }
