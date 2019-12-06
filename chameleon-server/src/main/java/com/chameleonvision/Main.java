@@ -2,6 +2,8 @@ package com.chameleonvision;
 
 import com.chameleonvision.config.ConfigManager;
 import com.chameleonvision.network.NetworkManager;
+import com.chameleonvision.scripting.ScriptEventType;
+import com.chameleonvision.scripting.ScriptManager;
 import com.chameleonvision.util.Platform;
 import com.chameleonvision.util.Utilities;
 import com.chameleonvision.vision.VisionManager;
@@ -41,6 +43,8 @@ public class Main {
             if (!hasReportedConnectionFailure && logMessage.message.contains("timed out")) {
                 System.err.println("NT Connection has failed!");
                 hasReportedConnectionFailure = true;
+            } else if (logMessage.message.contains("connected")) {
+                ScriptManager.queueEvent(ScriptEventType.kNTConnected);
             }
         }
     }
@@ -132,6 +136,7 @@ public class Main {
         }
 
         ConfigManager.initializeSettings();
+        ScriptManager.initialize();
         NetworkManager.initialize(manageNetwork);
 
         if (ntServerMode) {
@@ -146,6 +151,8 @@ public class Main {
             }
 //            NetworkTableInstance.getDefault().startClient("localhost");
         }
+
+        ScriptManager.queueEvent(ScriptEventType.kProgramInit);
 
         boolean visionSourcesOk = VisionManager.initializeSources();
         if (!visionSourcesOk) {

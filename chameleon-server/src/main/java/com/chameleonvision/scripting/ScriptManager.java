@@ -24,7 +24,7 @@ public class ScriptManager {
     private static final List<ScriptEvent> events = new ArrayList<>();
     private static final LinkedBlockingDeque<ScriptEventType> queuedEvents = new LinkedBlockingDeque<>(25);
 
-    public void initialize() {
+    public static void initialize() {
         ScriptConfigManager.initialize();
         if (ScriptConfigManager.fileExists()) {
             ScriptConfigManager.loadConfig().stream().map(ScriptEvent::new).forEach(events::add);
@@ -44,6 +44,7 @@ public class ScriptManager {
         @Override
         protected void process() {
             try {
+
                 handleEvent(queuedEvents.takeFirst());
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -110,7 +111,7 @@ public class ScriptManager {
         try {
             queuedEvents.putLast(eventType);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            System.err.println("Failed to add event to queue: " + eventType.name());
         }
     }
 }
