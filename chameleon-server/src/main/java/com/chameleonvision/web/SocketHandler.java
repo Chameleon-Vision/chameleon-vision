@@ -134,6 +134,15 @@ public class SocketHandler {
                         sendFullSettings();
                         break;
                     }
+                    case "is3D": {
+                        break;
+                    }
+                    case "isPNPCalibration": {
+                        break;
+                    }
+                    case "takeCalibrationSnapsnot": {
+                        break;
+                    }
                     default: {
 
                         // only change settings when we aren't in driver mode
