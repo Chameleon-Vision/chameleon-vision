@@ -16,10 +16,12 @@ import java.util.List;
 public class PipelineManager {
 
     private static final int DRIVERMODE_INDEX = -1;
+    private static final int CAL_3D_INDEX = -2;
 
     public final LinkedList<CVPipeline> pipelines = new LinkedList<>();
 
     public final CVPipeline driverModePipeline = new DriverVisionPipeline(new CVPipelineSettings());
+    public final CVPipeline calib3dPipe = new CalibrateSolvePNPPipeline(new CVPipeline3dSettings());
 
     private final VisionProcess parentProcess;
     private int lastPipelineIndex;
@@ -98,8 +100,10 @@ public class PipelineManager {
     }
 
     public CVPipeline getCurrentPipeline() {
-        if (currentPipelineIndex <= DRIVERMODE_INDEX) {
+        if (currentPipelineIndex == DRIVERMODE_INDEX) {
             return driverModePipeline;
+        } else if (currentPipelineIndex <= CAL_3D_INDEX) {
+          return calib3dPipe;
         } else {
             return pipelines.get(currentPipelineIndex);
         }
@@ -112,6 +116,10 @@ public class PipelineManager {
 
             // if we're changing into driver mode, try to set the nt entry to frue
             parentProcess.setDriverModeEntry(true);
+        } else if (index == CAL_3D_INDEX) {
+            parentProcess.setDriverModeEntry(true);
+
+            newPipeline = calib3dPipe;
         } else {
             newPipeline = pipelines.get(index);
 
