@@ -19,6 +19,7 @@ import java.util.List;
 
 public class SolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>, List<CVPipeline3d.Target3d>> {
 
+    private Double tilt_angle;
     private MatOfPoint3f objPointsMat = new MatOfPoint3f();
     private Mat rVec = new Mat(), tVec = new Mat(), scaledTvec = new Mat();
     private Mat rodriguez = new Mat();
@@ -32,6 +33,31 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>, List<CVPi
         super();
         setCameraCoeffs(settings);
         setObjectCorners(settings.targetCorners);
+        this.tilt_angle = Math.toRadians(settings.cameraTiltAngleDeg);
+    }
+
+    public void setTarget(double targetWidth, double targetHeight) {
+        // order is left top, left bottom, right bottom, right top
+
+//        # camera mount angle (radians)
+//        # NOTE: not sure if this should be positive or negative
+//        self.tilt_angle = math.radians(30.0)
+//        self.is_front_camera = False
+//
+//        self.target_coords = np.array([[-self.TARGET_WIDTH / 2.0, self.TARGET_HEIGHT / 2.0, 0.0],#left top?
+//                                       [-self.TARGET_WIDTH / 2.0, -self.TARGET_HEIGHT / 2.0, 0.0],#left bottom?
+//                                       [self.TARGET_WIDTH / 2.0, -self.TARGET_HEIGHT / 2.0, 0.0],#right bottom?
+//                                       [self.TARGET_WIDTH / 2.0, self.TARGET_HEIGHT / 2.0, 0.0]],#right top?
+//        dtype=np.float)
+
+        List<Point3> corners = List.of(
+                new Point3(-targetWidth / 2.0, targetHeight / 2.0, 0.0),
+                new Point3(-targetWidth / 2.0, -targetHeight / 2.0, 0.0),
+                new Point3(targetWidth / 2.0, -targetHeight / 2.0, 0.0),
+                new Point3(targetWidth / 2.0, targetHeight / 2.0, 0.0)
+        );
+        setObjectCorners(corners);
+
     }
 
     public void setObjectCorners(List<Point3> objectCorners) {
@@ -43,21 +69,10 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>, List<CVPi
     public void setConfig(CVPipeline3dSettings settings) {
         setCameraCoeffs(settings);
         setObjectCorners(settings.targetCorners);
+        tilt_angle = Math.toRadians(settings.cameraTiltAngleDeg);
     }
 
-    /**
-     * Set the camera calibration. Passed values won't be released
-     * @param cameraMat the camera matrix
-     * @param distCoeffs the distortion coefficient
-     */
-    public void setCameraCoeffs(Mat cameraMat, MatOfDouble distCoeffs) {
-        cameraMatrix.release();
-        cameraMat.copyTo(cameraMatrix);
-        distortionCoefficients.release();
-        distCoeffs.copyTo(distortionCoefficients);
-    }
-
-    public void setCameraCoeffs(CVPipeline3dSettings settings) {
+    private void setCameraCoeffs(CVPipeline3dSettings settings) {
         if(cameraMatrix != settings.cameraMatrix) {
             cameraMatrix.release();
             cameraMatrix = settings.cameraMatrix;
@@ -122,7 +137,7 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>, List<CVPi
 
         // Algorithm from team 5190 Green Hope Falcons
 
-        var tilt_angle = 0.0; // TODO add to settings
+//        var tilt_angle = 0.0; // TODO add to settings
 
         var x = tVec.get(0, 0)[0];
         var z = FastMath.sin(tilt_angle) * tVec.get(1, 0)[0] + tVec.get(2, 0)[0] *  FastMath.cos(tilt_angle);

@@ -45,13 +45,23 @@ public class CalibrateSolvePNPPipeline extends CVPipeline<DriverVisionPipeline.D
     private final Size zeroZone = new Size(-1, -1);
     private TermCriteria criteria = new TermCriteria(3, 30, 0.001); //(Imgproc.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
+    private int captureCount = 0;
+
     @Override
     public DriverVisionPipeline.DriverPipelineResult runPipeline(Mat inputMat) {
 
         // look for checkerboard
         Imgproc.cvtColor(inputMat, inputMat, Imgproc.COLOR_BGR2GRAY);
         var checkerboardFound = Calib3d.findChessboardCorners(inputMat, patternSize, calibrationOutput);
-        if(!checkerboardFound) return new DriverVisionPipeline.DriverPipelineResult(null, inputMat, 0);
+
+
+
+        if(!checkerboardFound) {
+            Imgproc.cvtColor(inputMat, inputMat, Imgproc.COLOR_GRAY2BGR);
+            putText(inputMat, captureCount);
+
+            return new DriverVisionPipeline.DriverPipelineResult(null, inputMat, 0);
+        }
 
         System.out.println("[SolvePNP] checkerboard found!!");
 
@@ -61,9 +71,21 @@ public class CalibrateSolvePNPPipeline extends CVPipeline<DriverVisionPipeline.D
 
         // draw the chessboard
         Calib3d.drawChessboardCorners(inputMat, patternSize, calibrationOutput, true);
-        return new DriverVisionPipeline.DriverPipelineResult(null, inputMat, 0);
 
-//        this.objpoints.add(objP);
-//        imgpoints.add(calibrationOutput);
+        // convert back to BGR
+        Imgproc.cvtColor(inputMat, inputMat, Imgproc.COLOR_GRAY2BGR);
+        putText(inputMat, captureCount);
+
+        this.objpoints.add(objP);
+        imgpoints.add(calibrationOutput);
+        captureCount++;
+        return new DriverVisionPipeline.DriverPipelineResult(null, inputMat, 0);
     }
+
+    private void putText(Mat inputImage, int count) {
+        Imgproc.putText(inputImage, "Captured " + count + " images",
+                new Point(35, 60),
+                Core.FONT_HERSHEY_PLAIN, 3.0, new Scalar(0, 0, 255));
+    }
+
 }

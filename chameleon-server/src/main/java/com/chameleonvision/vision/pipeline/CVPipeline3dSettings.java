@@ -13,4 +13,5 @@ public class CVPipeline3dSettings extends CVPipeline2dSettings {
     public List<Point3> targetCorners = List.of();
     public Mat cameraMatrix = new Mat();
     public MatOfDouble cameraDistortionCoefficients = new MatOfDouble();
+    public double cameraTiltAngleDeg = 0d;
 }
