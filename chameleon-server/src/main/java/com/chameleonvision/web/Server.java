@@ -30,6 +30,10 @@ public class Server {
         });
         app.post("/api/settings/general", RequestHandler::onGeneralSettings);
         app.post("/api/settings/camera", RequestHandler::onCameraSettings);
+        app.post("/api/settings/startCalibration", RequestHandler::onCalibrationStart);
+        app.post("/api/settings/snapshot", RequestHandler::onSnapshot);
+        app.post("/api/settings/finishCalibration", RequestHandler::onCalibrationFinish);
+        app.post("/api/settings/cancelCalibration", RequestHandler::onCalibrationCancellation);
         app.start(port);
     }
 }

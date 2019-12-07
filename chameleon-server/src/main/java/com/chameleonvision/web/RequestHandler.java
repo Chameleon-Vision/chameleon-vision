@@ -58,4 +58,21 @@ public class RequestHandler {
             ctx.status(500);
         }
     }
+
+    public static void onCalibrationStart(Context ctx) {
+
+
+    }
+
+    public static void onSnapshot(Context ctx) {
+
+    }
+
+    public static void onCalibrationFinish(Context ctx) {
+
+    }
+
+    public static void onCalibrationCancellation(Context ctx) {
+
+    }
 }
