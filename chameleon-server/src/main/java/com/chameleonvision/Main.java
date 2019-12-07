@@ -105,6 +105,9 @@ public class Main {
     }
 
     public static void main(String[] args) {
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> ScriptManager.queueEvent(ScriptEventType.kProgramExit)));
+
         if (CurrentPlatform.equals(Platform.UNSUPPORTED)) {
             System.err.printf("Sorry, this platform is not supported. Give these details to the developers.\n%s\n", CurrentPlatform.toString());
             return;
@@ -136,7 +139,14 @@ public class Main {
         }
 
         ConfigManager.initializeSettings();
-        ScriptManager.initialize();
+
+        if (!CurrentPlatform.isWindows()) {
+            ScriptManager.initialize();
+        } else {
+            System.out.println("Scripts not yet supported on Windows. ScriptEvents will be ignored.");
+        }
+
+
         NetworkManager.initialize(manageNetwork);
 
         if (ntServerMode) {
@@ -162,13 +172,13 @@ public class Main {
 
         boolean visionProcessesOk = VisionManager.initializeProcesses();
         if (!visionProcessesOk) {
-            System.err.println("shit");
+            System.err.println("Failed to start threads!");
             return;
         }
 
         VisionManager.startProcesses();
 
-        System.out.printf("Starting Webserver at port %d\n", DEFAULT_PORT);
+        System.out.printf("Starting Web server at port %d\n", DEFAULT_PORT);
         Server.main(DEFAULT_PORT);
     }
 }

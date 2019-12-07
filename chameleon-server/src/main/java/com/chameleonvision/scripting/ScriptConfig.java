@@ -5,27 +5,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScriptConfig {
     public final ScriptEventType eventType;
-    public final ScriptCommandType commandType;
-    public final String path;
-    public final String[] arguments;
+    public final String command;
 
     public ScriptConfig(ScriptEventType eventType) {
         this.eventType = eventType;
-        this.commandType = ScriptCommandType.kDefault;
-        this.path = "";
-        this.arguments = new String[]{""};
+        this.command = "";
     }
 
     @JsonCreator
     public ScriptConfig(
             @JsonProperty("eventType") ScriptEventType eventType,
-            @JsonProperty("commandType") ScriptCommandType commandType,
-            @JsonProperty("path") String path,
-            @JsonProperty("arguments") String[] arguments
+            @JsonProperty("command") String command
     ) {
         this.eventType = eventType;
-        this.commandType = commandType;
-        this.path = path;
-        this.arguments = arguments;
+        this.command = command;
     }
 }

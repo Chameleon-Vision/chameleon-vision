@@ -21,4 +21,9 @@ public class ScriptingTest {
         Assertions.assertEquals(config.size(), ScriptEventType.values().length);
         System.out.println("Script Config PASSED");
     }
+
+    @Test
+    public void eventTest() {
+        ScriptManager.queueEvent(ScriptEventType.kProgramInit);
+    }
 }

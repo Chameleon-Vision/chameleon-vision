@@ -1,5 +1,6 @@
 package com.chameleonvision.scripting;
 
+import com.chameleonvision.Debug;
 import com.chameleonvision.util.ShellExec;
 
 import java.io.IOException;
@@ -18,16 +19,7 @@ public class ScriptEvent {
     }
 
     public int run() throws IOException {
-        List<String> fullArgs = new ArrayList<>();
-        String command;
-        if (config.commandType == ScriptCommandType.kDefault || config.commandType == ScriptCommandType.kBashScript) {
-            command = config.path;
-        } else {
-
-        }
-        fullArgs.add(config.path);
-        fullArgs.addAll(Arrays.asList(config.arguments));
-        int retVal = executor.execute(config.commandType.value, fullArgs.toArray(new String[0]));
+        int retVal = executor.executeBashCommand(config.command);
 
         String output = executor.getOutput();
         String error = executor.getError();
@@ -35,8 +27,9 @@ public class ScriptEvent {
         if (!error.isEmpty()) {
             System.err.printf("Error when running \"%s\" script: %s\n", config.eventType.name(), error);
         } else if (!output.isEmpty()) {
-            System.out.printf("Output from \"%s\" script: %s\n", config.eventType.name(), output);
+            Debug.printInfo(String.format("Output from \"%s\" script: %s\n", config.eventType.name(), output));
         }
+        Debug.printInfo(String.format("Script for %s ran with command line: \"%s\", exit code: %d, output: %s, error: %s\n", config.eventType.name(), config.command, retVal, output, error));
         return retVal;
     }
 }

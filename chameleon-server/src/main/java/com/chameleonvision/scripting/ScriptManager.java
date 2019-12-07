@@ -1,8 +1,11 @@
 package com.chameleonvision.scripting;
 
+import com.chameleonvision.Debug;
+import com.chameleonvision.Main;
 import com.chameleonvision.config.ConfigManager;
 import com.chameleonvision.util.JacksonHelper;
 import com.chameleonvision.util.LoopingRunnable;
+import com.chameleonvision.util.Platform;
 import com.chameleonvision.util.ProgramDirectoryUtilities;
 
 import java.io.File;
@@ -27,12 +30,15 @@ public class ScriptManager {
     public static void initialize() {
         ScriptConfigManager.initialize();
         if (ScriptConfigManager.fileExists()) {
-            ScriptConfigManager.loadConfig().stream().map(ScriptEvent::new).forEach(events::add);
-        } else {
-            System.err.println("Something went wrong initializing scripts!");
-        }
+            for (ScriptConfig scriptConfig : ScriptConfigManager.loadConfig()) {
+                ScriptEvent scriptEvent = new ScriptEvent(scriptConfig);
+                events.add(scriptEvent);
+            }
 
-        new Thread(new ScriptRunner(10L)).start();
+            new Thread(new ScriptRunner(10L)).start();
+        } else {
+            System.err.println("Something went wrong initializing scripts! Events will not run.");
+        }
     }
 
     private static class ScriptRunner extends LoopingRunnable {
@@ -57,7 +63,7 @@ public class ScriptManager {
                 try {
                     toRun.run();
                 } catch (IOException e) {
-                    System.err.printf("Failed to run script for event: %s, exception below.\n%s\n", eventType.value, e.getMessage());
+                    System.err.printf("Failed to run script for event: %s, exception below.\n%s\n", eventType.name(), e.getMessage());
                 }
             }
         }
@@ -108,10 +114,13 @@ public class ScriptManager {
     }
 
     public static void queueEvent(ScriptEventType eventType) {
-        try {
-            queuedEvents.putLast(eventType);
-        } catch (InterruptedException e) {
-            System.err.println("Failed to add event to queue: " + eventType.name());
+        if (!Platform.getCurrentPlatform().isWindows()) {
+            try {
+                queuedEvents.putLast(eventType);
+                Debug.printInfo("Queued event: " + eventType.name());
+            } catch (InterruptedException e) {
+                System.err.println("Failed to add event to queue: " + eventType.name());
+            }
         }
     }
 }
