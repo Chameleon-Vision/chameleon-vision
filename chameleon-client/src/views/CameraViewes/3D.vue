@@ -10,6 +10,13 @@
                     upload model
                 </v-btn>
             </v-col>
+            <v-col :cols="6">
+                <CVswitch v-model="value" name="Enable 3D Calibration" @input="handleData('isPNPCalibration')"/>
+            </v-col>
+            <v-btn style="margin: 20px;" tile color="#4baf62" @click="handleSnapshot()" small>
+                <v-icon>camera</v-icon>
+                Take Calibration
+            </v-btn>
         </v-row>
         <mini-map class="miniMapClass" :location="lData"></mini-map>
     </div>
@@ -28,7 +35,8 @@
         },
         data() {
             return {
-                value: false,
+                is3D: false,
+                isPNPCalibration: false,
                 lData: {
                     x: 0,
                     y: 0,
@@ -38,7 +46,8 @@
         },
         methods: {
             handleData(val) {
-                this.handleInput(val, this.value[val]);
+                console.log("setting " + val + " to " + this.value)
+                this.handleInput(val, this.value);
                 this.$emit('update')
             },
             readFile(event) {
@@ -47,6 +56,13 @@
                     complete: this.onParse,
                     skipEmptyLines: true
                 });
+            },
+            handleSnapshot() {
+                let msg = this.$msgPack.encode({
+                    'takeCalibrationSnapsnot': true
+                });
+                this.$socket.send(msg);
+                this.$emit('update');
             },
             onParse(result) {
                 console.log(result.data);
