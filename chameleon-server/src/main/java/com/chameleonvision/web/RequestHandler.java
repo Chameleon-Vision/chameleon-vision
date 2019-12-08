@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.http.Context;
 
+import java.io.IOException;
 import java.util.Map;
 
 public class RequestHandler {
@@ -65,13 +66,22 @@ public class RequestHandler {
 
     public static void onSnapshot(Context ctx) {
         VisionManager.getCurrentUIVisionProcess().pipelineManager.calib3dPipe.takeSnapshot();
+
+        try {
+            ctx.res.getOutputStream().print(VisionManager.getCurrentUIVisionProcess().pipelineManager.calib3dPipe.getCount());
+            ctx.status(200);
+        } catch (IOException e) {
+            e.printStackTrace();
+            ctx.status(500);
+        }
     }
 
     public static void onCalibrationFinish(Context ctx) {
-        VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(true);
+        VisionManager.getCurrentUIVisionProcess().pipelineManager.calib3dPipe.calibrate();
+        VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(false);
     }
 
     public static void onCalibrationCancellation(Context ctx) {
-        VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(true);
+        VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(false);
     }
 }
