@@ -60,19 +60,18 @@ public class RequestHandler {
     }
 
     public static void onCalibrationStart(Context ctx) {
-
-
+        VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(true);
     }
 
     public static void onSnapshot(Context ctx) {
-
+        VisionManager.getCurrentUIVisionProcess().pipelineManager.calib3dPipe.takeSnapshot();
     }
 
     public static void onCalibrationFinish(Context ctx) {
-
+        VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(true);
     }
 
     public static void onCalibrationCancellation(Context ctx) {
-
+        VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(true);
     }
 }

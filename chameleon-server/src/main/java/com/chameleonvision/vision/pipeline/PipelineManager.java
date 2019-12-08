@@ -21,7 +21,7 @@ public class PipelineManager {
     public final LinkedList<CVPipeline> pipelines = new LinkedList<>();
 
     public final CVPipeline driverModePipeline = new DriverVisionPipeline(new CVPipelineSettings());
-    public final CVPipeline calib3dPipe = new CalibrateSolvePNPPipeline(new CVPipeline3dSettings());
+    public final CalibrateSolvePNPPipeline calib3dPipe = new CalibrateSolvePNPPipeline(new CVPipeline3dSettings());
 
     private final VisionProcess parentProcess;
     private int lastPipelineIndex;
@@ -84,11 +84,12 @@ public class PipelineManager {
     }
 
     public void setDriverMode(boolean driverMode) {
-        if (driverMode) {
-            setCurrentPipeline(DRIVERMODE_INDEX);
-        } else {
-            setCurrentPipeline(lastPipelineIndex);
-        }
+        if (driverMode) setCurrentPipeline(DRIVERMODE_INDEX);
+        else setCurrentPipeline(lastPipelineIndex);
+    }
+
+    public void setCalibrationMode(boolean calibrationMode) {
+        setCurrentPipeline((calibrationMode ? CAL_3D_INDEX : lastPipelineIndex));
     }
 
     public boolean getDriverMode() {

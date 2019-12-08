@@ -1,5 +1,6 @@
 package com.chameleonvision.vision.pipeline;
 
+import com.chameleonvision.vision.camera.CameraCapture;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
@@ -46,6 +47,11 @@ public class CalibrateSolvePNPPipeline extends CVPipeline<DriverVisionPipeline.D
     private TermCriteria criteria = new TermCriteria(3, 30, 0.001); //(Imgproc.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
     private int captureCount = 0;
+    private boolean wantsSnapshot = false;
+
+    public void takeSnapshot() {
+        wantsSnapshot = true;
+    }
 
     @Override
     public DriverVisionPipeline.DriverPipelineResult runPipeline(Mat inputMat) {
@@ -76,10 +82,21 @@ public class CalibrateSolvePNPPipeline extends CVPipeline<DriverVisionPipeline.D
         Imgproc.cvtColor(inputMat, inputMat, Imgproc.COLOR_GRAY2BGR);
         putText(inputMat, captureCount);
 
-        this.objpoints.add(objP);
-        imgpoints.add(calibrationOutput);
-        captureCount++;
+        if(wantsSnapshot) {
+            this.objpoints.add(objP);
+            imgpoints.add(calibrationOutput);
+            captureCount++;
+            wantsSnapshot = false;
+        }
+
         return new DriverVisionPipeline.DriverPipelineResult(null, inputMat, 0);
+    }
+
+    @Override
+    public void initPipeline(CameraCapture camera) {
+        super.initPipeline(camera);
+        objpoints.clear();
+        captureCount = 0;
     }
 
     private void putText(Mat inputImage, int count) {
