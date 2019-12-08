@@ -60,7 +60,10 @@ public class RequestHandler {
         }
     }
 
-    public static void onCalibrationStart(Context ctx) {
+    public static void onCalibrationStart(Context ctx) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map data = objectMapper.readValue(ctx.body(), Map.class);
+        int resolutionIndex = (Integer) data.get("resolution");
         VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(true);
     }
 

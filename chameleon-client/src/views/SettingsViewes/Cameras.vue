@@ -9,12 +9,20 @@
         <div style="margin-top: 15px">
             <span>3D Calibration</span>
             <v-divider color="white" style="margin-bottom: 10px"></v-divider>
+
+            <CVselect name="Resolution" v-model="resolutionIndex" :list="resolutionList"></CVselect>
             <v-row>
                 <v-col>
-                    <v-btn small :color="calibrationModeButton.color" @click="sendCalibrationMode">{{calibrationModeButton.text}}</v-btn>
+                    <v-btn small :color="calibrationModeButton.color" @click="sendCalibrationMode"
+                           :disabled="checkResolution">
+                        {{calibrationModeButton.text}}
+                    </v-btn>
                 </v-col>
                 <v-col>
-                    <v-btn small :color="cancellationModeButton.color" @click="sendCalibrationFinish">{{cancellationModeButton.text}}</v-btn>
+                    <v-btn small :color="cancellationModeButton.color" @click="sendCalibrationFinish"
+                           :disabled="checkResolution">
+                        {{cancellationModeButton.text}}
+                    </v-btn>
                 </v-col>
             </v-row>
         </div>
@@ -33,7 +41,8 @@
         },
         data() {
             return {
-                calibrationMode: false,
+                isCalibrating: false,
+                resolutionIndex: undefined,
                 calibrationModeButton: {
                     text: "Start Calibration",
                     color: "green"
@@ -42,7 +51,8 @@
                     text: "Cancel Calibration",
                     color: "red"
                 },
-                snapshotAmount: 0
+                snapshotAmount: 0,
+
             }
         },
         methods: {
@@ -58,16 +68,18 @@
             },
             sendCalibrationMode() {
                 const self = this;
+                let data = {};
                 let connection_string = "/api/settings/";
-                if (this.calibrationMode === true) {
+                if (this.isCalibrating === true) {
                     connection_string += "snapshot"
                 } else {
-                    connection_string += "startCalibration"
+                    connection_string += "startCalibration";
+                    data['resolution'] = this.resolutionIndex;
                 }
-                this.axios.post("http://" + this.$address + connection_string).then(
+                this.axios.post("http://" + this.$address + connection_string, data).then(
                     function (response) {
                         if (response.status === 200) {
-                            if (self.calibrationMode) {
+                            if (self.isCalibrating) {
                                 self.snapshotAmount = response.data;
                                 if (self.snapshotAmount > 12) {
                                     self.cancellationModeButton.text = "Finish Calibration";
@@ -75,7 +87,7 @@
                                 }
                             } else {
                                 self.calibrationModeButton.text = "Take Snapshot";
-                                self.calibrationMode = true;
+                                self.isCalibrating = true;
                             }
                         }
                     }
@@ -92,7 +104,7 @@
                 this.axios.post("http://" + this.$address + connection_string).then(
                     function (response) {
                         if (response.status === 200) {
-                            self.calibrationMode = false;
+                            self.isCalibrating = false;
                             self.snapshotAmount = 0;
                             self.calibrationModeButton.text = "Start Calibration";
                             self.cancellationModeButton.text = "Cancel Calibration";
@@ -103,6 +115,9 @@
             }
         },
         computed: {
+            checkResolution() {
+                return this.resolutionIndex === undefined;
+            },
             currentCameraIndex: {
                 get() {
                     return this.$store.state.currentCameraIndex;
@@ -117,6 +132,15 @@
                 },
                 set(value) {
                     this.$store.commit('cameraList', value);
+                }
+            },
+            resolutionList: {
+                get() {
+                    let tmp_list = [];
+                    for (let i of this.$store.state.resolutionList) {
+                        tmp_list.push(`${i['width']} X ${i['height']} at ${i['fps']} FPS, ${i['pixelFormat']}`)
+                    }
+                    return tmp_list;
                 }
             },
             cameraSettings: {

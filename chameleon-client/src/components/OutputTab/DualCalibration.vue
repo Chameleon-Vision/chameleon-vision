@@ -46,7 +46,7 @@
                     this.pointB = undefined;
                 }
             },
-            sendSlope(m, b, valid) {
+            sendSlope(m, b) {
                 this.handleInput('dualTargetCalibrationM', m);
                 this.handleInput('dualTargetCalibrationB', b);
                 this.$emit('update');
