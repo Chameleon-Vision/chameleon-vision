@@ -39,17 +39,6 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>
     public void setTarget(double targetWidth, double targetHeight) {
         // order is left top, left bottom, right bottom, right top
 
-//        # camera mount angle (radians)
-//        # NOTE: not sure if this should be positive or negative
-//        self.tilt_angle = math.radians(30.0)
-//        self.is_front_camera = False
-//
-//        self.target_coords = np.array([[-self.TARGET_WIDTH / 2.0, self.TARGET_HEIGHT / 2.0, 0.0],#left top?
-//                                       [-self.TARGET_WIDTH / 2.0, -self.TARGET_HEIGHT / 2.0, 0.0],#left bottom?
-//                                       [self.TARGET_WIDTH / 2.0, -self.TARGET_HEIGHT / 2.0, 0.0],#right bottom?
-//                                       [self.TARGET_WIDTH / 2.0, self.TARGET_HEIGHT / 2.0, 0.0]],#right top?
-//        dtype=np.float)
-
         List<Point3> corners = List.of(
                 new Point3(-targetWidth / 2.0, targetHeight / 2.0, 0.0),
                 new Point3(-targetWidth / 2.0, -targetHeight / 2.0, 0.0),
@@ -100,34 +89,34 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>
 //        List<Pair<MatOfPoint2f, CVPipeline2d.Target2d>> list = new ArrayList<>();
 //        // find the corners based on the bounding box
 //        // order is left top, left bottom, right bottom, right top
-            var mat2f = new MatOfPoint2f();
+        var mat2f = new MatOfPoint2f();
 
-            // extract the corners
-            var points = new Point[4];
-            target.rawPoint.points(points);
+        // extract the corners
+        var points = new Point[4];
+        target.rawPoint.points(points);
 
-            // find the tl/tr/bl/br corners
-            // first, min by left/right
-            Comparator<Point> leftRightComparator = Comparator.comparingDouble(point -> point.x);
-            Comparator<Point> verticalComparator = Comparator.comparingDouble(point -> point.y);
+        // find the tl/tr/bl/br corners
+        // first, min by left/right
+        Comparator<Point> leftRightComparator = Comparator.comparingDouble(point -> point.x);
+        Comparator<Point> verticalComparator = Comparator.comparingDouble(point -> point.y);
 
-            var list_ = Arrays.asList(points);
-            list_.sort(leftRightComparator);
-            // of this, we now have left and right
-            // sort to get top and bottom
-            var left = new ArrayList<>(List.of(list_.get(0), list_.get(1)));
-            left.sort(verticalComparator);
-            var right = new ArrayList<>(List.of(list_.get(2), list_.get(3)));
-            right.sort(verticalComparator);
+        var list_ = Arrays.asList(points);
+        list_.sort(leftRightComparator);
+        // of this, we now have left and right
+        // sort to get top and bottom
+        var left = new ArrayList<>(List.of(list_.get(0), list_.get(1)));
+        left.sort(verticalComparator);
+        var right = new ArrayList<>(List.of(list_.get(2), list_.get(3)));
+        right.sort(verticalComparator);
 
-            // tl tr bl br
-            var tl = left.get(0);
-            var tr = right.get(1);
-            var bl = left.get(0);
-            var br = right.get(1);
+        // tl tr bl br
+        var tl = left.get(0);
+        var tr = right.get(1);
+        var bl = left.get(0);
+        var br = right.get(1);
 
-            mat2f.fromList(List.of(tl, bl, br, tr));
-            return mat2f;
+        mat2f.fromList(List.of(tl, bl, br, tr));
+        return mat2f;
     }
 
     @SuppressWarnings("FieldCanBeLocal")
