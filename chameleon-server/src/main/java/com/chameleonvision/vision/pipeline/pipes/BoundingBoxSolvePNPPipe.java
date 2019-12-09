@@ -17,19 +17,19 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class SolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>, List<CVPipeline3d.Target3d>> {
+public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>, List<CVPipeline3d.Target3d>> {
 
     private Double tilt_angle;
     private MatOfPoint3f objPointsMat = new MatOfPoint3f();
     private Mat rVec = new Mat(), tVec = new Mat(), scaledTvec = new Mat();
     private Mat rodriguez = new Mat();
-    Mat pzero_world = new Mat();
+    private Mat pzero_world = new Mat();
     private MatOfPoint2f imagePoints = new MatOfPoint2f();
     private Mat cameraMatrix = new Mat();
     private MatOfDouble distortionCoefficients = new MatOfDouble();
     private List<CVPipeline3d.Target3d> poseList = new ArrayList<>();
 
-    public SolvePNPPipe(CVPipeline3dSettings settings) {
+    public BoundingBoxSolvePNPPipe(CVPipeline3dSettings settings) {
         super();
         setCameraCoeffs(settings);
         setObjectCorners(settings.targetCorners);
@@ -75,11 +75,11 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>, List<CVPi
     private void setCameraCoeffs(CVPipeline3dSettings settings) {
         if(cameraMatrix != settings.cameraMatrix) {
             cameraMatrix.release();
-            cameraMatrix = settings.cameraMatrix;
+            settings.cameraMatrix.copyTo(cameraMatrix);
         }
         if(distortionCoefficients != settings.cameraDistortionCoefficients) {
             distortionCoefficients.release();
-            distortionCoefficients = settings.cameraDistortionCoefficients;
+            settings.cameraDistortionCoefficients.copyTo(distortionCoefficients);
         }
     }
 
@@ -108,16 +108,17 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>, List<CVPi
 
             // find the tl/tr/bl/br corners
             // first, min by left/right
-            Comparator<Point> comparator = Comparator.comparingDouble(point -> point.x);
-            Comparator<Point> comparator2 = Comparator.comparingDouble(point -> point.y);
+            Comparator<Point> leftRightComparator = Comparator.comparingDouble(point -> point.x);
+            Comparator<Point> verticalComparator = Comparator.comparingDouble(point -> point.y);
+
             var list_ = Arrays.asList(points);
-            list_.sort(comparator);
+            list_.sort(leftRightComparator);
             // of this, we now have left and right
             // sort to get top and bottom
             var left = new ArrayList<>(List.of(list_.get(0), list_.get(1)));
-            left.sort(comparator2);
+            left.sort(verticalComparator);
             var right = new ArrayList<>(List.of(list_.get(2), list_.get(3)));
-            right.sort(comparator2);
+            right.sort(verticalComparator);
 
             // tl tr bl br
             var tl = left.get(0);

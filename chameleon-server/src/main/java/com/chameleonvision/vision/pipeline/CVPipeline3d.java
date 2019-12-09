@@ -26,7 +26,7 @@ public class CVPipeline3d extends CVPipeline<CVPipeline3dResult, CVPipeline3dSet
     private SpeckleRejectPipe speckleRejectPipe;
     private GroupContoursPipe groupContoursPipe;
     private SortContoursPipe sortContoursPipe;
-    private SolvePNPPipe solvePNPPipe;
+    private BoundingBoxSolvePNPPipe solvePNPBoundingBoxPipe;
     private DrawSolvePNPPipe drawSolvePNPPipe;
     private Collect2dTargetsPipe collect2dTargetsPipe;
     private Draw2dContoursPipe.Draw2dContoursSettings draw2dContoursSettings;
@@ -66,7 +66,7 @@ public class CVPipeline3d extends CVPipeline<CVPipeline3dResult, CVPipeline3dSet
         speckleRejectPipe = new SpeckleRejectPipe(settings.speckle.doubleValue());
         groupContoursPipe = new GroupContoursPipe(settings.targetGroup, settings.targetIntersection);
         sortContoursPipe = new SortContoursPipe(settings.sortMode, camProps, 5);
-        solvePNPPipe = new SolvePNPPipe(settings);
+        solvePNPBoundingBoxPipe = new BoundingBoxSolvePNPPipe(settings);
         drawSolvePNPPipe = new DrawSolvePNPPipe(settings);
         collect2dTargetsPipe = new Collect2dTargetsPipe(settings.calibrationMode, settings.point,
                 settings.dualTargetCalibrationM, settings.dualTargetCalibrationB, camProps);
@@ -117,7 +117,7 @@ public class CVPipeline3d extends CVPipeline<CVPipeline3dResult, CVPipeline3dSet
         filterContoursPipe.setConfig(settings.area, settings.ratio, settings.extent, camProps);
         speckleRejectPipe.setConfig(settings.speckle.doubleValue());
         groupContoursPipe.setConfig(settings.targetGroup, settings.targetIntersection);
-        solvePNPPipe.setConfig(settings);
+        solvePNPBoundingBoxPipe.setConfig(settings);
         sortContoursPipe.setConfig(settings.sortMode, camProps, settings.maxTargets);
         collect2dTargetsPipe.setConfig(settings.calibrationMode, settings.point,
                 settings.dualTargetCalibrationM, settings.dualTargetCalibrationB, camProps);
@@ -161,7 +161,7 @@ public class CVPipeline3d extends CVPipeline<CVPipeline3dResult, CVPipeline3dSet
         totalPipelineTimeNanos += collect2dTargetsResult.getRight();
 
         // once we've sorted our targets, perform solvePNP. The number of "best targets" is limited by the above pipe
-        Pair<List<Target3d>, Long> solvePNPResult = solvePNPPipe.run(collect2dTargetsResult.getLeft());
+        Pair<List<Target3d>, Long> solvePNPResult = solvePNPBoundingBoxPipe.run(collect2dTargetsResult.getLeft());
         totalPipelineTimeNanos += solvePNPResult.getRight();
 
         // takes pair of (Mat of original camera image (8UC3), Mat of HSV thresholded image(8UC1))
