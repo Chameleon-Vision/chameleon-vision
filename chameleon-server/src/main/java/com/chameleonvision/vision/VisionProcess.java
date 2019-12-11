@@ -5,6 +5,7 @@ import com.chameleonvision.config.ConfigManager;
 import com.chameleonvision.util.LoopingRunnable;
 import com.chameleonvision.vision.camera.CameraStreamer;
 import com.chameleonvision.vision.camera.USBCameraCapture;
+import com.chameleonvision.vision.enums.FrameRateMode;
 import com.chameleonvision.vision.pipeline.*;
 import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
 import com.chameleonvision.vision.pipeline.impl.CVPipeline3d;
@@ -59,8 +60,9 @@ public class VisionProcess {
         pipelineManager = new PipelineManager(this, loadedPipelineSettings);
 
         // Thread to put frames on the dashboard
-        this.cameraStreamer = new CameraStreamer(cameraCapture, name,pipelineManager.getCurrentPipeline().settings.streamDivisor);
-        this.streamRunnable = new CameraStreamerRunnable(30, cameraStreamer);
+        this.cameraStreamer = new CameraStreamer(cameraCapture, name, pipelineManager.getCurrentPipeline().settings.streamDivisor,
+                pipelineManager.getCurrentPipeline().settings.streamFpsMode);
+        this.streamRunnable = new CameraStreamerRunnable(cameraStreamer);
 
         // Thread to process vision data
         this.visionRunnable = new VisionProcessRunnable();
@@ -129,6 +131,7 @@ public class VisionProcess {
 
     /**
      * Method called by the nt entry listener to update the next pipeline.
+     *
      * @param notification the notification
      */
     private void setPipeline(EntryNotification notification) {
@@ -140,7 +143,7 @@ public class VisionProcess {
 
         // if it's null, we haven't even started the program yet, so just return
         // otherwise, set it.
-        if(ntDriverModeEntry != null) {
+        if (ntDriverModeEntry != null) {
             ntDriverModeEntry.setBoolean(isDriverMode);
         }
     }
@@ -148,16 +151,16 @@ public class VisionProcess {
     private void updateUI(CVPipelineResult data) {
         // 30 "FPS" update rate
         long currentMillis = System.currentTimeMillis();
-        if (currentMillis - lastUIUpdateMs > 1000/30) {
+        if (currentMillis - lastUIUpdateMs > 1000 / 30) {
             lastUIUpdateMs = currentMillis;
 
-            if(cameraCapture.getProperties().name.equals(ConfigManager.settings.currentCamera)) {
+            if (cameraCapture.getProperties().name.equals(ConfigManager.settings.currentCamera)) {
                 HashMap<String, Object> WebSend = new HashMap<>();
                 HashMap<String, Object> point = new HashMap<>();
                 HashMap<String, Object> calculated = new HashMap<>();
                 List<Double> center = new ArrayList<>();
                 if (data.hasTarget) {
-                    if(data instanceof CVPipeline2d.CVPipeline2dResult) {
+                    if (data instanceof CVPipeline2d.CVPipeline2dResult) {
                         CVPipeline2d.CVPipeline2dResult result = (CVPipeline2d.CVPipeline2dResult) data;
                         CVPipeline2d.Target2d bestTarget = result.targets.get(0);
                         center.add(bestTarget.rawPoint.center.x);
@@ -192,8 +195,8 @@ public class VisionProcess {
 
     private void updateNetworkTableData(CVPipelineResult data) {
         ntValidEntry.setBoolean(data.hasTarget);
-        if(data.hasTarget && !(data instanceof DriverVisionPipeline.DriverPipelineResult)) {
-            if(data instanceof CVPipeline2d.CVPipeline2dResult) {
+        if (data.hasTarget && !(data instanceof DriverVisionPipeline.DriverPipelineResult)) {
+            if (data instanceof CVPipeline2d.CVPipeline2dResult) {
 
                 //noinspection unchecked
                 List<CVPipeline2d.Target2d> targets = (List<CVPipeline2d.Target2d>) data.targets;
@@ -239,6 +242,10 @@ public class VisionProcess {
         return pipelineManager.driverModePipeline.settings;
     }
 
+    public void setStreamFps(FrameRateMode streamFps) {
+        this.streamRunnable.setLoopTimeMs(1000L / (streamFps.frameRate + 2));//allows 2 frames of overhead
+    }
+
     /**
      * VisionProcessRunnable will process images as quickly as possible
      */
@@ -250,7 +257,7 @@ public class VisionProcess {
         @Override
         public void run() {
             var lastUpdateTimeNanos = System.nanoTime();
-            while(!Thread.interrupted()) {
+            while (!Thread.interrupted()) {
 
                 // blocking call, will block until camera has a new frame.
                 Pair<Mat, Long> camData = cameraCapture.getFrame();
@@ -284,7 +291,7 @@ public class VisionProcess {
 
         double getAverageFPS() {
             var temp = 0.0;
-            for(int i = 0; i < 7; i++) {
+            for (int i = 0; i < 7; i++) {
                 temp += fpsAveragingBuffer.get(i);
             }
             temp /= 7.0;
@@ -293,14 +300,15 @@ public class VisionProcess {
 
     }
 
+
     private class CameraStreamerRunnable extends LoopingRunnable {
 
         final CameraStreamer streamer;
         private Mat bufferMat = new Mat();
 
-        private CameraStreamerRunnable(int cameraFPS, CameraStreamer streamer) {
+        private CameraStreamerRunnable(CameraStreamer streamer) {
             // add 2 FPS to allow for a bit of overhead
-            super(1000L/(cameraFPS + 2));
+            super(1000L / (streamer.frameRateMode.frameRate + 2));
             this.streamer = streamer;
         }
 

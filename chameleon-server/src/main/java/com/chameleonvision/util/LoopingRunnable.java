@@ -12,9 +12,14 @@ public abstract class LoopingRunnable implements Runnable {
         this.loopTimeMs = loopTimeMs;
     }
 
+    public void setLoopTimeMs(long loopTimeMs) {
+        this.loopTimeMs = loopTimeMs;
+        System.out.println("loopTimeMs = " + loopTimeMs);
+    }
+
     @Override
     public void run() {
-        while(!Thread.interrupted()) {
+        while (!Thread.interrupted()) {
             var now = System.currentTimeMillis();
 
             // Do the thing
@@ -24,14 +29,15 @@ public abstract class LoopingRunnable implements Runnable {
             var timeElapsed = System.currentTimeMillis() - now;
             var delta = loopTimeMs - timeElapsed;
             try {
-                if(delta > 0.0) {
+                if (delta > 0.0) {
 
                     Thread.sleep(delta, 0);
 
                 } else {
                     Thread.sleep(1);
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
     }
 }

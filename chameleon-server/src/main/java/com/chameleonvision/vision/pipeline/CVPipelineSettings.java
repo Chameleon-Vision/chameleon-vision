@@ -1,8 +1,6 @@
 package com.chameleonvision.vision.pipeline;
 
-import com.chameleonvision.vision.enums.ImageFlipMode;
-import com.chameleonvision.vision.enums.ImageRotationMode;
-import com.chameleonvision.vision.enums.StreamDivisor;
+import com.chameleonvision.vision.enums.*;
 
 @SuppressWarnings("ALL")
 public class CVPipelineSettings {
@@ -15,4 +13,5 @@ public class CVPipelineSettings {
     public double gain = 0;
     public int videoModeIndex = 0;
     public StreamDivisor streamDivisor = StreamDivisor.NONE;
+    public FrameRateMode streamFpsMode = FrameRateMode.MEDIUM;//Default values are subject to change
 }

@@ -64,7 +64,7 @@ class StaticCaptureTest {
 
         testPipeline.initPipeline(testCapture1);
 
-        var streamer = new CameraStreamer(testCapture1, "CargoSideStraightDark36in",testPipeline.settings.streamDivisor);
+        var streamer = new CameraStreamer(testCapture1, "CargoSideStraightDark36in",testPipeline.settings.streamDivisor,testPipeline.settings.streamFpsMode);
 
         NetworkTableInstance.getDefault().startClient("localhost");
 

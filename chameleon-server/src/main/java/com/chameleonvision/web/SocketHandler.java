@@ -6,6 +6,7 @@ import com.chameleonvision.vision.VisionProcess;
 import com.chameleonvision.vision.camera.CameraCapture;
 import com.chameleonvision.vision.camera.CaptureStaticProperties;
 import com.chameleonvision.vision.camera.USBCameraCapture;
+import com.chameleonvision.vision.enums.FrameRateMode;
 import com.chameleonvision.vision.enums.ImageRotationMode;
 import com.chameleonvision.vision.enums.StreamDivisor;
 import com.chameleonvision.vision.pipeline.CVPipeline;
@@ -56,7 +57,7 @@ public class SocketHandler {
                 VisionProcess currentProcess = VisionManager.getCurrentUIVisionProcess();
                 CameraCapture currentCamera = currentProcess.getCamera();
                 CVPipeline currentPipeline = currentProcess.pipelineManager.getCurrentPipeline();
-//                System.out.println("entry.getKey()+entry.getValue()= " + entry.getKey() + entry.getValue());
+                System.out.println("entry.getKey()+entry.getValue()= " + entry.getKey() + entry.getValue());
                 switch (entry.getKey()) {
                     case "driverMode": {
                         HashMap<String, Object> data = (HashMap<String, Object>) entry.getValue();
@@ -189,6 +190,10 @@ public class SocketHandler {
                             }
                             case "streamDivisor": {
                                 currentProcess.cameraStreamer.setDivisor(StreamDivisor.values()[(Integer) entry.getValue()], true);
+                                break;
+                            }
+                            case "streamFpsMode": {
+                                currentProcess.setStreamFps(FrameRateMode.values()[(Integer) entry.getValue()]);
                                 break;
                             }
                         }
