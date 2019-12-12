@@ -1,21 +1,20 @@
 package com.chameleonvision.vision.pipeline;
 
+import com.chameleonvision.config.CameraCalibrationConfig;
 import com.chameleonvision.vision.camera.CameraCapture;
+import edu.wpi.cscore.VideoMode;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class CalibrateSolvePNPPipeline extends CVPipeline<DriverVisionPipeline.DriverPipelineResult, CVPipeline3dSettings> {
 
-    private int checkerboardSquaresHigh = 7;
-    private int checkerboardSquaresWide = 7;
-    private MatOfPoint3f objP = null;// new MatOfPoint3f(checkerboardSquaresHigh + checkerboardSquaresWide, 3);//(checkerboardSquaresWide * checkerboardSquaresHigh, 3);
+    private int checkerboardSquaresHigh = 6;
+    private int checkerboardSquaresWide = 8;
+    private MatOfPoint3f objP;// new MatOfPoint3f(checkerboardSquaresHigh + checkerboardSquaresWide, 3);//(checkerboardSquaresWide * checkerboardSquaresHigh, 3);
     private Size patternSize = new Size(checkerboardSquaresWide, checkerboardSquaresHigh);
     private Size imageSize;
     double checkerboardSquareSize = 1; // inches!
@@ -23,7 +22,7 @@ public class CalibrateSolvePNPPipeline extends CVPipeline<DriverVisionPipeline.D
     private List<Mat> objpoints = new ArrayList<>();
     private List<Mat> imgpoints = new ArrayList<>();
 
-    private final int MIN_COUNT = 4;
+    public static final int MIN_COUNT = 15;
 
     public CalibrateSolvePNPPipeline(CVPipeline3dSettings settings) {
         super(settings);
@@ -55,7 +54,6 @@ public class CalibrateSolvePNPPipeline extends CVPipeline<DriverVisionPipeline.D
         imgpoints.forEach(Mat::release);
         objpoints.clear();
         imgpoints.clear();
-
     }
 
     private final Size windowSize = new Size(11, 11);
@@ -129,23 +127,27 @@ public class CalibrateSolvePNPPipeline extends CVPipeline<DriverVisionPipeline.D
     }
 
     public boolean calibrate() {
-        if(captureCount < MIN_COUNT) return false;
+        if (captureCount < MIN_COUNT - 1) return false;
 
-        Mat camMat = new Mat();
-        Mat distCoeffs = new Mat();
+        Mat cameraMatrix = new Mat();
+        Mat distortionCoeffs = new Mat();
         List<Mat> rvecs = new ArrayList<>();
         List<Mat> tvecs = new ArrayList<>();
 
         try {
-            Calib3d.calibrateCamera(objpoints, imgpoints, imageSize, camMat, distCoeffs, rvecs, tvecs);
+            Calib3d.calibrateCamera(objpoints, imgpoints, imageSize, cameraMatrix, distortionCoeffs, rvecs, tvecs);
         } catch(Exception e) {
-            e.printStackTrace();
+            System.err.println("Camera calibration failed!");
             return false;
         }
 
-        System.out.printf("CALIBRATION SUCCESS! Cam matrix: \n%s\ndistCoeffs:\n%s\n", camMat, distCoeffs);
+        VideoMode currentVidMode = cameraCapture.getCurrentVideoMode();
+        Size resolution = new Size(currentVidMode.width, currentVidMode.height);
+        CameraCalibrationConfig cal = new CameraCalibrationConfig(resolution, cameraMatrix, distortionCoeffs);
 
-        var i = 4;
+
+        System.out.printf("CALIBRATION SUCCESS! camMatrix: \n%s\ndistortionCoeffs:\n%s\n", cameraMatrix, distortionCoeffs);
+
         return true;
     }
 }

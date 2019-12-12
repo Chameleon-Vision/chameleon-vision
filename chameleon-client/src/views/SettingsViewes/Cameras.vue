@@ -52,7 +52,7 @@
                     color: "red"
                 },
                 snapshotAmount: 0,
-
+                hasEnough: false
             }
         },
         methods: {
@@ -70,18 +70,21 @@
                 const self = this;
                 let data = {};
                 let connection_string = "/api/settings/";
-                if (this.isCalibrating === true) {
+                if (self.isCalibrating === true) {
                     connection_string += "snapshot"
                 } else {
                     connection_string += "startCalibration";
                     data['resolution'] = this.resolutionIndex;
+                    self.hasEnough = false;
                 }
                 this.axios.post("http://" + this.$address + connection_string, data).then(
                     function (response) {
                         if (response.status === 200) {
                             if (self.isCalibrating) {
-                                self.snapshotAmount = response.data;
-                                if (self.snapshotAmount > 12) {
+
+                                self.snapshotAmount = response.data['snapshotCount'];
+                                self.hasEnough = response.data['hasEnough'];
+                                if (self.hasEnough === 'true') {
                                     self.cancellationModeButton.text = "Finish Calibration";
                                     self.cancellationModeButton.color = "green";
                                 }
@@ -96,15 +99,16 @@
             sendCalibrationFinish() {
                 const self = this;
                 let connection_string = "/api/settings/";
-                if (this.snapshotAmount > 12) {
+                if (this.hasEnough) {
                     connection_string += "finishCalibration"
                 } else {
                     connection_string += "cancelCalibration"
                 }
-                this.axios.post("http://" + this.$address + connection_string).then(
+                self.axios.post("http://" + this.$address + connection_string).then(
                     function (response) {
                         if (response.status === 200) {
                             self.isCalibrating = false;
+                            self.hasEnough = false;
                             self.snapshotAmount = 0;
                             self.calibrationModeButton.text = "Start Calibration";
                             self.cancellationModeButton.text = "Cancel Calibration";

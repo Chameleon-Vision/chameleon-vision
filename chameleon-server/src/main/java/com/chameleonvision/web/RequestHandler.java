@@ -4,8 +4,9 @@ import com.chameleonvision.config.ConfigManager;
 import com.chameleonvision.network.NetworkIPMode;
 import com.chameleonvision.vision.VisionManager;
 import com.chameleonvision.vision.VisionProcess;
-import com.chameleonvision.vision.camera.CameraCapture;
 import com.chameleonvision.vision.camera.USBCameraCapture;
+import com.chameleonvision.vision.pipeline.CVPipelineSettings;
+import com.chameleonvision.vision.pipeline.CalibrateSolvePNPPipeline;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.http.Context;
@@ -31,6 +32,43 @@ public class RequestHandler {
             ConfigManager.saveGeneralSettings();
             SocketHandler.sendFullSettings();
             ctx.status(200);
+        } catch (JsonProcessingException e) {
+            ctx.status(500);
+        }
+    }
+
+    public static void onDuplicatePipeline(Context ctx) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            Map newPipelineData = objectMapper.readValue(ctx.body(), Map.class);
+
+            int newCam = -1;
+            try {
+                newCam = (Integer) newPipelineData.get("camera");
+            } catch (Exception e) {
+                // ignored
+            }
+
+            var pipeline = (CVPipelineSettings) newPipelineData.get("pipeline");
+
+            if (newCam == -1) {
+                if (VisionManager.getCurrentCameraPipelineNicknames().contains(pipeline.nickname)) {
+                    ctx.status(400); // BAD REQUEST
+                } else {
+                    VisionManager.getCurrentUIVisionProcess().pipelineManager.addPipeline(pipeline);
+                    ctx.status(200);
+                }
+            } else {
+                var cam = VisionManager.getVisionProcessByIndex(newCam);
+                if (cam != null && cam.pipelineManager.pipelines.stream().anyMatch(c -> c.settings.nickname.equals(pipeline.nickname))) {
+                    ctx.status(400); // BAD REQUEST
+                } else {
+                    cam.pipelineManager.addPipeline(pipeline);
+                    ctx.status(200);
+                }
+            }
+
         } catch (JsonProcessingException e) {
             ctx.status(500);
         }
@@ -68,10 +106,16 @@ public class RequestHandler {
     }
 
     public static void onSnapshot(Context ctx) {
-        VisionManager.getCurrentUIVisionProcess().pipelineManager.calib3dPipe.takeSnapshot();
+        var calPipe = VisionManager.getCurrentUIVisionProcess().pipelineManager.calib3dPipe;
+
+        calPipe.takeSnapshot();
+
+        Boolean hasEnough = calPipe.getCount() >= CalibrateSolvePNPPipeline.MIN_COUNT - 1;
 
         try {
-            ctx.res.getOutputStream().print(VisionManager.getCurrentUIVisionProcess().pipelineManager.calib3dPipe.getCount());
+            // manual serialization ftw
+            String toSend = String.format("{\n\t\"snapshotCount\" : \"%d\",\n\t\"hasEnough\" : \"%s\"\n}", calPipe.getCount(), hasEnough.toString());
+            ctx.res.getOutputStream().print(toSend);
             ctx.status(200);
         } catch (IOException e) {
             e.printStackTrace();
