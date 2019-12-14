@@ -17,6 +17,7 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
 
     private int checkerboardSquaresHigh = 6;
     private int checkerboardSquaresWide = 8;
+    private MatOfPoint3f objP_ORIG;
     private MatOfPoint3f objP;// new MatOfPoint3f(checkerboardSquaresHigh + checkerboardSquaresWide, 3);//(checkerboardSquaresWide * checkerboardSquaresHigh, 3);
     private Size patternSize = new Size(checkerboardSquaresWide, checkerboardSquaresHigh);
     private Size imageSize;
@@ -24,6 +25,8 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
     private MatOfPoint2f calibrationOutput = new MatOfPoint2f();
     private List<Mat> objpoints = new ArrayList<>();
     private List<Mat> imgpoints = new ArrayList<>();
+
+    public static double checkerboardSquareSizeUnits = 1.0;
 
     public static final int MIN_COUNT = 15;
 
@@ -48,15 +51,21 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
 //            }
 //        }
 
-        objP = new MatOfPoint3f();
+        objP_ORIG = new MatOfPoint3f();
         for(int i = 0; i < checkerboardSquaresHigh * checkerboardSquaresWide; i++) {
-            objP.push_back(new MatOfPoint3f(new Point3(i / checkerboardSquaresWide, i % checkerboardSquaresHigh, 0.0f)));
+            objP_ORIG.push_back(new MatOfPoint3f(new Point3(i / checkerboardSquaresWide, i % checkerboardSquaresHigh, 0.0f)));
         }
+
+        setObjectSize(checkerboardSquareSizeUnits);
 
         objpoints.forEach(Mat::release);
         imgpoints.forEach(Mat::release);
         objpoints.clear();
         imgpoints.clear();
+    }
+
+    private void setObjectSize(double size) {
+        Core.multiply(objP_ORIG, new Scalar(new double[] { -1, -1, -1 }), objP);
     }
 
     private final Size windowSize = new Size(11, 11);
