@@ -1,4 +1,4 @@
-package com.chameleonvision.vision.pipeline;
+package com.chameleonvision.vision.pipeline.impl;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;

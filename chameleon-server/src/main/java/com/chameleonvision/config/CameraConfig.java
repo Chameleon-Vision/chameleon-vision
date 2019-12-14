@@ -1,5 +1,6 @@
 package com.chameleonvision.config;
 
+import com.chameleonvision.util.FileHelper;
 import com.chameleonvision.util.JacksonHelper;
 import com.chameleonvision.vision.pipeline.CVPipelineSettings;
 
@@ -21,6 +22,7 @@ public class CameraConfig {
     private final Path configPath;
     private final Path driverModePath;
     private final Path calibrationPath;
+    final Path pipelineFolderPath;
 
     public final PipelineConfig pipelineConfig;
 
@@ -33,6 +35,7 @@ public class CameraConfig {
         configPath = Path.of(configFolderPath.toString(), "camera.json");
         driverModePath = Path.of(configFolderPath.toString(), "drivermode.json");
         calibrationPath = Path.of(configFolderPath.toString(), "calibration.json");
+        pipelineFolderPath = Paths.get(configFolderPath.toString(), "pipelines");
     }
 
     public FullCameraConfiguration load() {
@@ -82,6 +85,7 @@ public class CameraConfig {
     void saveConfig(CameraJsonConfig config) {
         try {
             JacksonHelper.serializer(configPath, config);
+            FileHelper.setFilePerms(configPath);
         } catch (IOException e) {
             System.err.println("Failed to save camera config file: " + configPath.toString());
         }
@@ -94,6 +98,7 @@ public class CameraConfig {
     public void saveDriverMode(CVPipelineSettings driverMode) {
         try {
             JacksonHelper.serializer(driverModePath, driverMode);
+            FileHelper.setFilePerms(driverModePath);
         } catch (IOException e) {
             System.err.println("Failed to save camera drivermode file: " + driverModePath.toString());
         }
@@ -105,6 +110,7 @@ public class CameraConfig {
                 if (!(new File(configFolderPath.toUri()).mkdirs())) {
                     System.err.println("Failed to create camera config folder: " + configFolderPath.toString());
                 }
+                FileHelper.setFilePerms(configFolderPath);
             } catch(Exception e) {
                 System.err.println("Failed to create camera config folder: " + configFolderPath.toString());
             }
@@ -115,6 +121,7 @@ public class CameraConfig {
         if (!configExists()) {
             try {
                 JacksonHelper.serializer(configPath, preliminaryConfig);
+                FileHelper.setFilePerms(configPath);
             } catch (IOException e) {
                 System.err.println("Failed to create camera config file: " + configPath.toString());
             }
@@ -127,6 +134,7 @@ public class CameraConfig {
                 CVPipelineSettings newDriverModeSettings = new CVPipelineSettings();
                 newDriverModeSettings.nickname = "DRIVERMODE";
                 JacksonHelper.serializer(driverModePath, newDriverModeSettings);
+                FileHelper.setFilePerms(driverModePath);
             } catch (IOException e) {
                 System.err.println("Failed to create camera drivermode file: " + driverModePath.toString());
             }

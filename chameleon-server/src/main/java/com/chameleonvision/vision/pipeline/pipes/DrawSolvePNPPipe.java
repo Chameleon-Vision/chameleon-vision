@@ -1,11 +1,10 @@
 package com.chameleonvision.vision.pipeline.pipes;
 
 import com.chameleonvision.util.Helpers;
-import com.chameleonvision.vision.pipeline.CVPipeline3d;
-import com.chameleonvision.vision.pipeline.CVPipeline3dSettings;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
+import com.chameleonvision.vision.pipeline.Pipe;
+import com.chameleonvision.vision.pipeline.impl.CVPipeline3d;
+import com.chameleonvision.vision.pipeline.impl.CVPipeline3dSettings;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;

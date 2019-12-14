@@ -1,7 +1,10 @@
-package com.chameleonvision.vision.pipeline;
+package com.chameleonvision.vision.pipeline.impl;
 
 import com.chameleonvision.config.CameraCalibrationConfig;
 import com.chameleonvision.vision.camera.CameraCapture;
+import com.chameleonvision.vision.pipeline.CVPipeline;
+import com.chameleonvision.vision.pipeline.impl.CVPipeline3dSettings;
+import com.chameleonvision.vision.pipeline.impl.DriverVisionPipeline;
 import edu.wpi.cscore.VideoMode;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
@@ -10,7 +13,7 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CalibrateSolvePNPPipeline extends CVPipeline<DriverVisionPipeline.DriverPipelineResult, CVPipeline3dSettings> {
+public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverPipelineResult, CVPipeline3dSettings> {
 
     private int checkerboardSquaresHigh = 6;
     private int checkerboardSquaresWide = 8;
@@ -24,7 +27,7 @@ public class CalibrateSolvePNPPipeline extends CVPipeline<DriverVisionPipeline.D
 
     public static final int MIN_COUNT = 15;
 
-    public CalibrateSolvePNPPipeline(CVPipeline3dSettings settings) {
+    public Calibrate3dPipeline(CVPipeline3dSettings settings) {
         super(settings);
 
 //        // init mat -- set it all to zero
@@ -145,6 +148,7 @@ public class CalibrateSolvePNPPipeline extends CVPipeline<DriverVisionPipeline.D
         Size resolution = new Size(currentVidMode.width, currentVidMode.height);
         CameraCalibrationConfig cal = new CameraCalibrationConfig(resolution, cameraMatrix, distortionCoeffs);
 
+        // TODO: (HIGH) save calibration data!
 
         System.out.printf("CALIBRATION SUCCESS! camMatrix: \n%s\ndistortionCoeffs:\n%s\n", cameraMatrix, distortionCoeffs);
 

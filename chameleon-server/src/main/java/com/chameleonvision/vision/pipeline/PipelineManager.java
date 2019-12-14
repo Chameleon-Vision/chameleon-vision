@@ -4,6 +4,7 @@ import com.chameleonvision.config.CameraConfig;
 import com.chameleonvision.config.ConfigManager;
 import com.chameleonvision.vision.VisionManager;
 import com.chameleonvision.vision.VisionProcess;
+import com.chameleonvision.vision.pipeline.impl.*;
 import com.chameleonvision.web.SocketHandler;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
@@ -21,7 +22,7 @@ public class PipelineManager {
     public final LinkedList<CVPipeline> pipelines = new LinkedList<>();
 
     public final CVPipeline driverModePipeline = new DriverVisionPipeline(new CVPipelineSettings());
-    public final CalibrateSolvePNPPipeline calib3dPipe = new CalibrateSolvePNPPipeline(new CVPipeline3dSettings());
+    public final Calibrate3dPipeline calib3dPipe = new Calibrate3dPipeline(new CVPipeline3dSettings());
 
     private final VisionProcess parentProcess;
     private int lastPipelineIndex;
@@ -111,28 +112,35 @@ public class PipelineManager {
     }
 
     public void setCurrentPipeline(int index) {
-        CVPipeline newPipeline;
+        CVPipeline newPipeline=null;
         if (index == DRIVERMODE_INDEX) {
             newPipeline = driverModePipeline;
 
-            // if we're changing into driver mode, try to set the nt entry to frue
+            // if we're changing into driver mode, try to set the nt entry to true
             parentProcess.setDriverModeEntry(true);
         } else if (index == CAL_3D_INDEX) {
             parentProcess.setDriverModeEntry(true);
 
             newPipeline = calib3dPipe;
         } else {
-            newPipeline = pipelines.get(index);
+            if (index < pipelines.size()&&index>=0) {
+                newPipeline = pipelines.get(index);
 
-            // if we're switching out of driver mode, try to set the nt entry to false
-            parentProcess.setDriverModeEntry(false);
+                // if we're switching out of driver mode, try to set the nt entry to false
+                parentProcess.setDriverModeEntry(false);
+            }
+            else
+                {
+                    //TODO alert/warn user that pipeline doesnt exsits
+                    System.err.println("Index is out of bounds");
+                }
         }
         if (newPipeline != null) {
             lastPipelineIndex = currentPipelineIndex;
             currentPipelineIndex = index;
             getCurrentPipeline().initPipeline(parentProcess.getCamera());
 
-            if(ConfigManager.settings.currentCamera.equals(parentProcess.getCamera().getProperties().name)) {
+            if (ConfigManager.settings.currentCamera.equals(parentProcess.getCamera().getProperties().name)) {
                 ConfigManager.settings.currentPipeline = currentPipelineIndex;
 
                 HashMap<String, Object> pipeChange = new HashMap<>();
@@ -145,7 +153,9 @@ public class PipelineManager {
                 }
             }
             newPipeline.initPipeline(parentProcess.getCamera());
-            if(ntIndexEntry != null) {
+            if (parentProcess.cameraStreamer != null)
+                parentProcess.cameraStreamer.setDivisor(newPipeline.settings.streamDivisor, true);
+            if (ntIndexEntry != null) {
                 ntIndexEntry.setDouble(index);
             }
         }
@@ -162,13 +172,14 @@ public class PipelineManager {
         savePipelineConfig(pipeline.settings);
     }
 
-    public void addNewPipeline(boolean is3D) {
+    public void addNewPipeline(boolean is3D, String piplineName) {
         CVPipeline newPipeline;
         if (!is3D) {
             newPipeline = new CVPipeline2d();
         } else {
             newPipeline = new CVPipeline3d();
         }
+        newPipeline.settings.nickname = piplineName;
         newPipeline.settings.index = pipelines.size();
         addPipeline(newPipeline);
     }
@@ -189,7 +200,6 @@ public class PipelineManager {
 
     public void renameCurrentPipeline(String newName) {
         CVPipelineSettings settings = getCurrentPipeline().settings;
-        settings.nickname = newName;
         renamePipelineConfig(settings, newName);
     }
 

@@ -3,10 +3,12 @@ package com.chameleonvision.vision;
 import com.chameleonvision.Debug;
 import com.chameleonvision.config.ConfigManager;
 import com.chameleonvision.util.LoopingRunnable;
-import com.chameleonvision.vision.camera.CameraCapture;
 import com.chameleonvision.vision.camera.CameraStreamer;
 import com.chameleonvision.vision.camera.USBCameraCapture;
 import com.chameleonvision.vision.pipeline.*;
+import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
+import com.chameleonvision.vision.pipeline.impl.CVPipeline3d;
+import com.chameleonvision.vision.pipeline.impl.DriverVisionPipeline;
 import com.chameleonvision.web.SocketHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,13 +51,15 @@ public class VisionProcess {
     private NetworkTableEntry ntValidEntry;
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    private long lastUIUpdateMs = 0;
+
     VisionProcess(USBCameraCapture cameraCapture, String name, List<CVPipelineSettings> loadedPipelineSettings) {
         this.cameraCapture = cameraCapture;
 
         pipelineManager = new PipelineManager(this, loadedPipelineSettings);
 
         // Thread to put frames on the dashboard
-        this.cameraStreamer = new CameraStreamer(cameraCapture, name);
+        this.cameraStreamer = new CameraStreamer(cameraCapture, name,pipelineManager.getCurrentPipeline().settings.streamDivisor);
         this.streamRunnable = new CameraStreamerRunnable(30, cameraStreamer);
 
         // Thread to process vision data
@@ -142,22 +146,34 @@ public class VisionProcess {
     }
 
     private void updateUI(CVPipelineResult data) {
-        if(cameraCapture.getProperties().name.equals(ConfigManager.settings.currentCamera)) {
-            HashMap<String, Object> WebSend = new HashMap<>();
-            HashMap<String, Object> point = new HashMap<>();
-            HashMap<String, Object> calculated = new HashMap<>();
-            List<Double> center = new ArrayList<>();
-            if (data.hasTarget) {
-                if(data instanceof CVPipeline2d.CVPipeline2dResult) {
-                    CVPipeline2d.CVPipeline2dResult result = (CVPipeline2d.CVPipeline2dResult) data;
-                    CVPipeline2d.Target2d bestTarget = result.targets.get(0);
-                    center.add(bestTarget.rawPoint.center.x);
-                    center.add(bestTarget.rawPoint.center.y);
-                    calculated.put("pitch", bestTarget.pitch);
-                    calculated.put("yaw", bestTarget.yaw);
-                    calculated.put("area", bestTarget.area);
-                } else if (data instanceof CVPipeline3d.CVPipeline3dResult) {
-                    // TODO: (2.1) 3d stuff in UI
+        // 30 "FPS" update rate
+        long currentMillis = System.currentTimeMillis();
+        if (currentMillis - lastUIUpdateMs > 1000/30) {
+            lastUIUpdateMs = currentMillis;
+
+            if(cameraCapture.getProperties().name.equals(ConfigManager.settings.currentCamera)) {
+                HashMap<String, Object> WebSend = new HashMap<>();
+                HashMap<String, Object> point = new HashMap<>();
+                HashMap<String, Object> calculated = new HashMap<>();
+                List<Double> center = new ArrayList<>();
+                if (data.hasTarget) {
+                    if(data instanceof CVPipeline2d.CVPipeline2dResult) {
+                        CVPipeline2d.CVPipeline2dResult result = (CVPipeline2d.CVPipeline2dResult) data;
+                        CVPipeline2d.Target2d bestTarget = result.targets.get(0);
+                        center.add(bestTarget.rawPoint.center.x);
+                        center.add(bestTarget.rawPoint.center.y);
+                        calculated.put("pitch", bestTarget.pitch);
+                        calculated.put("yaw", bestTarget.yaw);
+                        calculated.put("area", bestTarget.area);
+                    } else if (data instanceof CVPipeline3d.CVPipeline3dResult) {
+                        // TODO: (2.1) 3d stuff in UI
+                    } else {
+                        center.add(null);
+                        center.add(null);
+                        calculated.put("pitch", null);
+                        calculated.put("yaw", null);
+                        calculated.put("area", null);
+                    }
                 } else {
                     center.add(null);
                     center.add(null);
@@ -165,18 +181,12 @@ public class VisionProcess {
                     calculated.put("yaw", null);
                     calculated.put("area", null);
                 }
-            } else {
-                center.add(null);
-                center.add(null);
-                calculated.put("pitch", null);
-                calculated.put("yaw", null);
-                calculated.put("area", null);
+                point.put("fps", visionRunnable.fps);
+                point.put("calculated", calculated);
+                point.put("rawPoint", center);
+                WebSend.put("point", point);
+                SocketHandler.broadcastMessage(WebSend);
             }
-            point.put("fps", visionRunnable.fps);
-            point.put("calculated", calculated);
-            point.put("rawPoint", center);
-            WebSend.put("point", point);
-            SocketHandler.broadcastMessage(WebSend);
         }
     }
 

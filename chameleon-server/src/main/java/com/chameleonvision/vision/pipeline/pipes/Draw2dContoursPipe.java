@@ -2,6 +2,7 @@ package com.chameleonvision.vision.pipeline.pipes;
 
 import com.chameleonvision.vision.camera.CaptureStaticProperties;
 import com.chameleonvision.util.Helpers;
+import com.chameleonvision.vision.pipeline.Pipe;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Point;
 import org.opencv.core.*;
@@ -40,7 +41,7 @@ public class Draw2dContoursPipe implements Pipe<Pair<Mat, List<RotatedRect>>, Ma
     public Pair<Mat, Long> run(Pair<Mat, List<RotatedRect>> input) {
         long processStartNanos = System.nanoTime();
 
-        if (settings.showCrosshair || settings.showCentroid || settings.showMaximumBox || settings.showRotatedBox) {
+        if (settings.showCentroid || settings.showMaximumBox || settings.showRotatedBox) {
 //            input.getLeft().copyTo(processBuffer);
 //            processBuffer = input.getLeft();
 
@@ -77,34 +78,22 @@ public class Draw2dContoursPipe implements Pipe<Pair<Mat, List<RotatedRect>>, Ma
                 }
             }
 
-            if (settings.showCrosshair) {
-                xMax.set(new double[] {camProps.centerX + 10, camProps.centerY});
-                xMin.set(new double[] {camProps.centerX - 10, camProps.centerY});
-                yMax.set(new double[] {camProps.centerX, camProps.centerY + 10});
-                yMin.set(new double[] {camProps.centerX, camProps.centerY - 10});
-                Imgproc.line(input.getLeft(), xMax, xMin, Helpers.colorToScalar(settings.crosshairColor), 2);
-                Imgproc.line(input.getLeft(), yMax, yMin, Helpers.colorToScalar(settings.crosshairColor), 2);
-            }
-
 //            processBuffer.copyTo(outputMat);
 //            processBuffer.release();
         } else {
 //            input.getLeft().copyTo(outputMat);
         }
-
         long processTime = System.nanoTime() - processStartNanos;
         return Pair.of(input.getLeft(), processTime);
     }
 
     public static class Draw2dContoursSettings {
         public boolean showCentroid = false;
-        public boolean showCrosshair = false;
         public boolean showMultiple = false;
         public int boxOutlineSize = 0;
         public boolean showRotatedBox = false;
         public boolean showMaximumBox = false;
         public Color centroidColor = Color.GREEN;
-        public Color crosshairColor = Color.GREEN;
         public Color rotatedBoxColor = Color.BLUE;
         public Color maximumBoxColor = Color.RED;
     }

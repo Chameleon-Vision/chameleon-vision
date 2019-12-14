@@ -2,6 +2,7 @@ package com.chameleonvision.vision.pipeline.pipes;
 
 import com.chameleonvision.vision.camera.CaptureStaticProperties;
 import com.chameleonvision.vision.enums.SortMode;
+import com.chameleonvision.vision.pipeline.Pipe;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.FastMath;
 import org.opencv.core.RotatedRect;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class SortContoursPipe implements Pipe<List<RotatedRect>, List<RotatedRect>> {
 
-    private final Comparator<RotatedRect> SortByCentermostComparator = Comparator.comparingDouble(this::calcCenterDistance);
+    private final Comparator<RotatedRect> SortByCentermostComparator = Comparator.comparingDouble(this::calcSquareCenterDistance);
 
     private static final Comparator<RotatedRect> SortByLargestComparator = (rect1, rect2) -> Double.compare(rect2.size.area(), rect1.size.area());
     private static final Comparator<RotatedRect> SortBySmallestComparator = SortByLargestComparator.reversed();
@@ -81,7 +82,7 @@ public class SortContoursPipe implements Pipe<List<RotatedRect>, List<RotatedRec
         return Pair.of(sortedContours, processTime);
     }
 
-    private double calcCenterDistance(RotatedRect rect) {
+    private double calcSquareCenterDistance(RotatedRect rect) {
         return FastMath.sqrt(FastMath.pow(camProps.centerX - rect.center.x, 2) + FastMath.pow(camProps.centerY - rect.center.y, 2));
     }
 }

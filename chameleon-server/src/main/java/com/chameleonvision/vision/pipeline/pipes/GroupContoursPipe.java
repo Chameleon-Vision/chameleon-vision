@@ -3,6 +3,7 @@ package com.chameleonvision.vision.pipeline.pipes;
 import com.chameleonvision.util.MathHandler;
 import com.chameleonvision.vision.enums.TargetGroup;
 import com.chameleonvision.vision.enums.TargetIntersection;
+import com.chameleonvision.vision.pipeline.Pipe;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;

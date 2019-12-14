@@ -6,7 +6,7 @@ import com.chameleonvision.vision.VisionManager;
 import com.chameleonvision.vision.VisionProcess;
 import com.chameleonvision.vision.camera.USBCameraCapture;
 import com.chameleonvision.vision.pipeline.CVPipelineSettings;
-import com.chameleonvision.vision.pipeline.CalibrateSolvePNPPipeline;
+import com.chameleonvision.vision.pipeline.impl.Calibrate3dPipeline;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.http.Context;
@@ -110,7 +110,7 @@ public class RequestHandler {
 
         calPipe.takeSnapshot();
 
-        Boolean hasEnough = calPipe.getCount() >= CalibrateSolvePNPPipeline.MIN_COUNT - 1;
+        Boolean hasEnough = calPipe.getCount() >= Calibrate3dPipeline.MIN_COUNT - 1;
 
         try {
             // manual serialization ftw
