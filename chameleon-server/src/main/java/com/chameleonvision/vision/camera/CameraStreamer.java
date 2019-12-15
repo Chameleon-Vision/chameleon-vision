@@ -3,9 +3,7 @@ package com.chameleonvision.vision.camera;
 import com.chameleonvision.vision.enums.FrameRateMode;
 import com.chameleonvision.vision.enums.StreamDivisor;
 import com.chameleonvision.web.SocketHandler;
-import edu.wpi.cscore.CvSource;
-import edu.wpi.cscore.MjpegServer;
-import edu.wpi.cscore.VideoMode;
+import edu.wpi.cscore.*;
 import edu.wpi.first.cameraserver.CameraServer;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -36,8 +34,6 @@ public class CameraStreamer {
                 cameraCapture.getProperties().getStaticProperties().imageHeight / divisor.value
         );
         setDivisor(divisor, false);
-//        MjpegServer s = (MjpegServer) CameraServer.getInstance().getServer("serve_" + name);
-//        s.setCompression(this.compressionMode.compressionValue);
     }
 
     public void setDivisor(StreamDivisor newDivisor, boolean updateUI) {
@@ -52,12 +48,11 @@ public class CameraStreamer {
             cvSource.setVideoMode(new VideoMode(oldVideoMode.pixelFormat,
                     cameraCapture.getProperties().getStaticProperties().imageWidth / divisor.value,
                     cameraCapture.getProperties().getStaticProperties().imageHeight / divisor.value,
-                    10));
+                    oldVideoMode.fps));
         }
         if (updateUI) {
             SocketHandler.sendFullSettings();
         }
-
     }
 
     public StreamDivisor getDivisor() {
