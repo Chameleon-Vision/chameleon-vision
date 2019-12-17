@@ -4,20 +4,9 @@
         <CVslider name="Brightness" v-model="value.brightness" :min="0" :max="100" @input="handleData('brightness')"/>
         <CVselect name="Orientation" v-model="value.rotationMode" :list="['Normal','90° CW','180°','90° CCW']"
                   @input="handleData('rotationMode')"/>
-        <CVselect name="Resolution" v-model="value.videoModeIndex" :list="resolutionList" @input="handleData('videoModeIndex')"/>        
-        <span>Stream Resolution:</span>
-        <v-tabs v-model="value.streamDivisor" style="padding-bottom:5%" fixed-tabs background-color="#252525" dark height="48" slider-color="#4baf62" @change="handleData('streamDivisor')">
-            <v-tab>Original</v-tab>
-            <v-tab>High</v-tab>
-            <v-tab>Medium</v-tab>
-            <v-tab>Low</v-tab>
-        </v-tabs>
-        <span>Stream Frame Rate:</span>
-        <v-tabs v-model="value.streamFpsMode" style="padding-bottom:5%" fixed-tabs background-color="#252525" dark height="48" slider-color="#4baf62" @change="handleData('streamFpsMode')">
-            <v-tab>30</v-tab>
-            <v-tab>20</v-tab>
-            <v-tab>10</v-tab>
-        </v-tabs>
+        <CVselect name="Resolution" v-model="value.videoModeIndex" :list="resolutionList" @input="handleData('videoModeIndex')"/>
+        <CVselect name="Stream Resolution" v-model="value.streamDivisor"
+                  :list="streamResolutionList" @input="handleData('streamDivisor')"/>
     </div>
 </template>
 
