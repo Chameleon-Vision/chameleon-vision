@@ -8,9 +8,9 @@
         </div>
         <div style="margin-top: 15px">
             <span>3D Calibration</span>
-            <v-divider color="white" style="margin-bottom: 10px"></v-divider>
+            <v-divider color="white" style="margin-bottom: 10px"/>
 
-            <CVselect name="Resolution" v-model="resolutionIndex" :list="resolutionList"></CVselect>
+            <CVselect name="Resolution" v-model="resolutionIndex" :list="resolutionList" @input="sendCurrentResolution()"/>
             <v-row>
                 <v-col>
                     <v-btn small :color="calibrationModeButton.color" @click="sendCalibrationMode"
@@ -20,7 +20,7 @@
                 </v-col>
                 <v-col>
                     <v-btn small :color="cancellationModeButton.color" @click="sendCalibrationFinish"
-                           :disabled="checkResolution">
+                           :disabled="checkCancelation">
                         {{cancellationModeButton.text}}
                     </v-btn>
                 </v-col>
@@ -81,10 +81,9 @@
                     function (response) {
                         if (response.status === 200) {
                             if (self.isCalibrating) {
-
                                 self.snapshotAmount = response.data['snapshotCount'];
                                 self.hasEnough = response.data['hasEnough'];
-                                if (self.hasEnough === 'true') {
+                                if (self.hasEnough === true) {
                                     self.cancellationModeButton.text = "Finish Calibration";
                                     self.cancellationModeButton.color = "green";
                                 }
@@ -116,11 +115,25 @@
                         }
                     }
                 );
+            },
+            sendCurrentResolution() {
+                console.log("setting " + "videoModeIndex" + " to " + this.resolutionIndex);
+                this.handleInput("videoModeIndex", this.resolutionIndex);
+                this.$emit('update')
             }
         },
         computed: {
             checkResolution() {
                 return this.resolutionIndex === undefined;
+            },
+            checkCancelation(){
+                if (this.isCalibrating){
+                    return false
+                } else if (this.checkResolution){
+                    return true;
+                } else{
+                    return true
+                }
             },
             currentCameraIndex: {
                 get() {

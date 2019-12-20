@@ -9,9 +9,12 @@ import com.chameleonvision.vision.pipeline.CVPipelineSettings;
 import com.chameleonvision.vision.pipeline.impl.Calibrate3dPipeline;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.wpi.cscore.VideoMode;
 import io.javalin.http.Context;
+import io.javalin.http.Handler;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class RequestHandler {
@@ -102,7 +105,8 @@ public class RequestHandler {
         ObjectMapper objectMapper = new ObjectMapper();
         Map data = objectMapper.readValue(ctx.body(), Map.class);
         int resolutionIndex = (Integer) data.get("resolution");
-        VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(true);
+        VideoMode mode = VisionManager.getCurrentUIVisionProcess().getPossibleVideoModes().get(resolutionIndex);
+        VisionManager.getCurrentUIVisionProcess().pipelineManager.enableCalibrationMode(mode);
     }
 
     public static void onSnapshot(Context ctx) {
@@ -112,15 +116,15 @@ public class RequestHandler {
 
         Boolean hasEnough = calPipe.getCount() >= Calibrate3dPipeline.MIN_COUNT - 1;
 
-        try {
-            // manual serialization ftw
-            String toSend = String.format("{\n\t\"snapshotCount\" : \"%d\",\n\t\"hasEnough\" : \"%s\"\n}", calPipe.getCount(), hasEnough.toString());
-            ctx.res.getOutputStream().print(toSend);
-            ctx.status(200);
-        } catch (IOException e) {
-            e.printStackTrace();
-            ctx.status(500);
-        }
+        // manual serialization ftw
+//            String toSend = String.format("{\n\t\"snapshotCount\" : \"%d\",\n\t\"hasEnough\" : \"%s\"\n}", calPipe.getCount(), hasEnough.toString());
+        HashMap<String, Object> toSend = new HashMap<String, Object>();
+        toSend.put("snapshotCount", calPipe.getCount());
+        toSend.put("hasEnough", hasEnough);
+
+        ctx.json(toSend);
+//            ctx.res.getOutputStream().print(toSend);
+        ctx.status(200);
     }
 
     public static void onCalibrationFinish(Context ctx) {
