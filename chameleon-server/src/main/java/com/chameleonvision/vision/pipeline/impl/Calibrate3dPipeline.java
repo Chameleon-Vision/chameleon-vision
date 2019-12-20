@@ -15,8 +15,8 @@ import java.util.List;
 
 public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverPipelineResult, CVPipeline3dSettings> {
 
-    private int checkerboardSquaresHigh = 6;
-    private int checkerboardSquaresWide = 8;
+    private int checkerboardSquaresHigh = 7;
+    private int checkerboardSquaresWide = 7;
     private MatOfPoint3f objP_ORIG;
     private MatOfPoint3f objP;// new MatOfPoint3f(checkerboardSquaresHigh + checkerboardSquaresWide, 3);//(checkerboardSquaresWide * checkerboardSquaresHigh, 3);
     private Size patternSize = new Size(checkerboardSquaresWide, checkerboardSquaresHigh);

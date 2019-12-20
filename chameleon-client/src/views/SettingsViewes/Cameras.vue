@@ -10,7 +10,7 @@
             <span>3D Calibration</span>
             <v-divider color="white" style="margin-bottom: 10px"/>
 
-            <CVselect name="Resolution" v-model="resolutionIndex" :list="resolutionList"/>
+            <CVselect name="Resolution" v-model="resolutionIndex" :list="resolutionList" @input="sendCurrentResolution()"/>
             <v-row>
                 <v-col>
                     <v-btn small :color="calibrationModeButton.color" @click="sendCalibrationMode"
@@ -115,6 +115,11 @@
                         }
                     }
                 );
+            },
+            sendCurrentResolution() {
+                console.log("setting " + "videoModeIndex" + " to " + this.resolutionIndex);
+                this.handleInput("videoModeIndex", this.resolutionIndex);
+                this.$emit('update')
             }
         },
         computed: {

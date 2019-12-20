@@ -139,6 +139,13 @@ public class SocketHandler {
                         sendFullSettings();
                         break;
                     }
+                    case "isPNPCalibration": {
+                        currentProcess.pipelineManager.setCalibrationMode((Boolean) entry.getValue());
+                        break;
+                    }
+                    case "takeCalibrationSnapshot": {
+                        currentProcess.pipelineManager.calib3dPipe.takeSnapshot();
+                    }
                     default: {
 
                         switch (entry.getKey()) {//Pre field value set
