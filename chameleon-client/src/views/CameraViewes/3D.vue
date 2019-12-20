@@ -26,7 +26,7 @@
     import miniMap from '../../components/3D/MiniMap';
     import CVswitch from '../../components/cv-switch';
     import Papa from 'papaparse';
-
+    
     export default {
         name: "solvePNP",
         components: {
@@ -59,7 +59,7 @@
             },
             handleSnapshot() {
                 let msg = this.$msgPack.encode({
-                    'takeCalibrationSnapsnot': true
+                    'takeCalibrationSnapshot': true
                 });
                 this.$socket.send(msg);
                 this.$emit('update');
