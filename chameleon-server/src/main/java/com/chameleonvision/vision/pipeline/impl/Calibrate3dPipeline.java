@@ -33,25 +33,9 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
     public Calibrate3dPipeline(CVPipeline3dSettings settings) {
         super(settings);
 
-//        // init mat -- set it all to zero
-//        // start by looping over rows
-//        for(int i = 0; i < checkerboardSquaresHigh * checkerboardSquaresWide; i++) {
-//            for(int j = 0; j < 3; j++) {
-//                objP.put(i, j, 0);
-//            }
-//        }
-//
-//        // the first column iterates through width once, and the second column is zero
-//        // we repeat this pattern hight times
-//        for(int i = 0; i < checkerboardSquaresHigh; i++) {
-//            // within this we incrament by width
-//            for(int j = 0; j < checkerboardSquaresWide; j++) {
-//                objP.put(i + j, 0, j);
-//                objP.put(i + j, 1, i);
-//            }
-//        }
-
         objP_ORIG = new MatOfPoint3f();
+        objP = new MatOfPoint3f();
+
         for(int i = 0; i < checkerboardSquaresHigh * checkerboardSquaresWide; i++) {
             objP_ORIG.push_back(new MatOfPoint3f(new Point3(i / checkerboardSquaresWide, i % checkerboardSquaresHigh, 0.0f)));
         }
