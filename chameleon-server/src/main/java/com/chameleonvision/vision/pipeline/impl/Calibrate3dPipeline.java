@@ -1,6 +1,8 @@
 package com.chameleonvision.vision.pipeline.impl;
 
 import com.chameleonvision.config.CameraCalibrationConfig;
+import com.chameleonvision.config.ConfigManager;
+import com.chameleonvision.vision.VisionManager;
 import com.chameleonvision.vision.camera.CameraCapture;
 import com.chameleonvision.vision.pipeline.CVPipeline;
 import com.chameleonvision.vision.pipeline.impl.CVPipeline3dSettings;
@@ -28,7 +30,8 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
 
     public static double checkerboardSquareSizeUnits = 1.0;
 
-    public static final int MIN_COUNT = 15;
+    public static final int MIN_COUNT = 4;
+    private VideoMode calibrationMode;
 
     public Calibrate3dPipeline(CVPipeline3dSettings settings) {
         super(settings);
@@ -140,11 +143,18 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
         VideoMode currentVidMode = cameraCapture.getCurrentVideoMode();
         Size resolution = new Size(currentVidMode.width, currentVidMode.height);
         CameraCalibrationConfig cal = new CameraCalibrationConfig(resolution, cameraMatrix, distortionCoeffs);
+        VisionManager.getCurrentUIVisionProcess().getCamera().addCalibrationData(cal);
 
         // TODO: (HIGH) save calibration data!
 
         System.out.printf("CALIBRATION SUCCESS! camMatrix: \n%s\ndistortionCoeffs:\n%s\n", cameraMatrix, distortionCoeffs);
 
+        ConfigManager.saveGeneralSettings();
+
         return true;
+    }
+
+    public void setVideoMode(VideoMode mode) {
+        this.calibrationMode = mode;
     }
 }

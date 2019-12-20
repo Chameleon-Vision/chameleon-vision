@@ -9,6 +9,7 @@ import com.chameleonvision.vision.pipeline.CVPipelineSettings;
 import com.chameleonvision.vision.pipeline.impl.Calibrate3dPipeline;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.wpi.cscore.VideoMode;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 
@@ -104,7 +105,8 @@ public class RequestHandler {
         ObjectMapper objectMapper = new ObjectMapper();
         Map data = objectMapper.readValue(ctx.body(), Map.class);
         int resolutionIndex = (Integer) data.get("resolution");
-        VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(true);
+        VideoMode mode = VisionManager.getCurrentUIVisionProcess().getPossibleVideoModes().get(resolutionIndex);
+        VisionManager.getCurrentUIVisionProcess().pipelineManager.enableCalibrationMode(mode);
     }
 
     public static void onSnapshot(Context ctx) {

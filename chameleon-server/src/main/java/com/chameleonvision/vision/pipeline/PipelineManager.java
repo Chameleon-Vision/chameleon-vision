@@ -6,6 +6,7 @@ import com.chameleonvision.vision.VisionManager;
 import com.chameleonvision.vision.VisionProcess;
 import com.chameleonvision.vision.pipeline.impl.*;
 import com.chameleonvision.web.SocketHandler;
+import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
 import java.util.Comparator;
@@ -91,6 +92,12 @@ public class PipelineManager {
 
     public void setCalibrationMode(boolean calibrationMode) {
         setCurrentPipeline((calibrationMode ? CAL_3D_INDEX : lastPipelineIndex));
+    }
+
+    public void enableCalibrationMode(VideoMode mode) {
+        parentProcess.setVideoMode(mode);
+        calib3dPipe.setVideoMode(mode);
+        setCalibrationMode(true);
     }
 
     public boolean getDriverMode() {
