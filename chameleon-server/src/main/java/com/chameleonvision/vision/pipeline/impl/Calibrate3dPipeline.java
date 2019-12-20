@@ -5,8 +5,6 @@ import com.chameleonvision.config.ConfigManager;
 import com.chameleonvision.vision.VisionManager;
 import com.chameleonvision.vision.camera.CameraCapture;
 import com.chameleonvision.vision.pipeline.CVPipeline;
-import com.chameleonvision.vision.pipeline.impl.CVPipeline3dSettings;
-import com.chameleonvision.vision.pipeline.impl.DriverVisionPipeline;
 import edu.wpi.cscore.VideoMode;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
@@ -20,8 +18,9 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
     private int checkerboardSquaresHigh = 7;
     private int checkerboardSquaresWide = 7;
     private MatOfPoint3f objP_ORIG;
+
     private MatOfPoint3f objP;// new MatOfPoint3f(checkerboardSquaresHigh + checkerboardSquaresWide, 3);//(checkerboardSquaresWide * checkerboardSquaresHigh, 3);
-    private Size patternSize = new Size(checkerboardSquaresWide, checkerboardSquaresHigh);
+    private Size patternSize = new Size(checkerboardSquaresHigh, checkerboardSquaresWide);
     private Size imageSize;
     double checkerboardSquareSize = 1; // inches!
     private MatOfPoint2f calibrationOutput = new MatOfPoint2f();
@@ -30,8 +29,14 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
 
     public static double checkerboardSquareSizeUnits = 1.0;
 
-    public static final int MIN_COUNT = 4;
+    public static final int MIN_COUNT = 15;
     private VideoMode calibrationMode;
+    private final Size windowSize = new Size(11, 11);
+    private final Size zeroZone = new Size(-1, -1);
+    private TermCriteria criteria = new TermCriteria(3, 30, 0.001); //(Imgproc.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+
+    private int captureCount = 0;
+    private boolean wantsSnapshot = false;
 
     public Calibrate3dPipeline(CVPipeline3dSettings settings) {
         super(settings);
@@ -55,19 +60,12 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
         Core.multiply(objP_ORIG, new Scalar(new double[] { -1, -1, -1 }), objP);
     }
 
-    private final Size windowSize = new Size(11, 11);
-    private final Size zeroZone = new Size(-1, -1);
-    private TermCriteria criteria = new TermCriteria(3, 30, 0.001); //(Imgproc.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-
-    private int captureCount = 0;
-    private boolean wantsSnapshot = false;
-
     public void takeSnapshot() {
         wantsSnapshot = true;
     }
 
-    public int getCount() {
-        return captureCount;
+    public boolean hasEnoughSnapshots() {
+        return captureCount >= MIN_COUNT - 1;
     }
 
     @Override
@@ -125,7 +123,7 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
                 Core.FONT_HERSHEY_PLAIN, 3.0, new Scalar(0, 0, 255));
     }
 
-    public boolean calibrate() {
+    public boolean tryCalibration() {
         if (captureCount < MIN_COUNT - 1) return false;
 
         Mat cameraMatrix = new Mat();
@@ -143,9 +141,8 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
         VideoMode currentVidMode = cameraCapture.getCurrentVideoMode();
         Size resolution = new Size(currentVidMode.width, currentVidMode.height);
         CameraCalibrationConfig cal = new CameraCalibrationConfig(resolution, cameraMatrix, distortionCoeffs);
-        VisionManager.getCurrentUIVisionProcess().getCamera().addCalibrationData(cal);
 
-        // TODO: (HIGH) save calibration data!
+        VisionManager.getCurrentUIVisionProcess().addCalibration(cal);
 
         System.out.printf("CALIBRATION SUCCESS! camMatrix: \n%s\ndistortionCoeffs:\n%s\n", cameraMatrix, distortionCoeffs);
 
@@ -154,7 +151,11 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
         return true;
     }
 
-    public void setVideoMode(VideoMode mode) {
+    public void setVideoMode(VideoMode mode){
         this.calibrationMode = mode;
+    }
+    
+    public int getSnapshotCount() {
+        return captureCount;
     }
 }

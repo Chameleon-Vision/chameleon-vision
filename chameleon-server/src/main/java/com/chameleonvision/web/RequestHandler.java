@@ -6,6 +6,7 @@ import com.chameleonvision.vision.VisionManager;
 import com.chameleonvision.vision.VisionProcess;
 import com.chameleonvision.vision.camera.USBCameraCapture;
 import com.chameleonvision.vision.pipeline.CVPipelineSettings;
+import com.chameleonvision.vision.pipeline.PipelineManager;
 import com.chameleonvision.vision.pipeline.impl.Calibrate3dPipeline;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -110,29 +111,32 @@ public class RequestHandler {
     }
 
     public static void onSnapshot(Context ctx) {
-        var calPipe = VisionManager.getCurrentUIVisionProcess().pipelineManager.calib3dPipe;
+        Calibrate3dPipeline calPipe = VisionManager.getCurrentUIVisionProcess().pipelineManager.calib3dPipe;
 
         calPipe.takeSnapshot();
 
-        Boolean hasEnough = calPipe.getCount() >= Calibrate3dPipeline.MIN_COUNT - 1;
-
-        // manual serialization ftw
-//            String toSend = String.format("{\n\t\"snapshotCount\" : \"%d\",\n\t\"hasEnough\" : \"%s\"\n}", calPipe.getCount(), hasEnough.toString());
         HashMap<String, Object> toSend = new HashMap<String, Object>();
-        toSend.put("snapshotCount", calPipe.getCount());
-        toSend.put("hasEnough", hasEnough);
+        toSend.put("snapshotCount", calPipe.getSnapshotCount());
+        toSend.put("hasEnough", calPipe.hasEnoughSnapshots());
 
         ctx.json(toSend);
-//            ctx.res.getOutputStream().print(toSend);
         ctx.status(200);
     }
 
     public static void onCalibrationFinish(Context ctx) {
-        VisionManager.getCurrentUIVisionProcess().pipelineManager.calib3dPipe.calibrate();
-        VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(false);
+        PipelineManager pipeManager = VisionManager.getCurrentUIVisionProcess().pipelineManager;
+        System.out.println("Finishing Cal");
+        if (pipeManager.calib3dPipe.tryCalibration()) {
+            ctx.status(200);
+        } else {
+            System.err.println("CALFAIL");
+            ctx.status(500);
+        }
+        pipeManager.setCalibrationMode(false);
     }
 
     public static void onCalibrationCancellation(Context ctx) {
         VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(false);
+        ctx.status(200);
     }
 }

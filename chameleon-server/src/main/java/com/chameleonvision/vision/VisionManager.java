@@ -84,7 +84,7 @@ public class VisionManager {
             CameraJsonConfig cameraJsonConfig = config.cameraConfig;
 
             USBCameraCapture camera = new USBCameraCapture(config);
-            VisionProcess process = new VisionProcess(camera, cameraJsonConfig.name, config.pipelines);
+            VisionProcess process = new VisionProcess(camera, config);
             process.pipelineManager.driverModePipeline.settings = config.driverMode;
             visionProcesses.add(new VisionProcessManageable(i, cameraJsonConfig.name, process));
         }
@@ -99,6 +99,10 @@ public class VisionManager {
 
     public static VisionProcess getCurrentUIVisionProcess() {
         return currentUIVisionProcess;
+    }
+
+    public static CameraConfig getCurrentCameraConfig() {
+        return getCameraConfig(currentUIVisionProcess);
     }
 
     public static CameraConfig getCameraConfig(VisionProcess process) {

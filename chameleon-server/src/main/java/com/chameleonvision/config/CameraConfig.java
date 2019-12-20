@@ -104,6 +104,17 @@ public class CameraConfig {
         }
     }
 
+
+    public void saveCalibration(List<CameraCalibrationConfig> cal) {
+        CameraCalibrationConfig[] configs = cal.toArray(new CameraCalibrationConfig[0]);
+        try {
+            JacksonHelper.serializer(calibrationPath, configs);
+            FileHelper.setFilePerms(calibrationPath);
+        } catch (IOException e) {
+            System.err.println("Failed to save camera calibration file: " + calibrationPath.toString());
+        }
+    }
+
     void checkFolder() {
         if (!configFolderExists()) {
             try {
@@ -154,10 +165,6 @@ public class CameraConfig {
 
     private boolean configFolderExists() {
         return Files.exists(configFolderPath);
-    }
-
-    Path getPipelineFolderPath() {
-        return Paths.get(configFolderPath.toString(), "pipelines");
     }
 
     private boolean configExists() {

@@ -1,7 +1,10 @@
 package com.chameleonvision.vision;
 
 import com.chameleonvision.Debug;
+import com.chameleonvision.config.CameraCalibrationConfig;
+import com.chameleonvision.config.CameraConfig;
 import com.chameleonvision.config.ConfigManager;
+import com.chameleonvision.config.FullCameraConfiguration;
 import com.chameleonvision.util.LoopingRunnable;
 import com.chameleonvision.util.MathHandler;
 import com.chameleonvision.vision.camera.CameraStreamer;
@@ -18,9 +21,11 @@ import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpiutil.CircularBuffer;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -31,6 +36,7 @@ public class VisionProcess {
     private final USBCameraCapture cameraCapture;
     private final CameraStreamerRunnable streamRunnable;
     private final VisionProcessRunnable visionRunnable;
+    private final CameraConfig fileConfig;
     public final CameraStreamer cameraStreamer;
     public PipelineManager pipelineManager;
 
@@ -54,13 +60,21 @@ public class VisionProcess {
 
     private long lastUIUpdateMs = 0;
 
-    VisionProcess(USBCameraCapture cameraCapture, String name, List<CVPipelineSettings> loadedPipelineSettings) {
+    private final LinkedHashMap<Size, CameraCalibrationConfig> cameraCalibrationConfigs = new LinkedHashMap<>();
+
+    VisionProcess(USBCameraCapture cameraCapture, FullCameraConfiguration config) {
         this.cameraCapture = cameraCapture;
 
-        pipelineManager = new PipelineManager(this, loadedPipelineSettings);
+        for (CameraCalibrationConfig calibration : config.calibration) {
+            cameraCalibrationConfigs.put(calibration.resolution, calibration);
+        }
+
+        fileConfig = config.fileConfig;
+
+        pipelineManager = new PipelineManager(this, config.pipelines);
 
         // Thread to put frames on the dashboard
-        this.cameraStreamer = new CameraStreamer(cameraCapture, name,pipelineManager.getCurrentPipeline().settings.streamDivisor);
+        this.cameraStreamer = new CameraStreamer(cameraCapture, config.cameraConfig.name, pipelineManager.getCurrentPipeline().settings.streamDivisor);
         this.streamRunnable = new CameraStreamerRunnable(30, cameraStreamer);
 
         // Thread to process vision data
@@ -238,6 +252,12 @@ public class VisionProcess {
 
     public CVPipelineSettings getDriverModeSettings() {
         return pipelineManager.driverModePipeline.settings;
+    }
+
+    public void addCalibration(CameraCalibrationConfig cal) {
+        cameraCapture.addCalibrationData(cal);
+        cameraCalibrationConfigs.put(cal.resolution, cal);
+        fileConfig.saveCalibration((List<CameraCalibrationConfig>) cameraCalibrationConfigs.values());
     }
 
     /**
