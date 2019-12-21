@@ -106,8 +106,9 @@ public class RequestHandler {
         ObjectMapper objectMapper = new ObjectMapper();
         Map data = objectMapper.readValue(ctx.body(), Map.class);
         int resolutionIndex = (Integer) data.get("resolution");
-        VideoMode mode = VisionManager.getCurrentUIVisionProcess().getPossibleVideoModes().get(resolutionIndex);
-        VisionManager.getCurrentUIVisionProcess().pipelineManager.enableCalibrationMode(mode);
+        int index = VisionManager.getCurrentUIVisionProcess().pipelineManager.getCurrentPipeline().settings.videoModeIndex;
+        VisionManager.getCurrentUIVisionProcess().pipelineManager.calib3dPipe.settings.videoModeIndex = index;
+        VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(true);
     }
 
     public static void onSnapshot(Context ctx) {

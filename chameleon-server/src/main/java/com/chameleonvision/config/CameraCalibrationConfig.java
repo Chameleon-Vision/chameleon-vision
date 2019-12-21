@@ -9,9 +9,9 @@ import org.opencv.core.Size;
  * A class that holds a camera matrix and distortion coefficients for a given resolution
  */
 public class CameraCalibrationConfig {
-    public final Size resolution;
-    public final JsonMat cameraMatrix;
-    public final JsonMat distortionCoeffs;
+    @JsonProperty("resolution") public final Size resolution;
+    @JsonProperty("cameraMatrix") public final JsonMat cameraMatrix;
+    @JsonProperty("distortionCoeffs") public final JsonMat distortionCoeffs;
 
     @JsonCreator
     public CameraCalibrationConfig(
@@ -29,11 +29,11 @@ public class CameraCalibrationConfig {
         this.distortionCoeffs = JsonMat.fromMat(distortionCoeffs);
     }
 
-    public Mat getCameraMatrix() {
+    public Mat getCameraMatrixAsMat() {
         return cameraMatrix.toMat();
     }
 
-    public Mat getDistortionCoeffs() {
+    public Mat getDistortionCoeffsAsMat() {
         return distortionCoeffs.toMat();
     }
 }

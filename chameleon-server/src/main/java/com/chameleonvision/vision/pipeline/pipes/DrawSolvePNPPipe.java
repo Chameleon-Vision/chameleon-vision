@@ -68,7 +68,7 @@ public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Tracke
             System.err.println("got passed a null config! Returning...");
             return;
         }
-        setConfig(config.getCameraMatrix(), config.getDistortionCoeffs());
+        setConfig(config.getCameraMatrixAsMat(), config.getDistortionCoeffsAsMat());
     }
 
     public void setConfig(Mat cameraMatrix, Mat distortionMatrix) {

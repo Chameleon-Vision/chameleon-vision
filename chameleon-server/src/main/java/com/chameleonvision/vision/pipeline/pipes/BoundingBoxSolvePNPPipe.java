@@ -66,13 +66,13 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTa
             System.err.println("got passed a null config! Returning...");
             return;
         }
-        if(cameraMatrix != settings.getCameraMatrix()) {
+        if(cameraMatrix != settings.getCameraMatrixAsMat()) {
             cameraMatrix.release();
-            settings.getCameraMatrix().copyTo(cameraMatrix);
+            settings.getCameraMatrixAsMat().copyTo(cameraMatrix);
         }
-        if(distortionCoefficients != settings.getDistortionCoeffs()) {
+        if(distortionCoefficients != settings.getDistortionCoeffsAsMat()) {
             distortionCoefficients.release();
-            settings.getDistortionCoeffs().copyTo(distortionCoefficients);
+            settings.getDistortionCoeffsAsMat().copyTo(distortionCoefficients);
         }
     }
 
