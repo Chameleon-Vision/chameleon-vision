@@ -13,7 +13,7 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverPipelineResult, CVPipeline3dSettings> {
+public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverPipelineResult, StandardCVPipelineSettings> {
 
     private int checkerboardSquaresHigh = 7;
     private int checkerboardSquaresWide = 7;
@@ -38,7 +38,7 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
     private int captureCount = 0;
     private boolean wantsSnapshot = false;
 
-    public Calibrate3dPipeline(CVPipeline3dSettings settings) {
+    public Calibrate3dPipeline(StandardCVPipelineSettings settings) {
         super(settings);
 
         objP_ORIG = new MatOfPoint3f();

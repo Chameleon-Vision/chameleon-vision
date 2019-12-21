@@ -1,9 +1,10 @@
 package com.chameleonvision.vision.pipeline.pipes;
 
+import com.chameleonvision.config.CameraCalibrationConfig;
 import com.chameleonvision.util.Helpers;
 import com.chameleonvision.vision.pipeline.Pipe;
-import com.chameleonvision.vision.pipeline.impl.CVPipeline3d;
-import com.chameleonvision.vision.pipeline.impl.CVPipeline3dSettings;
+import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
+import com.chameleonvision.vision.pipeline.impl.StandardCVPipelineSettings;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
@@ -12,14 +13,14 @@ import org.opencv.imgproc.Imgproc;
 import java.awt.*;
 import java.util.List;
 
-public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline3d.Target3d>>, Mat> {
+public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.TrackedTarget>>, Mat> {
 
     private MatOfPoint3f boxCornerMat = new MatOfPoint3f();
 
     public Scalar color = Helpers.colorToScalar(Color.GREEN);
 
-    public DrawSolvePNPPipe(CVPipeline3dSettings settings) {
-        setConfig(settings.cameraMatrix, settings.cameraDistortionCoefficients);
+    public DrawSolvePNPPipe(CameraCalibrationConfig settings) {
+        setConfig(settings.getCameraMatrix(), settings.getDistortionCoefffs());
     }
 
     public void setObjectBox(double targetWidth, double targetHeight, double targetDepth) {
@@ -75,7 +76,7 @@ public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline3d.Target
     }
 
     @Override
-    public Pair<Mat, Long> run(Pair<Mat, List<CVPipeline3d.Target3d>> targets) {
+    public Pair<Mat, Long> run(Pair<Mat, List<CVPipeline2d.TrackedTarget>> targets) {
         long processStartNanos = System.nanoTime();
 
         var image = targets.getLeft();

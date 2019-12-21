@@ -1,5 +1,6 @@
 package com.chameleonvision.vision.image;
 
+import com.chameleonvision.config.CameraCalibrationConfig;
 import com.chameleonvision.vision.camera.CameraCapture;
 import com.chameleonvision.vision.camera.USBCaptureProperties;
 import edu.wpi.cscore.VideoMode;
@@ -72,5 +73,10 @@ public class StaticImageCapture implements CameraCapture {
     @Override
     public void setGain(int gain) {
         // do nothing
+    }
+
+    @Override
+    public CameraCalibrationConfig getCurrentCalibrationData() {
+        return null;
     }
 }

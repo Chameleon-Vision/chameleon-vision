@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 
+/**
+ * A class that holds a camera matrix and distortion coefficients for a given resolution
+ */
 public class CameraCalibrationConfig {
     public final Size resolution;
     private final JsonMat cameraMatrix;

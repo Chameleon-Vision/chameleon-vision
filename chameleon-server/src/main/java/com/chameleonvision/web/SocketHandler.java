@@ -107,8 +107,7 @@ public class SocketHandler {
 //                        HashMap<String, Object> data = (HashMap<String, Object>) entry.getValue();
                         String pipeName = (String) entry.getValue();
                         // TODO: add to UI selection for new 2d/3d
-                        boolean is3d = false;
-                        currentProcess.pipelineManager.addNewPipeline(is3d, pipeName);
+                        currentProcess.pipelineManager.addNewPipeline(pipeName);
                         sendFullSettings();
                         VisionManager.saveCurrentCameraPipelines();
                         break;

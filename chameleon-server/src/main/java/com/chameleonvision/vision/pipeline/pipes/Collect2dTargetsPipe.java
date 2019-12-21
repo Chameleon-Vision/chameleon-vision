@@ -11,14 +11,14 @@ import org.opencv.core.RotatedRect;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Collect2dTargetsPipe implements Pipe<Pair<List<RotatedRect>, CaptureStaticProperties>, List<CVPipeline2d.Target2d>> {
+public class Collect2dTargetsPipe implements Pipe<Pair<List<RotatedRect>, CaptureStaticProperties>, List<CVPipeline2d.TrackedTarget>> {
 
 
     private CaptureStaticProperties camProps;
     private CalibrationMode calibrationMode;
     private List<Number> calibrationPoint;
     private double calibrationM, calibrationB;
-    private List<CVPipeline2d.Target2d> targets = new ArrayList<>();
+    private List<CVPipeline2d.TrackedTarget> targets = new ArrayList<>();
 
     public Collect2dTargetsPipe(CalibrationMode calibrationMode, List<Number> calibrationPoint, double calibrationM, double calibrationB, CaptureStaticProperties camProps) {
         setConfig(calibrationMode, calibrationPoint, calibrationM, calibrationB, camProps);
@@ -33,7 +33,7 @@ public class Collect2dTargetsPipe implements Pipe<Pair<List<RotatedRect>, Captur
     }
 
     @Override
-    public Pair<List<CVPipeline2d.Target2d>, Long> run(Pair<List<RotatedRect>, CaptureStaticProperties> inputPair) {
+    public Pair<List<CVPipeline2d.TrackedTarget>, Long> run(Pair<List<RotatedRect>, CaptureStaticProperties> inputPair) {
         long processStartNanos = System.nanoTime();
 
         targets.clear();
@@ -42,7 +42,7 @@ public class Collect2dTargetsPipe implements Pipe<Pair<List<RotatedRect>, Captur
 
         if (input.size() > 0) {
             for (RotatedRect r : input) {
-                CVPipeline2d.Target2d t = new CVPipeline2d.Target2d();
+                CVPipeline2d.TrackedTarget t = new CVPipeline2d.TrackedTarget();
                 t.rawPoint = r;
                 switch (this.calibrationMode) {
                     case Single:

@@ -11,7 +11,6 @@ import com.chameleonvision.vision.camera.CameraStreamer;
 import com.chameleonvision.vision.camera.USBCameraCapture;
 import com.chameleonvision.vision.pipeline.*;
 import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
-import com.chameleonvision.vision.pipeline.impl.CVPipeline3d;
 import com.chameleonvision.vision.pipeline.impl.DriverVisionPipeline;
 import com.chameleonvision.web.SocketHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -56,6 +55,7 @@ public class VisionProcess {
     private NetworkTableEntry ntAreaEntry;
     private NetworkTableEntry ntLatencyEntry;
     private NetworkTableEntry ntValidEntry;
+    private NetworkTableEntry ntPoseEntry;
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private long lastUIUpdateMs = 0;
@@ -126,6 +126,7 @@ public class VisionProcess {
         ntLatencyEntry = newTable.getEntry("latency");
         ntValidEntry = newTable.getEntry("is_valid");
         ntAuxListEntry = newTable.getEntry("aux_targets");
+        ntPoseEntry = newTable.getEntry("poseList");
         ntDriveModeListenerID = ntDriverModeEntry.addListener(this::setDriverMode, EntryListenerFlags.kUpdate);
         ntPipelineListenerID = ntPipelineEntry.addListener(this::setPipeline, EntryListenerFlags.kUpdate);
         ntDriverModeEntry.setBoolean(false);
@@ -144,6 +145,7 @@ public class VisionProcess {
 
     /**
      * Method called by the nt entry listener to update the next pipeline.
+     *
      * @param notification the notification
      */
     private void setPipeline(EntryNotification notification) {
@@ -155,7 +157,7 @@ public class VisionProcess {
 
         // if it's null, we haven't even started the program yet, so just return
         // otherwise, set it.
-        if(ntDriverModeEntry != null) {
+        if (ntDriverModeEntry != null) {
             ntDriverModeEntry.setBoolean(isDriverMode);
         }
     }
@@ -163,25 +165,26 @@ public class VisionProcess {
     private void updateUI(CVPipelineResult data) {
         // 30 "FPS" update rate
         long currentMillis = System.currentTimeMillis();
-        if (currentMillis - lastUIUpdateMs > 1000/30) {
+        if (currentMillis - lastUIUpdateMs > 1000 / 30) {
             lastUIUpdateMs = currentMillis;
 
-            if(cameraCapture.getProperties().name.equals(ConfigManager.settings.currentCamera)) {
+            if (cameraCapture.getProperties().name.equals(ConfigManager.settings.currentCamera)) {
                 HashMap<String, Object> WebSend = new HashMap<>();
                 HashMap<String, Object> point = new HashMap<>();
                 HashMap<String, Object> calculated = new HashMap<>();
                 List<Double> center = new ArrayList<>();
                 if (data.hasTarget) {
-                    if(data instanceof CVPipeline2d.CVPipeline2dResult) {
+                    if (data instanceof CVPipeline2d.CVPipeline2dResult) {
                         CVPipeline2d.CVPipeline2dResult result = (CVPipeline2d.CVPipeline2dResult) data;
-                        CVPipeline2d.Target2d bestTarget = result.targets.get(0);
+                        CVPipeline2d.TrackedTarget bestTarget = result.targets.get(0);
                         center.add(bestTarget.rawPoint.center.x);
                         center.add(bestTarget.rawPoint.center.y);
                         calculated.put("pitch", bestTarget.pitch);
                         calculated.put("yaw", bestTarget.yaw);
                         calculated.put("area", bestTarget.area);
-                    } else if (data instanceof CVPipeline3d.CVPipeline3dResult) {
-                        // TODO: (2.1) 3d stuff in UI
+
+                        // TODO (High) 3d vision report to UI
+                        calculated.put("pose", bestTarget.cameraRelativePose);
                     } else {
                         center.add(null);
                         center.add(null);
@@ -207,54 +210,55 @@ public class VisionProcess {
 
     private void updateNetworkTableData(CVPipelineResult data) {
         ntValidEntry.setBoolean(data.hasTarget);
-        if(data.hasTarget && !(data instanceof DriverVisionPipeline.DriverPipelineResult)) {
-            if(data instanceof CVPipeline2d.CVPipeline2dResult) {
+        if (data.hasTarget && !(data instanceof DriverVisionPipeline.DriverPipelineResult)) {
+            if (data instanceof CVPipeline2d.CVPipeline2dResult) {
 
                 //noinspection unchecked
-                List<CVPipeline2d.Target2d> targets = (List<CVPipeline2d.Target2d>) data.targets;
+                List<CVPipeline2d.TrackedTarget> targets = (List<CVPipeline2d.TrackedTarget>) data.targets;
                 ntLatencyEntry.setDouble(MathHandler.roundTo(data.processTime * 1e-6, 3));
                 ntPitchEntry.setDouble(targets.get(0).pitch);
                 ntYawEntry.setDouble(targets.get(0).yaw);
                 ntAreaEntry.setDouble(targets.get(0).area);
                 try {
                     ntAuxListEntry.setString(objectMapper.writeValueAsString(targets));
+
+                    // TODO: (2.1) 3d stuff...
+                    ntPoseEntry.setString(objectMapper.writeValueAsString(targets.stream().map(target -> target.cameraRelativePose)));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
-            } else if (data instanceof CVPipeline3d.CVPipeline3dResult) {
-                // TODO: (2.1) 3d stuff...
+            } else {
+                ntPitchEntry.setDouble(0.0);
+                ntYawEntry.setDouble(0.0);
+                ntAreaEntry.setDouble(0.0);
+                ntLatencyEntry.setDouble(0.0);
+                ntAuxListEntry.setString("");
             }
-        } else {
-            ntPitchEntry.setDouble(0.0);
-            ntYawEntry.setDouble(0.0);
-            ntAreaEntry.setDouble(0.0);
-            ntLatencyEntry.setDouble(0.0);
-            ntAuxListEntry.setString("");
         }
     }
 
-    public void setVideoMode(VideoMode newMode) {
+    public void setVideoMode(VideoMode newMode){
         cameraCapture.setVideoMode(newMode);
         cameraStreamer.setNewVideoMode(newMode);
     }
 
-    public VideoMode getCurrentVideoMode() {
+    public VideoMode getCurrentVideoMode () {
         return cameraCapture.getCurrentVideoMode();
     }
 
-    public List<VideoMode> getPossibleVideoModes() {
+    public List<VideoMode> getPossibleVideoModes () {
         return cameraCapture.getProperties().videoModes;
     }
 
-    public USBCameraCapture getCamera() {
+    public USBCameraCapture getCamera () {
         return cameraCapture;
     }
 
-    public CVPipelineSettings getDriverModeSettings() {
+    public CVPipelineSettings getDriverModeSettings () {
         return pipelineManager.driverModePipeline.settings;
     }
 
-    public void addCalibration(CameraCalibrationConfig cal) {
+    public void addCalibration (CameraCalibrationConfig cal){
         cameraCapture.addCalibrationData(cal);
         cameraCalibrationConfigs.put(cal.resolution, cal);
         fileConfig.saveCalibration((List<CameraCalibrationConfig>) cameraCalibrationConfigs.values());
@@ -271,7 +275,7 @@ public class VisionProcess {
         @Override
         public void run() {
             var lastUpdateTimeNanos = System.nanoTime();
-            while(!Thread.interrupted()) {
+            while (!Thread.interrupted()) {
 
                 // blocking call, will block until camera has a new frame.
                 Pair<Mat, Long> camData = cameraCapture.getFrame();
@@ -305,7 +309,7 @@ public class VisionProcess {
 
         double getAverageFPS() {
             var temp = 0.0;
-            for(int i = 0; i < 7; i++) {
+            for (int i = 0; i < 7; i++) {
                 temp += fpsAveragingBuffer.get(i);
             }
             temp /= 7.0;
@@ -321,7 +325,7 @@ public class VisionProcess {
 
         private CameraStreamerRunnable(int cameraFPS, CameraStreamer streamer) {
             // add 2 FPS to allow for a bit of overhead
-            super(1000L/(cameraFPS + 2));
+            super(1000L / (cameraFPS + 2));
             this.streamer = streamer;
         }
 

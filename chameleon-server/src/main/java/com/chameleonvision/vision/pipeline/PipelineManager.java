@@ -23,7 +23,7 @@ public class PipelineManager {
     public final LinkedList<CVPipeline> pipelines = new LinkedList<>();
 
     public final CVPipeline driverModePipeline = new DriverVisionPipeline(new CVPipelineSettings());
-    public final Calibrate3dPipeline calib3dPipe = new Calibrate3dPipeline(new CVPipeline3dSettings());
+    public final Calibrate3dPipeline calib3dPipe = new Calibrate3dPipeline(new StandardCVPipelineSettings());
 
     private final VisionProcess parentProcess;
     private int lastPipelineIndex;
@@ -75,10 +75,8 @@ public class PipelineManager {
     }
 
     private void addInternalPipeline(CVPipelineSettings setting) {
-        if (setting instanceof CVPipeline3dSettings) {
-            pipelines.add(new CVPipeline3d((CVPipeline3dSettings) setting));
-        } else if (setting instanceof CVPipeline2dSettings) {
-            pipelines.add(new CVPipeline2d((CVPipeline2dSettings) setting));
+        if (setting instanceof StandardCVPipelineSettings) {
+            pipelines.add(new CVPipeline2d((StandardCVPipelineSettings) setting));
         } else {
             System.out.println("Non 2D/3D pipelines not supported!");
         }
@@ -179,13 +177,8 @@ public class PipelineManager {
         savePipelineConfig(pipeline.settings);
     }
 
-    public void addNewPipeline(boolean is3D, String piplineName) {
-        CVPipeline newPipeline;
-        if (!is3D) {
-            newPipeline = new CVPipeline2d();
-        } else {
-            newPipeline = new CVPipeline3d();
-        }
+    public void addNewPipeline(String piplineName) {
+        CVPipeline2d newPipeline = new CVPipeline2d();
         newPipeline.settings.nickname = piplineName;
         newPipeline.settings.index = pipelines.size();
         addPipeline(newPipeline);

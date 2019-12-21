@@ -12,7 +12,7 @@ import org.opencv.imgproc.Imgproc;
 import java.awt.*;
 import java.util.List;
 
-public class Draw2dCrosshairPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Target2d>>, Mat> {
+public class Draw2dCrosshairPipe implements Pipe<Pair<Mat, List<CVPipeline2d.TrackedTarget>>, Mat> {
 
     //Settings
     private Draw2dCrosshairPipeSettings crosshairSettings;
@@ -36,10 +36,10 @@ public class Draw2dCrosshairPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Tar
     }
 
     @Override
-    public Pair<Mat, Long> run(Pair<Mat, List<CVPipeline2d.Target2d>> inputPair) {
+    public Pair<Mat, Long> run(Pair<Mat, List<CVPipeline2d.TrackedTarget>> inputPair) {
         long processStartNanos = System.nanoTime();
         Mat image = inputPair.getLeft();
-        List<CVPipeline2d.Target2d> targets = inputPair.getRight();
+        List<CVPipeline2d.TrackedTarget> targets = inputPair.getRight();
         double x = 0, y = 0, scale = image.cols() / 32.0;
 
         drawCrosshair:

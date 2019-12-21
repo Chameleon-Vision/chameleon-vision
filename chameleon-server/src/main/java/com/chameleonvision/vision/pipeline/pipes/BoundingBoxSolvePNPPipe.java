@@ -1,9 +1,10 @@
 package com.chameleonvision.vision.pipeline.pipes;
 
+import com.chameleonvision.config.CameraCalibrationConfig;
+import com.chameleonvision.config.CameraJsonConfig;
 import com.chameleonvision.vision.pipeline.Pipe;
 import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
-import com.chameleonvision.vision.pipeline.impl.CVPipeline3d;
-import com.chameleonvision.vision.pipeline.impl.CVPipeline3dSettings;
+import com.chameleonvision.vision.pipeline.impl.StandardCVPipelineSettings;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
@@ -17,7 +18,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>, List<CVPipeline3d.Target3d>> {
+public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List<CVPipeline2d.TrackedTarget>> {
 
     private Double tilt_angle;
     private MatOfPoint3f objPointsMat = new MatOfPoint3f();
@@ -27,11 +28,11 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>
     private MatOfPoint2f imagePoints = new MatOfPoint2f();
     private Mat cameraMatrix = new Mat();
     private MatOfDouble distortionCoefficients = new MatOfDouble();
-    private List<CVPipeline3d.Target3d> poseList = new ArrayList<>();
+    private List<CVPipeline2d.TrackedTarget> poseList = new ArrayList<>();
 
-    public BoundingBoxSolvePNPPipe(CVPipeline3dSettings settings) {
+    public BoundingBoxSolvePNPPipe(StandardCVPipelineSettings settings, CameraCalibrationConfig calibration) {
         super();
-        setCameraCoeffs(settings);
+        setCameraCoeffs(calibration);
         setObjectCorners(settings.targetCorners);
         this.tilt_angle = Math.toRadians(settings.cameraTiltAngleDeg);
     }
@@ -55,25 +56,25 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>
         objPointsMat.fromList(objectCorners);
     }
 
-    public void setConfig(CVPipeline3dSettings settings) {
-        setCameraCoeffs(settings);
+    public void setConfig(StandardCVPipelineSettings settings, CameraCalibrationConfig camConfig) {
+        setCameraCoeffs(camConfig);
         setObjectCorners(settings.targetCorners);
         tilt_angle = Math.toRadians(settings.cameraTiltAngleDeg);
     }
 
-    private void setCameraCoeffs(CVPipeline3dSettings settings) {
-        if(cameraMatrix != settings.cameraMatrix) {
+    private void setCameraCoeffs(CameraCalibrationConfig settings) {
+        if(cameraMatrix != settings.getCameraMatrix()) {
             cameraMatrix.release();
-            settings.cameraMatrix.copyTo(cameraMatrix);
+            settings.getCameraMatrix().copyTo(cameraMatrix);
         }
-        if(distortionCoefficients != settings.cameraDistortionCoefficients) {
+        if(distortionCoefficients != settings.getDistortionCoefffs()) {
             distortionCoefficients.release();
-            settings.cameraDistortionCoefficients.copyTo(distortionCoefficients);
+            settings.getDistortionCoefffs().copyTo(distortionCoefficients);
         }
     }
 
     @Override
-    public Pair<List<CVPipeline3d.Target3d>, Long> run(List<CVPipeline2d.Target2d> targets) {
+    public Pair<List<CVPipeline2d.TrackedTarget>, Long> run(List<CVPipeline2d.TrackedTarget> targets) {
         long processStartNanos = System.nanoTime();
         poseList.clear();
         for(var target: targets) {
@@ -84,7 +85,7 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>
         return Pair.of(poseList, processTime);
     }
 
-    private MatOfPoint2f findBoundingBoxCorners(CVPipeline2d.Target2d target) {
+    private MatOfPoint2f findBoundingBoxCorners(CVPipeline2d.TrackedTarget target) {
 
 //        List<Pair<MatOfPoint2f, CVPipeline2d.Target2d>> list = new ArrayList<>();
 //        // find the corners based on the bounding box
@@ -122,7 +123,7 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>
     @SuppressWarnings("FieldCanBeLocal")
     private Scalar scalar = new Scalar(new double[] { -1, -1, -1 });
 
-    private CVPipeline3d.Target3d calculatePose(MatOfPoint2f imageCornerPoints, CVPipeline2d.Target2d target) {
+    private CVPipeline2d.TrackedTarget calculatePose(MatOfPoint2f imageCornerPoints, CVPipeline2d.TrackedTarget target) {
         Calib3d.solvePnP(objPointsMat, imageCornerPoints, cameraMatrix, distortionCoefficients, rVec, tVec);
 
         // Algorithm from team 5190 Green Hope Falcons
@@ -155,12 +156,10 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.Target2d>
         var targetDistance = distance; // meters or whatever the calibration was in
 
         var targetLocation = new Translation2d(targetDistance * FastMath.cos(targetAngle), targetDistance * FastMath.sin(targetAngle));
-        var pose = new Pose2d(targetLocation, new Rotation2d(targetRotation));
-        var toRet = new CVPipeline3d.Target3d(target);
-        toRet.cameraRelativePose = pose;
-        toRet.rVector = rVec;
-        toRet.tVector = tVec;
-        return toRet;
+        target.cameraRelativePose = new Pose2d(targetLocation, new Rotation2d(targetRotation));
+        target.rVector = rVec;
+        target.tVector = tVec;
+        return target;
     }
 
 }

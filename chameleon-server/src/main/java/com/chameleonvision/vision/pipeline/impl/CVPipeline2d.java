@@ -7,6 +7,7 @@ import com.chameleonvision.vision.camera.CaptureStaticProperties;
 import com.chameleonvision.vision.pipeline.CVPipeline;
 import com.chameleonvision.vision.pipeline.CVPipelineResult;
 import com.chameleonvision.vision.pipeline.pipes.*;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.*;
 
@@ -15,7 +16,7 @@ import java.util.List;
 import static com.chameleonvision.vision.pipeline.impl.CVPipeline2d.*;
 
 @SuppressWarnings("WeakerAccess")
-public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, CVPipeline2dSettings> {
+public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipelineSettings> {
 
     private Mat rawCameraMat = new Mat();
 
@@ -32,6 +33,8 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, CVPipeline2dSet
     private Draw2dContoursPipe.Draw2dContoursSettings draw2dContoursSettings;
     private Draw2dContoursPipe draw2dContoursPipe;
     private Draw2dCrosshairPipe draw2dCrosshairPipe;
+    private DrawSolvePNPPipe drawSolvePNPPipe;
+    private BoundingBoxSolvePNPPipe solvePNPBoundingBoxPipe;
     private Draw2dCrosshairPipe.Draw2dCrosshairPipeSettings draw2dCrosshairPipeSettings;
     private OutputMatPipe outputMatPipe;
 
@@ -40,14 +43,14 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, CVPipeline2dSet
     private Scalar hsvLower, hsvUpper;
 
     public CVPipeline2d() {
-        super(new CVPipeline2dSettings());
+        super(new StandardCVPipelineSettings());
     }
 
     public CVPipeline2d(String name) {
-        super(name, new CVPipeline2dSettings());
+        super(name, new StandardCVPipelineSettings());
     }
 
-    public CVPipeline2d(CVPipeline2dSettings settings) {
+    public CVPipeline2d(StandardCVPipelineSettings settings) {
         super(settings);
     }
 
@@ -121,6 +124,8 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, CVPipeline2dSet
         draw2dCrosshairPipe.setConfig(draw2dCrosshairPipeSettings,settings.calibrationMode,settings.point,settings.dualTargetCalibrationM,settings.dualTargetCalibrationB);
         outputMatPipe.setConfig(settings.isBinary);
 
+        solvePNPBoundingBoxPipe.setConfig(settings, cameraCapture.getCurrentCalibrationData());
+
         long pipeInitTimeNanos = System.nanoTime() - pipelineStartTimeNanos;
 
         // run pipes
@@ -153,7 +158,7 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, CVPipeline2dSet
         Pair<List<RotatedRect>, Long> sortContoursResult = sortContoursPipe.run(groupContoursResult.getLeft());
         totalPipelineTimeNanos += sortContoursResult.getRight();
 
-        Pair<List<Target2d>, Long> collect2dTargetsResult = collect2dTargetsPipe.run(Pair.of(sortContoursResult.getLeft(), camProps));
+        Pair<List<TrackedTarget>, Long> collect2dTargetsResult = collect2dTargetsPipe.run(Pair.of(sortContoursResult.getLeft(), camProps));
         totalPipelineTimeNanos += collect2dTargetsResult.getRight();
 
         // takes pair of (Mat of original camera image (8UC3), Mat of HSV thresholded image(8UC1))
@@ -167,6 +172,15 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, CVPipeline2dSet
         // takes pair of (Mat to draw on, List<RotatedRect> of sorted contours)
         Pair<Mat, Long> draw2dCrosshairResult = draw2dCrosshairPipe.run(Pair.of(draw2dContoursResult.getLeft(),collect2dTargetsResult.getLeft()));
         totalPipelineTimeNanos += draw2dCrosshairResult.getRight();
+
+        if(settings.wants3dMode) {
+            // once we've sorted our targets, perform solvePNP. The number of "best targets" is limited by the above pipe
+            Pair<List<TrackedTarget>, Long> solvePNPResult = solvePNPBoundingBoxPipe.run(collect2dTargetsResult.getLeft());
+            totalPipelineTimeNanos += solvePNPResult.getRight();
+
+            Pair<Mat, Long> draw3dContoursResult = drawSolvePNPPipe.run(Pair.of(outputMatResult.getLeft(), solvePNPResult.getLeft()));
+            totalPipelineTimeNanos += draw3dContoursResult.getRight();
+        }
 
         if (Main.testMode) {
             pipelineTimeString += String.format("PipeInit: %.2fms, ", pipeInitTimeNanos / 1000000.0);
@@ -198,19 +212,24 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, CVPipeline2dSet
         return new CVPipeline2dResult(collect2dTargetsResult.getLeft(), draw2dCrosshairResult.getLeft(), totalPipelineTimeNanos);
     }
 
-    public static class CVPipeline2dResult extends CVPipelineResult<Target2d> {
-        public CVPipeline2dResult(List<Target2d> targets, Mat outputMat, long processTimeNanos) {
+    public static class CVPipeline2dResult extends CVPipelineResult<TrackedTarget> {
+        public CVPipeline2dResult(List<TrackedTarget> targets, Mat outputMat, long processTimeNanos) {
             super(targets, outputMat, processTimeNanos);
         }
     }
 
-    public static class Target2d {
+    public static class TrackedTarget {
         public double calibratedX = 0.0;
         public double calibratedY = 0.0;
         public double pitch = 0.0;
         public double yaw = 0.0;
         public double area = 0.0;
         public RotatedRect rawPoint;
+
+        // 3d stuff
+        public Pose2d cameraRelativePose = new Pose2d();
+        public Mat rVector = new Mat();
+        public Mat tVector = new Mat();
     }
 
 

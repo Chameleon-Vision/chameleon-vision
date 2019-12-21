@@ -5,11 +5,14 @@ import com.chameleonvision.vision.enums.SortMode;
 import com.chameleonvision.vision.enums.TargetGroup;
 import com.chameleonvision.vision.enums.TargetIntersection;
 import com.chameleonvision.vision.pipeline.CVPipelineSettings;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfDouble;
+import org.opencv.core.Point3;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class CVPipeline2dSettings extends CVPipelineSettings {
+public class StandardCVPipelineSettings extends CVPipelineSettings {
     public List<Number> hue = Arrays.asList(50, 180);
     public List<Number> saturation = Arrays.asList(50, 255);
     public List<Number> value = Arrays.asList(50, 255);
@@ -28,4 +31,10 @@ public class CVPipeline2dSettings extends CVPipelineSettings {
     public CalibrationMode calibrationMode = CalibrationMode.None;
     public double dualTargetCalibrationM = 1;
     public double dualTargetCalibrationB = 0;
+
+    // 3d stuff
+    public int maxTargets = 5;
+    public List<Point3> targetCorners = List.of();
+    public double cameraTiltAngleDeg = 0d;
+    public boolean wants3dMode = false;
 }
