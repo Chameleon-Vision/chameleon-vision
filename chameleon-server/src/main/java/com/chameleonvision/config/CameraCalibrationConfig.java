@@ -1,6 +1,7 @@
 package com.chameleonvision.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
@@ -29,10 +30,12 @@ public class CameraCalibrationConfig {
         this.distortionCoeffs = JsonMat.fromMat(distortionCoeffs);
     }
 
+    @JsonIgnore
     public Mat getCameraMatrixAsMat() {
         return cameraMatrix.toMat();
     }
 
+    @JsonIgnore
     public Mat getDistortionCoeffsAsMat() {
         return distortionCoeffs.toMat();
     }
