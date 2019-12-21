@@ -1,5 +1,6 @@
 package com.chameleonvision.config;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
@@ -17,9 +18,17 @@ public class JsonMat {
     public final double[] data;
 
     public JsonMat(int rows, int cols, double[] data) {
+        this(rows, cols, CvType.CV_64FC1, data);
+    }
+
+    public JsonMat(
+            @JsonProperty("rows") int rows,
+            @JsonProperty("cols") int cols,
+            @JsonProperty("type") int type,
+            @JsonProperty("data") double[] data) {
         this.rows = rows;
         this.cols = cols;
-        this.type = CvType.CV_64FC1;
+        this.type = type;
         this.data = data;
     }
 

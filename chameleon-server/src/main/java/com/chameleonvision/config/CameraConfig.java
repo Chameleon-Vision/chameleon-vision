@@ -76,7 +76,7 @@ public class CameraConfig {
         List<CameraCalibrationConfig> calibrations = new ArrayList<>();
         try {
             calibrations = List.of(Objects.requireNonNull(JacksonHelper.deserializer(calibrationPath, CameraCalibrationConfig[].class)));
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.err.println("Failed to load camera calibration: " + driverModePath.toString());
         }
         return calibrations;
