@@ -138,7 +138,7 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
         // run pipes
         Pair<Mat, Long> rotateFlipResult = rotateFlipPipe.run(inputMat);
         totalPipelineTimeNanos += rotateFlipResult.getRight();
-		
+
         inputMat.copyTo(rawCameraMat);
 
 //        Pair<Mat, Long> blurResult = blurPipe.run(rotateFlipResult.getLeft());
@@ -180,6 +180,8 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
         Pair<Mat, Long> draw2dCrosshairResult = draw2dCrosshairPipe.run(Pair.of(draw2dContoursResult.getLeft(),collect2dTargetsResult.getLeft()));
         totalPipelineTimeNanos += draw2dCrosshairResult.getRight();
 
+        Mat outputMat;
+
         if(settings.wants3dMode) {
             // once we've sorted our targets, perform solvePNP. The number of "best targets" is limited by the above pipe
             Pair<List<TrackedTarget>, Long> solvePNPResult = solvePNPBoundingBoxPipe.run(collect2dTargetsResult.getLeft());
@@ -187,6 +189,10 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
 
             Pair<Mat, Long> draw3dContoursResult = drawSolvePNPPipe.run(Pair.of(outputMatResult.getLeft(), solvePNPResult.getLeft()));
             totalPipelineTimeNanos += draw3dContoursResult.getRight();
+
+            outputMat = draw3dContoursResult.getLeft();
+        } else {
+            outputMat = draw2dCrosshairResult.getLeft();
         }
 
         if (Main.testMode) {
@@ -216,7 +222,7 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
 
         memManager.run();
 
-        return new CVPipeline2dResult(collect2dTargetsResult.getLeft(), draw2dCrosshairResult.getLeft(), totalPipelineTimeNanos);
+        return new CVPipeline2dResult(collect2dTargetsResult.getLeft(), outputMat, totalPipelineTimeNanos);
     }
 
     public static class CVPipeline2dResult extends CVPipelineResult<TrackedTarget> {

@@ -21,7 +21,8 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTa
 
     private Double tilt_angle;
     private MatOfPoint3f objPointsMat = new MatOfPoint3f();
-    private Mat rVec = new Mat(), tVec = new Mat(), scaledTvec = new Mat();
+    private Mat rVec = new Mat();
+    private Mat tVec = new Mat();
     private Mat rodriguez = new Mat();
     private Mat pzero_world = new Mat();
     private MatOfPoint2f imagePoints = new MatOfPoint2f();
@@ -127,7 +128,13 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTa
     private Scalar scalar = new Scalar(new double[] { -1, -1, -1 });
 
     private CVPipeline2d.TrackedTarget calculatePose(MatOfPoint2f imageCornerPoints, CVPipeline2d.TrackedTarget target) {
-        Calib3d.solvePnP(objPointsMat, imageCornerPoints, cameraMatrix, distortionCoefficients, rVec, tVec);
+        try {
+            Calib3d.solvePnP(objPointsMat, imageCornerPoints, cameraMatrix, distortionCoefficients, rVec, tVec);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new CVPipeline2d.TrackedTarget();
+//            throw new RuntimeException(e);
+        }
 
         // Algorithm from team 5190 Green Hope Falcons
 
@@ -148,8 +155,8 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTa
         Core.transpose(rodriguez, rot_inv);
 
         // This should be pzero_world = numpy.matmul(rot_inv, -tvec)
-        Core.multiply(tVec, scalar, scaledTvec);
-        pzero_world  = rot_inv.mul(scaledTvec);
+//        pzero_world  = rot_inv.mul(matScale(tVec, -1));
+        Core.gemm(rot_inv, matScale(tVec, -1), 1, new Mat(), 0, pzero_world);
 
         var angle2 = FastMath.atan2(pzero_world.get(0, 0)[0], pzero_world.get(2, 0)[0]);
 
@@ -162,7 +169,17 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTa
         target.cameraRelativePose = new Pose2d(targetLocation, new Rotation2d(targetRotation));
         target.rVector = rVec;
         target.tVector = tVec;
+
+        System.out.println("found target at \n" + target.cameraRelativePose.toString());
+
         return target;
+    }
+
+    public Mat matScale(Mat src, double factor) {
+        Mat dst= new Mat(src.rows(),src.cols(),src.type());
+        Scalar s = new Scalar(factor);
+        Core.multiply(src, s, dst);
+        return dst;
     }
 
 }

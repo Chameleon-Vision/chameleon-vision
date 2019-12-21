@@ -7,6 +7,7 @@ import com.chameleonvision.vision.enums.TargetIntersection;
 import com.chameleonvision.vision.pipeline.CVPipelineSettings;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;
+import org.opencv.core.Point;
 import org.opencv.core.Point3;
 
 import java.util.Arrays;
@@ -34,7 +35,12 @@ public class StandardCVPipelineSettings extends CVPipelineSettings {
 
     // 3d stuff
     public int maxTargets = 5;
-    public List<Point3> targetCorners = List.of();
+    public List<Point3> targetCorners = List.of(
+            new Point3(new Point(-6, 2)),
+            new Point3(new Point(-6, -2)),
+            new Point3(new Point(6, -2)),
+            new Point3(new Point(6, 2))
+    );
     public double cameraTiltAngleDeg = 0d;
     public boolean wants3dMode = false;
 }

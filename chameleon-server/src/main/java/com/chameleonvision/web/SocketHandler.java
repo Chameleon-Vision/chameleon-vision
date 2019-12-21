@@ -133,6 +133,10 @@ public class SocketHandler {
                         sendFullSettings();
                         break;
                     }
+                    case "is3D": {
+                        VisionManager.getCurrentUIVisionProcess().setIs3d((Boolean) entry.getValue());
+                        break;
+                    }
                     case "currentPipeline": {
                         currentProcess.pipelineManager.setCurrentPipeline((Integer) entry.getValue());
                         sendFullSettings();

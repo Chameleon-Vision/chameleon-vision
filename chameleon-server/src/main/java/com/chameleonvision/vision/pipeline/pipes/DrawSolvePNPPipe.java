@@ -7,10 +7,13 @@ import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
+import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
+import javax.management.remote.TargetedNotification;
 import java.awt.*;
 import java.util.List;
+import java.util.Vector;
 
 public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.TrackedTarget>>, Mat> {
 
@@ -20,44 +23,38 @@ public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Tracke
 
     public DrawSolvePNPPipe(CameraCalibrationConfig settings) {
         setConfig(settings);
+        setObjectBox(12, 4, 2);
     }
 
     public void setObjectBox(double targetWidth, double targetHeight, double targetDepth) {
         // implementation from 5190 Green Hope Falcons
 
         boxCornerMat.release();
-        boxCornerMat = new MatOfPoint3f();
-        boxCornerMat.put(0, 0, -targetWidth/2);
-        boxCornerMat.put(0, 0, -targetHeight / 2);
-        boxCornerMat.put(0, 0, 0);
+        boxCornerMat = new MatOfPoint3f(
+                new Point3(-targetWidth/2d, -targetHeight/2d, 0),
+                new Point3(-targetWidth/2d, targetHeight/2d, 0),
+                new Point3(targetWidth/2d, targetHeight/2d, 0),
+                new Point3(targetWidth/2d, -targetHeight/2d, 0),
+                new Point3(-targetWidth/2d, -targetHeight/2d, -targetDepth),
+                new Point3(-targetWidth/2d, targetHeight/2d, -targetDepth),
+                new Point3(targetWidth/2d, targetHeight/2d, -targetDepth),
+                new Point3(targetWidth/2d, -targetHeight/2d, -targetDepth)
+        );
 
-        boxCornerMat.put(0, 0, -targetWidth/2);
-        boxCornerMat.put(0, 0, targetHeight / 2);
-        boxCornerMat.put(0, 0, 0);
+//        var temp = new Vector<Point3>();
+//        var size = 4;
+//        temp.add(new Point3(-size, -size, 0));
+//        temp.add(new Point3(-size, size, 0));
+//        temp.add(new Point3(size, size, 0));
+//        temp.add(new Point3(size, -size, 0));
+//        temp.add(new Point3(-size, -size, size));
+//        temp.add(new Point3(-size, size, size));
+//        temp.add(new Point3(size, size, size));
+//        temp.add(new Point3(size, -size, size));
+//        boxCornerMat.fromList(temp);
 
-        boxCornerMat.put(0, 0, targetWidth/2);
-        boxCornerMat.put(0, 0, targetHeight / 2);
-        boxCornerMat.put(0, 0, 0);
+        var yes = 4;
 
-        boxCornerMat.put(0, 0, targetWidth/2);
-        boxCornerMat.put(0, 0, -targetHeight / 2);
-        boxCornerMat.put(0, 0, 0);
-
-        boxCornerMat.put(0, 0, -targetWidth/2);
-        boxCornerMat.put(0, 0, -targetHeight / 2);
-        boxCornerMat.put(0, 0, -targetDepth/2);
-
-        boxCornerMat.put(0, 0, -targetWidth/2);
-        boxCornerMat.put(0, 0, targetHeight / 2);
-        boxCornerMat.put(0, 0, -targetDepth/2);
-
-        boxCornerMat.put(0, 0, targetWidth/2);
-        boxCornerMat.put(0, 0, targetHeight / 2);
-        boxCornerMat.put(0, 0, -targetDepth/2);
-
-        boxCornerMat.put(0, 0, targetWidth/2);
-        boxCornerMat.put(0, 0, -targetHeight / 2);
-        boxCornerMat.put(0, 0, -targetDepth/2);
     }
 
     private Mat cameraMatrix = new Mat();
@@ -71,15 +68,9 @@ public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Tracke
         setConfig(config.getCameraMatrixAsMat(), config.getDistortionCoeffsAsMat());
     }
 
-    public void setConfig(Mat cameraMatrix, Mat distortionMatrix) {
-        if(cameraMatrix != this.cameraMatrix) {
-            cameraMatrix.release();
-            cameraMatrix.copyTo(this.cameraMatrix);
-        }
-        if(distortionMatrix != this.distortionCoefficients) {
-            distortionCoefficients.release();
-            distortionMatrix.copyTo(this.distortionCoefficients);
-        }
+    public void setConfig(Mat cameraMatrix_, MatOfDouble distortionMatrix_) {
+        this.cameraMatrix = cameraMatrix_;
+        this.distortionCoefficients = distortionMatrix_;
     }
 
     @Override
@@ -90,13 +81,30 @@ public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Tracke
         var rows = boxCornerMat.rows();
         for(var it : targets.getRight()) {
             MatOfPoint2f imagePoints = new MatOfPoint2f();
-            Calib3d.projectPoints(boxCornerMat, it.rVector, it.tVector, this.cameraMatrix, this.distortionCoefficients, imagePoints, new Mat() , 0);
-            var pts = imagePoints.toList();
-            for(int i = 0; i < rows; i++) {
-                Imgproc.line(image, pts.get(i), pts.get((i+1)%4), color, 2);
-                Imgproc.line(image, pts.get(i+4), pts.get(4+(i+1)%4), color, 2);
-                Imgproc.line(image, pts.get(i), pts.get(i+4), color, 2);
+            try {
+                Calib3d.projectPoints(boxCornerMat, it.rVector, it.tVector, this.cameraMatrix, this.distortionCoefficients, imagePoints, new Mat() , 0);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            var pts = imagePoints.toList();
+
+            // sketch out floor
+            Imgproc.line(image, pts.get(0), pts.get(1), new Scalar(0, 255, 0), 3);
+            Imgproc.line(image, pts.get(1), pts.get(2), new Scalar(0, 255, 0), 3);
+            Imgproc.line(image, pts.get(2), pts.get(3), new Scalar(0, 255, 0), 3);
+            Imgproc.line(image, pts.get(3), pts.get(0), new Scalar(0, 255, 0), 3);
+
+            // draw pillars
+            Imgproc.line(image, pts.get(0), pts.get(4), new Scalar(255, 0, 0), 3);
+            Imgproc.line(image, pts.get(1), pts.get(5), new Scalar(255, 0, 0), 3);
+            Imgproc.line(image, pts.get(2), pts.get(6), new Scalar(255, 0, 0), 3);
+            Imgproc.line(image, pts.get(3), pts.get(7), new Scalar(255, 0, 0), 3);
+
+            // draw top
+            Imgproc.line(image, pts.get(4), pts.get(5), new Scalar(0, 0, 255), 3);
+            Imgproc.line(image, pts.get(5), pts.get(6), new Scalar(0, 0, 255), 3);
+            Imgproc.line(image, pts.get(6), pts.get(7), new Scalar(0, 0, 255), 3);
+            Imgproc.line(image, pts.get(7), pts.get(4), new Scalar(0, 0, 255), 3);
         }
 
         long processTime = System.nanoTime() - processStartNanos;

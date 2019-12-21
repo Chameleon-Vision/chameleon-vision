@@ -12,6 +12,7 @@ import com.chameleonvision.vision.camera.USBCameraCapture;
 import com.chameleonvision.vision.pipeline.*;
 import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
 import com.chameleonvision.vision.pipeline.impl.DriverVisionPipeline;
+import com.chameleonvision.vision.pipeline.impl.StandardCVPipelineSettings;
 import com.chameleonvision.web.SocketHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -256,6 +257,13 @@ public class VisionProcess {
         cameraCapture.addCalibrationData(cal);
         System.out.println("saving to file");
         fileConfig.saveCalibration(cameraCapture.getConfig());
+    }
+
+    public void setIs3d(Boolean value) {
+        var settings = pipelineManager.getCurrentPipeline().settings;
+        if(settings instanceof StandardCVPipelineSettings) {
+            ((StandardCVPipelineSettings) settings).wants3dMode = value;
+        }
     }
 
     /**
