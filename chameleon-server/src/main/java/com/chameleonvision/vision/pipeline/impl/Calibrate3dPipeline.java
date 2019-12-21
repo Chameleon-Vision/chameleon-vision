@@ -101,6 +101,8 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
         putText(inputMat, captureCount);
 
         if(wantsSnapshot) {
+            this.imageSize = new Size(inputMat.width(), inputMat.height());
+
             var mat = new MatOfPoint3f();
             calibrationOutput.copyTo(mat);
             this.objpoints.add(objP);
@@ -118,6 +120,7 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
     public void initPipeline(CameraCapture camera) {
         super.initPipeline(camera);
         objpoints.clear();
+        imgpoints.clear();
         captureCount = 0;
     }
 
@@ -139,6 +142,7 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
             Calib3d.calibrateCamera(objpoints, imgpoints, imageSize, cameraMatrix, distortionCoeffs, rvecs, tvecs);
         } catch(Exception e) {
             System.err.println("Camera calibration failed!");
+            initPipeline(cameraCapture);
             return false;
         }
 
