@@ -74,6 +74,10 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
         collect2dTargetsPipe = new Collect2dTargetsPipe(settings.calibrationMode,settings.point,settings.dualTargetCalibrationM,settings.dualTargetCalibrationB, camProps);
         draw2dContoursSettings = new Draw2dContoursPipe.Draw2dContoursSettings();
         draw2dCrosshairPipeSettings = new Draw2dCrosshairPipe.Draw2dCrosshairPipeSettings();
+
+        solvePNPBoundingBoxPipe = new BoundingBoxSolvePNPPipe(settings, cameraCapture.getCurrentCalibrationData());
+        drawSolvePNPPipe = new DrawSolvePNPPipe(cameraCapture.getCurrentCalibrationData());
+
         // TODO: make settable from UI? config?
         draw2dContoursSettings.showCentroid = false;
         draw2dContoursSettings.boxOutlineSize = 2;
@@ -124,7 +128,10 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
         draw2dCrosshairPipe.setConfig(draw2dCrosshairPipeSettings,settings.calibrationMode,settings.point,settings.dualTargetCalibrationM,settings.dualTargetCalibrationB);
         outputMatPipe.setConfig(settings.isBinary);
 
-        solvePNPBoundingBoxPipe.setConfig(settings, cameraCapture.getCurrentCalibrationData());
+        if(settings.wants3dMode) {
+            solvePNPBoundingBoxPipe.setConfig(settings, cameraCapture.getCurrentCalibrationData());
+            drawSolvePNPPipe.setConfig(cameraCapture.getCurrentCalibrationData());
+        }
 
         long pipeInitTimeNanos = System.nanoTime() - pipelineStartTimeNanos;
 

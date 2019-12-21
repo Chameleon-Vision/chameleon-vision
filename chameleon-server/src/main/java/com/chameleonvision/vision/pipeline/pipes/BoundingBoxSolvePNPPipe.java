@@ -1,7 +1,6 @@
 package com.chameleonvision.vision.pipeline.pipes;
 
 import com.chameleonvision.config.CameraCalibrationConfig;
-import com.chameleonvision.config.CameraJsonConfig;
 import com.chameleonvision.vision.pipeline.Pipe;
 import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
 import com.chameleonvision.vision.pipeline.impl.StandardCVPipelineSettings;
@@ -63,13 +62,17 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTa
     }
 
     private void setCameraCoeffs(CameraCalibrationConfig settings) {
+        if(settings == null) {
+            System.err.println("got passed a null config! Returning...");
+            return;
+        }
         if(cameraMatrix != settings.getCameraMatrix()) {
             cameraMatrix.release();
             settings.getCameraMatrix().copyTo(cameraMatrix);
         }
-        if(distortionCoefficients != settings.getDistortionCoefffs()) {
+        if(distortionCoefficients != settings.getDistortionCoeffs()) {
             distortionCoefficients.release();
-            settings.getDistortionCoefffs().copyTo(distortionCoefficients);
+            settings.getDistortionCoeffs().copyTo(distortionCoefficients);
         }
     }
 

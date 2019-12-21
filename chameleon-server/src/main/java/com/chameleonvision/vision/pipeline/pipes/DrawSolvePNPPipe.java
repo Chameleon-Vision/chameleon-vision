@@ -4,7 +4,6 @@ import com.chameleonvision.config.CameraCalibrationConfig;
 import com.chameleonvision.util.Helpers;
 import com.chameleonvision.vision.pipeline.Pipe;
 import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
-import com.chameleonvision.vision.pipeline.impl.StandardCVPipelineSettings;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
@@ -20,7 +19,7 @@ public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Tracke
     public Scalar color = Helpers.colorToScalar(Color.GREEN);
 
     public DrawSolvePNPPipe(CameraCalibrationConfig settings) {
-        setConfig(settings.getCameraMatrix(), settings.getDistortionCoefffs());
+        setConfig(settings);
     }
 
     public void setObjectBox(double targetWidth, double targetHeight, double targetDepth) {
@@ -63,6 +62,14 @@ public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Tracke
 
     private Mat cameraMatrix = new Mat();
     private MatOfDouble distortionCoefficients = new MatOfDouble();
+
+    public void setConfig(CameraCalibrationConfig config) {
+        if(config == null) {
+            System.err.println("got passed a null config! Returning...");
+            return;
+        }
+        setConfig(config.getCameraMatrix(), config.getDistortionCoeffs());
+    }
 
     public void setConfig(Mat cameraMatrix, Mat distortionMatrix) {
         if(cameraMatrix != this.cameraMatrix) {

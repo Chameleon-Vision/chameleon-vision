@@ -60,7 +60,7 @@ public class VisionProcess {
 
     private long lastUIUpdateMs = 0;
 
-    private final LinkedHashMap<Size, CameraCalibrationConfig> cameraCalibrationConfigs = new LinkedHashMap<>();
+    private LinkedHashMap<Size, CameraCalibrationConfig> cameraCalibrationConfigs = new LinkedHashMap<>();
 
     VisionProcess(USBCameraCapture cameraCapture, FullCameraConfiguration config) {
         this.cameraCapture = cameraCapture;
@@ -261,7 +261,8 @@ public class VisionProcess {
     public void addCalibration (CameraCalibrationConfig cal){
         cameraCapture.addCalibrationData(cal);
         cameraCalibrationConfigs.put(cal.resolution, cal);
-        fileConfig.saveCalibration((List<CameraCalibrationConfig>) cameraCalibrationConfigs.values());
+        System.out.println("saving to file");
+        fileConfig.saveCalibration(new ArrayList<>(cameraCalibrationConfigs.values()));
     }
 
     /**

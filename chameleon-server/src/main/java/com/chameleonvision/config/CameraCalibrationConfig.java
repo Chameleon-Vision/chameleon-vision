@@ -10,8 +10,8 @@ import org.opencv.core.Size;
  */
 public class CameraCalibrationConfig {
     public final Size resolution;
-    private final JsonMat cameraMatrix;
-    private final JsonMat distortionCoeffs;
+    public final JsonMat cameraMatrix;
+    public final JsonMat distortionCoeffs;
 
     @JsonCreator
     public CameraCalibrationConfig(
@@ -33,7 +33,7 @@ public class CameraCalibrationConfig {
         return cameraMatrix.toMat();
     }
 
-    public Mat getDistortionCoefffs() {
+    public Mat getDistortionCoeffs() {
         return distortionCoeffs.toMat();
     }
 }

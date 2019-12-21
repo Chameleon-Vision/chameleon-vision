@@ -2,9 +2,13 @@ package com.chameleonvision.vision.pipeline.impl;
 
 import com.chameleonvision.config.CameraCalibrationConfig;
 import com.chameleonvision.config.ConfigManager;
+import com.chameleonvision.config.JsonMat;
+import com.chameleonvision.util.JacksonHelper;
 import com.chameleonvision.vision.VisionManager;
 import com.chameleonvision.vision.camera.CameraCapture;
 import com.chameleonvision.vision.pipeline.CVPipeline;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.cscore.VideoMode;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
@@ -124,7 +128,7 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
     }
 
     public boolean tryCalibration() {
-        if (captureCount < MIN_COUNT - 1) return false;
+        if (!hasEnoughSnapshots()) return false;
 
         Mat cameraMatrix = new Mat();
         Mat distortionCoeffs = new Mat();
@@ -144,7 +148,13 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
 
         VisionManager.getCurrentUIVisionProcess().addCalibration(cal);
 
-        System.out.printf("CALIBRATION SUCCESS! camMatrix: \n%s\ndistortionCoeffs:\n%s\n", cameraMatrix, distortionCoeffs);
+        try {
+            System.out.printf("CALIBRATION SUCCESS! camMatrix: \n%s\ndistortionCoeffs:\n%s\n",
+                    new ObjectMapper().writeValueAsString(cal.cameraMatrix), new ObjectMapper().writeValueAsString(cal.distortionCoeffs));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
 
         ConfigManager.saveGeneralSettings();
 

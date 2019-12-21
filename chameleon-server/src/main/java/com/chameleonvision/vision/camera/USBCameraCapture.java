@@ -11,18 +11,20 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class USBCameraCapture implements CameraCapture {
     private final UsbCamera baseCamera;
     private final CvSink cvSink;
-    private final List<CameraCalibrationConfig> calibrationList;
+    private List<CameraCalibrationConfig> calibrationList;
     private Mat imageBuffer = new Mat();
     private USBCaptureProperties properties;
 
     public USBCameraCapture(FullCameraConfiguration fullCameraConfiguration) {
         var config = fullCameraConfiguration.cameraConfig;
-        this.calibrationList = fullCameraConfiguration.calibration;
+        this.calibrationList = new ArrayList<>(); //fullCameraConfiguration.calibration;
+        calibrationList.addAll(fullCameraConfiguration.calibration);
         baseCamera = new UsbCamera(config.name, config.path);
         cvSink = CameraServer.getInstance().getVideo(baseCamera);
         properties = new USBCaptureProperties(baseCamera, config);
