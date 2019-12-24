@@ -116,8 +116,8 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTa
 
         // tl tr bl br
         var tl = left.get(0);
-        var tr = right.get(1);
-        var bl = left.get(0);
+        var bl = left.get(1);
+        var tr = right.get(0);
         var br = right.get(1);
 
         mat2f.fromList(List.of(tl, bl, br, tr));
@@ -175,6 +175,12 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTa
         return target;
     }
 
+    /**
+     * Element-wise scale a matrix by a given factor
+     * @param src the source matrix
+     * @param factor by how much to scale each element
+     * @return the scaled matrix
+     */
     public Mat matScale(Mat src, double factor) {
         Mat dst= new Mat(src.rows(),src.cols(),src.type());
         Scalar s = new Scalar(factor);

@@ -23,7 +23,7 @@ public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Tracke
 
     public DrawSolvePNPPipe(CameraCalibrationConfig settings) {
         setConfig(settings);
-        setObjectBox(12, 4, 2);
+        setObjectBox(15.5, 6, 2);
     }
 
     public void setObjectBox(double targetWidth, double targetHeight, double targetDepth) {
