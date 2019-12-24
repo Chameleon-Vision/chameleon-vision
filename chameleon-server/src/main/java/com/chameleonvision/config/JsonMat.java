@@ -42,7 +42,7 @@ public class JsonMat {
         double[] data = new double[(int)(mat.total()*mat.elemSize())];
         mat.get(0, 0, data);
 
-        double[] trimmedData = Arrays.copyOfRange(data, 0, 5);
+        double[] trimmedData = Arrays.copyOfRange(data, 0, 8);
 
         return new JsonMat(mat.rows(), mat.cols(), trimmedData);
     }
