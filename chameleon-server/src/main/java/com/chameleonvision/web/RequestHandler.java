@@ -16,6 +16,7 @@ import io.javalin.http.Handler;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RequestHandler {
@@ -139,5 +140,12 @@ public class RequestHandler {
     public static void onCalibrationCancellation(Context ctx) {
         VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(false);
         ctx.status(200);
+    }
+
+    public static void onPnpModel(Context ctx) throws JsonProcessingException {
+        System.out.println(ctx.body());
+        ObjectMapper objectMapper = new ObjectMapper();
+        List points = objectMapper.readValue(ctx.body(), List.class);
+        System.out.println(points);
     }
 }

@@ -2,7 +2,7 @@
     <div>
         <v-row align="center" justify="start" dense>
             <v-col :cols="6">
-                <CVswitch v-model="value" name="Enable 3D" @input="handleData('is3D')"/>
+                <CVswitch v-model="value.is3D" name="Enable 3D" @input="handleData('is3D')"/>
             </v-col>
             <v-col>
                 <input type="file" ref="file" style="display: none" accept=".csv" @change="readFile">
@@ -10,15 +10,9 @@
                     upload model
                 </v-btn>
             </v-col>
-            <v-col :cols="6">
-                <CVswitch v-model="value" name="Enable 3D Calibration" @input="handleData('isPNPCalibration')"/>
-            </v-col>
-            <v-btn style="margin: 20px;" tile color="#4baf62" @click="handleSnapshot()" small>
-                <v-icon>camera</v-icon>
-                Take Calibration
-            </v-btn>
         </v-row>
-        <mini-map class="miniMapClass" :location="lData"></mini-map>
+        <mini-map class="miniMapClass" :location="point.pose.translation"
+                  :angle="(point.pose.rotation.radians * (180/Math.PI))"/>
     </div>
 </template>
 
@@ -26,9 +20,10 @@
     import miniMap from '../../components/3D/MiniMap';
     import CVswitch from '../../components/cv-switch';
     import Papa from 'papaparse';
-    
+
     export default {
         name: "solvePNP",
+        props: ['value'],
         components: {
             CVswitch,
             miniMap
@@ -37,16 +32,10 @@
             return {
                 is3D: false,
                 isPNPCalibration: false,
-                lData: {
-                    x: 0,
-                    y: 0,
-                    a: 0
-                }
             }
         },
         methods: {
             handleData(val) {
-                console.log("setting " + val + " to " + this.value)
                 this.handleInput(val, this.value);
                 this.$emit('update')
             },
@@ -57,17 +46,18 @@
                     skipEmptyLines: true
                 });
             },
-            handleSnapshot() {
-                let msg = this.$msgPack.encode({
-                    'takeCalibrationSnapshot': true
-                });
-                this.$socket.send(msg);
-                this.$emit('update');
-            },
             onParse(result) {
-                console.log(result.data);
+                // console.log(result.data);
+                this.axios.post("http://" + this.$address + "/api/vision/pnpModel", result.data);
             },
         },
+        computed: {
+            point: {
+                get() {
+                    return this.$store.state.point.calculated;
+                }
+            }
+        }
     }
 </script>
 

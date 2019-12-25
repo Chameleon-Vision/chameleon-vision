@@ -1,5 +1,5 @@
 <template>
-    <canvas id="canvasId" width="800" height="800"></canvas>
+    <canvas id="canvasId" width="800" height="800"/>
 </template>
 
 <script>
@@ -9,8 +9,8 @@
             location: {
                 x: 0,
                 y: 0,
-                a: 0
             },
+            angle: Number
         },
         data() {
             return {
@@ -41,7 +41,7 @@
             },
             drawText() {
                 this.ctx.fillStyle = "whitesmoke";
-                this.ctx.fillText(`X: ${this.location.x}, Y: ${this.location.y}, ∠${this.location.a}° `, 200 - 15, this.location.y + 25);
+                this.ctx.fillText(`X: ${this.location.x}, Y: ${this.location.y}, ∠${this.angle}° `, 200 - 15, this.location.y + 25);
             },
             drawTarget() {
                 this.ctx.fillStyle = "#01a209";
@@ -59,7 +59,7 @@
             drawPlayer() {
                 // drawing the player icon onto the canvas
                 this.ctx.setTransform(0.4, 0, 0, 0.4, this.location.x, this.location.y);
-                this.ctx.rotate((Math.PI * this.location.a) / 180);
+                this.ctx.rotate((Math.PI * this.angle) / 180);
                 this.ctx.drawImage(this.image, -this.image.width / 2, -this.image.height / 2);
             },
             clearBoard() {

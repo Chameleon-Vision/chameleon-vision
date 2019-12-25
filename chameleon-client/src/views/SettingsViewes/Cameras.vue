@@ -25,6 +25,11 @@
                     </v-btn>
                 </v-col>
             </v-row>
+            <v-row v-if="isCalibrating">
+                <v-col>
+                    <span>Snapshot Amount: {{snapshotAmount}}</span>
+                </v-col>
+            </v-row>
         </div>
     </div>
 </template>
