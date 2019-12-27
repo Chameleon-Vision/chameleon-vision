@@ -3,6 +3,7 @@ package com.chameleonvision.vision.pipeline.pipes;
 import com.chameleonvision.vision.camera.CaptureStaticProperties;
 import com.chameleonvision.vision.enums.SortMode;
 import com.chameleonvision.vision.pipeline.Pipe;
+import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.FastMath;
 import org.opencv.core.RotatedRect;
@@ -11,24 +12,24 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class SortContoursPipe implements Pipe<List<RotatedRect>, List<RotatedRect>> {
+public class SortContoursPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List<CVPipeline2d.TrackedTarget>> {
 
-    private final Comparator<RotatedRect> SortByCentermostComparator = Comparator.comparingDouble(this::calcSquareCenterDistance);
+    private final Comparator<CVPipeline2d.TrackedTarget> SortByCentermostComparator = Comparator.comparingDouble(this::calcSquareCenterDistance);
 
-    private static final Comparator<RotatedRect> SortByLargestComparator = (rect1, rect2) -> Double.compare(rect2.size.area(), rect1.size.area());
-    private static final Comparator<RotatedRect> SortBySmallestComparator = SortByLargestComparator.reversed();
+    private static final Comparator<CVPipeline2d.TrackedTarget> SortByLargestComparator = (rect1, rect2) -> Double.compare(rect2.rawPoint.size.area(), rect1.rawPoint.size.area());
+    private static final Comparator<CVPipeline2d.TrackedTarget> SortBySmallestComparator = SortByLargestComparator.reversed();
 
-    private static final Comparator<RotatedRect> SortByHighestComparator = (rect1, rect2) -> Double.compare(rect2.center.y, rect1.center.y);
-    private static final Comparator<RotatedRect> SortByLowestComparator = SortByHighestComparator.reversed();
+    private static final Comparator<CVPipeline2d.TrackedTarget> SortByHighestComparator = (rect1, rect2) -> Double.compare(rect2.rawPoint.center.y, rect1.rawPoint.center.y);
+    private static final Comparator<CVPipeline2d.TrackedTarget> SortByLowestComparator = SortByHighestComparator.reversed();
 
-    public static final Comparator<RotatedRect> SortByLeftmostComparator = Comparator.comparingDouble(rect -> rect.center.x);
-    private static final Comparator<RotatedRect> SortByRightmostComparator = SortByLeftmostComparator.reversed();
+    public static final Comparator<CVPipeline2d.TrackedTarget> SortByLeftmostComparator = Comparator.comparingDouble(target -> target.rawPoint.center.x);
+    private static final Comparator<CVPipeline2d.TrackedTarget> SortByRightmostComparator = SortByLeftmostComparator.reversed();
 
     private SortMode sort;
     private CaptureStaticProperties camProps;
     private int maxTargets;
 
-    private List<RotatedRect> sortedContours = new ArrayList<>();
+    private List<CVPipeline2d.TrackedTarget> sortedContours = new ArrayList<>();
 
     public SortContoursPipe(SortMode sort, CaptureStaticProperties camProps, int maxTargets) {
         this.sort = sort;
@@ -43,7 +44,7 @@ public class SortContoursPipe implements Pipe<List<RotatedRect>, List<RotatedRec
     }
 
     @Override
-    public Pair<List<RotatedRect>, Long> run(List<RotatedRect> input) {
+    public Pair<List<CVPipeline2d.TrackedTarget>, Long> run(List<CVPipeline2d.TrackedTarget> input) {
         long processStartNanos = System.nanoTime();
 
         sortedContours.clear();
@@ -82,7 +83,7 @@ public class SortContoursPipe implements Pipe<List<RotatedRect>, List<RotatedRec
         return Pair.of(sortedContours, processTime);
     }
 
-    private double calcSquareCenterDistance(RotatedRect rect) {
-        return FastMath.sqrt(FastMath.pow(camProps.centerX - rect.center.x, 2) + FastMath.pow(camProps.centerY - rect.center.y, 2));
+    private double calcSquareCenterDistance(CVPipeline2d.TrackedTarget rect) {
+        return FastMath.sqrt(FastMath.pow(camProps.centerX - rect.rawPoint.center.x, 2) + FastMath.pow(camProps.centerY - rect.rawPoint.center.y, 2));
     }
 }

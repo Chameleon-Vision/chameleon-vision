@@ -3,6 +3,7 @@ package com.chameleonvision.vision.pipeline.pipes;
 import com.chameleonvision.vision.camera.CaptureStaticProperties;
 import com.chameleonvision.util.Helpers;
 import com.chameleonvision.vision.pipeline.Pipe;
+import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Point;
 import org.opencv.core.*;
@@ -12,7 +13,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Draw2dContoursPipe implements Pipe<Pair<Mat, List<RotatedRect>>, Mat> {
+public class Draw2dContoursPipe implements Pipe<Pair<Mat, List<CVPipeline2d.TrackedTarget>>, Mat> {
 
     private final Draw2dContoursSettings settings;
     private CaptureStaticProperties camProps;
@@ -38,7 +39,7 @@ public class Draw2dContoursPipe implements Pipe<Pair<Mat, List<RotatedRect>>, Ma
     }
 
     @Override
-    public Pair<Mat, Long> run(Pair<Mat, List<RotatedRect>> input) {
+    public Pair<Mat, Long> run(Pair<Mat, List<CVPipeline2d.TrackedTarget>> input) {
         long processStartNanos = System.nanoTime();
 
         if (settings.showCentroid || settings.showMaximumBox || settings.showRotatedBox) {
@@ -50,7 +51,7 @@ public class Draw2dContoursPipe implements Pipe<Pair<Mat, List<RotatedRect>>, Ma
                     if (i != 0 && !settings.showMultiple){
                         break;
                     }
-                    RotatedRect r = input.getRight().get(i);
+                    RotatedRect r = input.getRight().get(i).rawPoint;
                     if (r == null) continue;
 
                     drawnContours.forEach(Mat::release);

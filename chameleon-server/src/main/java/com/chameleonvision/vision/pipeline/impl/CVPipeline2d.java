@@ -159,10 +159,10 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
         Pair<List<MatOfPoint>, Long> speckleRejectResult = speckleRejectPipe.run(filterContoursResult.getLeft());
         totalPipelineTimeNanos += speckleRejectResult.getRight();
 
-        Pair<List<RotatedRect>, Long> groupContoursResult = groupContoursPipe.run(speckleRejectResult.getLeft());
+        Pair<List<TrackedTarget>, Long> groupContoursResult = groupContoursPipe.run(speckleRejectResult.getLeft());
         totalPipelineTimeNanos += groupContoursResult.getRight();
 
-        Pair<List<RotatedRect>, Long> sortContoursResult = sortContoursPipe.run(groupContoursResult.getLeft());
+        Pair<List<TrackedTarget>, Long> sortContoursResult = sortContoursPipe.run(groupContoursResult.getLeft());
         totalPipelineTimeNanos += sortContoursResult.getRight();
 
         Pair<List<TrackedTarget>, Long> collect2dTargetsResult = collect2dTargetsPipe.run(Pair.of(sortContoursResult.getLeft(), camProps));
@@ -238,7 +238,7 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
         public double yaw = 0.0;
         public double area = 0.0;
         public RotatedRect rawPoint;
-        public Rect boundingRect;
+        public MatOfPoint2f contour;
 
         // 3d stuff
         public Pose2d cameraRelativePose = new Pose2d();

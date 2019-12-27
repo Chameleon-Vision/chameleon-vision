@@ -4,6 +4,7 @@ import com.chameleonvision.util.MathHandler;
 import com.chameleonvision.vision.enums.TargetGroup;
 import com.chameleonvision.vision.enums.TargetIntersection;
 import com.chameleonvision.vision.pipeline.Pipe;
+import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
@@ -14,7 +15,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class GroupContoursPipe implements Pipe<List<MatOfPoint>, List<RotatedRect>> {
+public class GroupContoursPipe implements Pipe<List<MatOfPoint>, List<CVPipeline2d.TrackedTarget>> {
 
     private static final Comparator<MatOfPoint> sortByMomentsX =
             Comparator.comparingDouble(GroupContoursPipe::calcMomentsX);
@@ -22,7 +23,7 @@ public class GroupContoursPipe implements Pipe<List<MatOfPoint>, List<RotatedRec
     private TargetGroup group;
     private TargetIntersection intersection;
 
-    private List<RotatedRect> groupedContours = new ArrayList<>();
+    private List<CVPipeline2d.TrackedTarget> groupedContours = new ArrayList<>();
     private MatOfPoint2f intersectMatA = new MatOfPoint2f();
     private MatOfPoint2f intersectMatB = new MatOfPoint2f();
 
@@ -37,7 +38,7 @@ public class GroupContoursPipe implements Pipe<List<MatOfPoint>, List<RotatedRec
     }
 
     @Override
-    public Pair<List<RotatedRect>, Long> run(List<MatOfPoint> input) {
+    public Pair<List<CVPipeline2d.TrackedTarget>, Long> run(List<MatOfPoint> input) {
         long processStartNanos = System.nanoTime();
 
         groupedContours.clear();
@@ -56,7 +57,10 @@ public class GroupContoursPipe implements Pipe<List<MatOfPoint>, List<RotatedRec
                         contour.fromArray(c.toArray());
                         if (contour.cols() != 0 && contour.rows() != 0) {
                             RotatedRect rect = Imgproc.minAreaRect(contour);
-                            groupedContours.add(rect);
+                            var target = new CVPipeline2d.TrackedTarget();
+                            target.rawPoint = rect;
+                            target.contour = contour;
+                            groupedContours.add(target);
                         }
                     });
                     break;
