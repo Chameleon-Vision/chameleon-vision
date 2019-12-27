@@ -10,6 +10,7 @@ import com.chameleonvision.vision.pipeline.CVPipeline;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.cscore.VideoMode;
+import edu.wpi.first.wpilibj.util.Units;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
@@ -31,7 +32,7 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
     private List<Mat> objpoints = new ArrayList<>();
     private List<Mat> imgpoints = new ArrayList<>();
 
-    public static double checkerboardSquareSizeUnits = 1.0;
+    public static double checkerboardSquareSizeUnits = Units.inchesToMeters(1.0);
 
     public static final int MIN_COUNT = 15;
     private VideoMode calibrationMode;
