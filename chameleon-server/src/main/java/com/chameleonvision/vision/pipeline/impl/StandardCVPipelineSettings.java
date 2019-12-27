@@ -35,11 +35,12 @@ public class StandardCVPipelineSettings extends CVPipelineSettings {
 
     // 3d stuff
     public int maxTargets = 5;
+    private static final double width = 14.5, height = 6.0;
     public List<Point3> targetCorners = List.of(
-            new Point3(new Point(-7.5, 3)),
-            new Point3(new Point(-7.5, -3)),
-            new Point3(new Point(7.5, -3)),
-            new Point3(new Point(7.5, 3))
+            new Point3(new Point(-width/2, height/2)),
+            new Point3(new Point(-width/2, -height/2)),
+            new Point3(new Point(width/2, -height/2)),
+            new Point3(new Point(width/2, height/2))
     );
     public double cameraTiltAngleDeg = 0d;
     public boolean wants3dMode = false;

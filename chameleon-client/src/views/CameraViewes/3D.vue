@@ -36,7 +36,7 @@
         },
         methods: {
             handleData(val) {
-                this.handleInput(val, this.value);
+                this.handleInput(val, this.value[val]);
                 this.$emit('update')
             },
             readFile(event) {

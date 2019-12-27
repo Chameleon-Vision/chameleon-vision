@@ -12,6 +12,7 @@ import org.apache.commons.math3.util.FastMath;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 
+import javax.sound.midi.SysexMessage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -83,7 +84,8 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTa
         poseList.clear();
         for(var target: targets) {
             var corners = findBoundingBoxCorners(target);
-            poseList.add(calculatePose(corners, target));
+            var pose = calculatePose(corners, target);
+            if(pose != null) poseList.add(pose);
         }
         long processTime = System.nanoTime() - processStartNanos;
         return Pair.of(poseList, processTime);
@@ -128,12 +130,15 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTa
     private Scalar scalar = new Scalar(new double[] { -1, -1, -1 });
 
     private CVPipeline2d.TrackedTarget calculatePose(MatOfPoint2f imageCornerPoints, CVPipeline2d.TrackedTarget target) {
+        if(objPointsMat.size() != imageCornerPoints.size() || cameraMatrix.rows() < 3 || distortionCoefficients.cols() < 5) {
+            System.err.println("can't do solvePNP with invalid params!");
+            return null;
+        }
         try {
             Calib3d.solvePnP(objPointsMat, imageCornerPoints, cameraMatrix, distortionCoefficients, rVec, tVec);
         } catch (Exception e) {
             e.printStackTrace();
-            return new CVPipeline2d.TrackedTarget();
-//            throw new RuntimeException(e);
+            return null;
         }
 
         // Algorithm from team 5190 Green Hope Falcons
@@ -170,8 +175,8 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTa
         target.rVector = rVec;
         target.tVector = tVec;
 
-        System.out.println("found target at \n" + target.cameraRelativePose.toString());
-
+//        System.out.println("found target at \n" + target.cameraRelativePose.toString());
+//
         return target;
     }
 

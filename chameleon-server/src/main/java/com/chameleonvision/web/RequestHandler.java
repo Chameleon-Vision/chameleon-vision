@@ -117,7 +117,7 @@ public class RequestHandler {
 
         calPipe.takeSnapshot();
 
-        HashMap<String, Object> toSend = new HashMap<String, Object>();
+        HashMap<String, Object> toSend = new HashMap<>();
         toSend.put("snapshotCount", calPipe.getSnapshotCount());
         toSend.put("hasEnough", calPipe.hasEnoughSnapshots());
 
