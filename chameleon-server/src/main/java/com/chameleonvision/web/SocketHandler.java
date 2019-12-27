@@ -227,8 +227,9 @@ public class SocketHandler {
     }
 
     private static void broadcastMessage(Object obj, WsContext userToSkip) {
-        if (users != null)
-            for (WsContext user : users) {
+        if (users != null) {
+            var userList = users;
+            for (WsContext user : userList) {
                 if (userToSkip != null && user.getSessionId().equals(userToSkip.getSessionId())) {
                     continue;
                 }
@@ -239,6 +240,7 @@ public class SocketHandler {
                     e.printStackTrace();
                 }
             }
+        }
     }
 
     public static void broadcastMessage(Object obj) {

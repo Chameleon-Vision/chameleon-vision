@@ -11,6 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.FastMath;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
+import org.opencv.imgproc.Imgproc;
 
 import javax.sound.midi.SysexMessage;
 import java.util.ArrayList;
@@ -130,10 +131,13 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTa
     private Scalar scalar = new Scalar(new double[] { -1, -1, -1 });
 
     private CVPipeline2d.TrackedTarget calculatePose(MatOfPoint2f imageCornerPoints, CVPipeline2d.TrackedTarget target) {
-        if(objPointsMat.size() != imageCornerPoints.size() || cameraMatrix.rows() < 3 || distortionCoefficients.cols() < 5) {
+        if(objPointsMat.rows() != imageCornerPoints.rows() || cameraMatrix.rows() < 2 || distortionCoefficients.cols() < 4) {
             System.err.println("can't do solvePNP with invalid params!");
             return null;
         }
+
+        imageCornerPoints.copyTo(target.imageCornerPoints);
+
         try {
             Calib3d.solvePnP(objPointsMat, imageCornerPoints, cameraMatrix, distortionCoefficients, rVec, tVec);
         } catch (Exception e) {

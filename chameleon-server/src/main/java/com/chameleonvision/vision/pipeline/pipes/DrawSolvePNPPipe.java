@@ -4,6 +4,8 @@ import com.chameleonvision.config.CameraCalibrationConfig;
 import com.chameleonvision.util.Helpers;
 import com.chameleonvision.vision.pipeline.Pipe;
 import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
+import com.chameleonvision.vision.pipeline.impl.StandardCVPipelineSettings;
+import edu.wpi.first.wpilibj.util.Units;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
@@ -23,7 +25,7 @@ public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Tracke
 
     public DrawSolvePNPPipe(CameraCalibrationConfig settings) {
         setConfig(settings);
-        setObjectBox(15.5, 6, 2);
+        setObjectBox(14.5, 6, 2);
     }
 
     public void setObjectBox(double targetWidth, double targetHeight, double targetDepth) {
@@ -87,6 +89,12 @@ public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Tracke
                 e.printStackTrace();
             }
             var pts = imagePoints.toList();
+
+            // draw corners
+            for(int i = 0; i < it.imageCornerPoints.rows(); i++) {
+                var point = new Point(it.imageCornerPoints.get(i, 0));
+                Imgproc.circle(image, point, 4, new Scalar(0, 255, 0), 5);
+            }
 
             // sketch out floor
             Imgproc.line(image, pts.get(0), pts.get(1), new Scalar(0, 255, 0), 3);

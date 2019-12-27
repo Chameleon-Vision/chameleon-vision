@@ -84,7 +84,6 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
 
         if(!checkerboardFound) {
             Imgproc.cvtColor(inputMat, inputMat, Imgproc.COLOR_GRAY2BGR);
-            putText(inputMat, captureCount);
 
             return new DriverVisionPipeline.DriverPipelineResult(null, inputMat, 0);
         }
@@ -99,7 +98,6 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
         Imgproc.cvtColor(inputMat, inputMat, Imgproc.COLOR_GRAY2BGR);
         // draw the chessboard
         Calib3d.drawChessboardCorners(inputMat, patternSize, calibrationOutput, true);
-        putText(inputMat, captureCount);
 
         if(wantsSnapshot) {
             this.imageSize = new Size(inputMat.width(), inputMat.height());
@@ -123,12 +121,6 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
         objpoints.clear();
         imgpoints.clear();
         captureCount = 0;
-    }
-
-    private void putText(Mat inputImage, int count) {
-        Imgproc.putText(inputImage, "Captured " + count + " images",
-                new Point(35, 60),
-                Core.FONT_HERSHEY_PLAIN, 3.0, new Scalar(0, 0, 255));
     }
 
     public boolean tryCalibration() {
@@ -171,6 +163,6 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
     }
     
     public int getSnapshotCount() {
-        return captureCount;
+        return captureCount + 1;
     }
 }
