@@ -90,7 +90,10 @@ public class GroupContoursPipe implements Pipe<List<MatOfPoint>, List<CVPipeline
 
                             if (contour.cols() != 0 && contour.rows() != 0) {
                                 RotatedRect rect = Imgproc.minAreaRect(contour);
-                                groupedContours.add(rect);
+                                var target = new CVPipeline2d.TrackedTarget();
+                                target.rawPoint = rect;
+                                target.contour = contour;
+                                groupedContours.add(target);
                             }
                         } catch (IndexOutOfBoundsException e) {
                             finalContourList.clear();
