@@ -10,6 +10,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 public class StaticImageCapture implements CameraCapture {
 
@@ -77,6 +78,11 @@ public class StaticImageCapture implements CameraCapture {
 
     @Override
     public CameraCalibrationConfig getCurrentCalibrationData() {
+        return null;
+    }
+
+    @Override
+    public List<CameraCalibrationConfig> getAllCalibrationData() {
         return null;
     }
 }

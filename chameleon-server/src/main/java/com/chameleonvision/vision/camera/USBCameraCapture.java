@@ -122,4 +122,9 @@ public class USBCameraCapture implements CameraCapture {
     public CameraCalibrationConfig getCurrentCalibrationData() {
         return getCalibration(getCurrentVideoMode());
     }
+
+    @Override
+    public List<CameraCalibrationConfig> getAllCalibrationData() {
+        return calibrationList;
+    }
 }

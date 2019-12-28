@@ -5,6 +5,8 @@ import com.chameleonvision.vision.image.CaptureProperties;
 import com.chameleonvision.vision.image.ImageCapture;
 import edu.wpi.cscore.VideoMode;
 
+import java.util.List;
+
 public interface CameraCapture extends ImageCapture {
     CaptureProperties getProperties();
 
@@ -42,4 +44,5 @@ public interface CameraCapture extends ImageCapture {
     void setGain(int gain);
 
     CameraCalibrationConfig getCurrentCalibrationData();
+    List<CameraCalibrationConfig> getAllCalibrationData();
 }
