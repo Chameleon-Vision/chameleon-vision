@@ -7,20 +7,17 @@ import com.chameleonvision.vision.pipeline.impl.StandardCVPipelineSettings;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.util.Units;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.FastMath;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
-import org.opencv.imgproc.Imgproc;
 
-import javax.sound.midi.SysexMessage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List<CVPipeline2d.TrackedTarget>> {
+public class SolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List<CVPipeline2d.TrackedTarget>> {
 
     private Double tilt_angle;
     private MatOfPoint3f objPointsMat = new MatOfPoint3f();
@@ -33,7 +30,7 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTa
     private MatOfDouble distortionCoefficients = new MatOfDouble();
     private List<CVPipeline2d.TrackedTarget> poseList = new ArrayList<>();
 
-    public BoundingBoxSolvePNPPipe(StandardCVPipelineSettings settings, CameraCalibrationConfig calibration) {
+    public SolvePNPPipe(StandardCVPipelineSettings settings, CameraCalibrationConfig calibration) {
         super();
         setCameraCoeffs(calibration);
         setObjectCorners(settings.targetCorners);
@@ -85,12 +82,28 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTa
         long processStartNanos = System.nanoTime();
         poseList.clear();
         for(var target: targets) {
-            var corners = findBoundingBoxCorners(target);
+            var corners = findCorner2019(target);// findBoundingBoxCorners(target);
             var pose = calculatePose(corners, target);
             if(pose != null) poseList.add(pose);
         }
         long processTime = System.nanoTime() - processStartNanos;
         return Pair.of(poseList, processTime);
+    }
+
+    private MatOfPoint2f findCorner2019(CVPipeline2d.TrackedTarget target) {
+        if(target.leftRightTarget2019 == null) return null;
+
+        var left = target.leftRightTarget2019.getLeft();
+        var right = target.leftRightTarget2019.getRight();
+
+        var points = new MatOfPoint2f();
+        points.fromArray(
+                new Point(left.x, left.y + left.height),
+                new Point(left.x, left.y),
+                new Point(right.x + right.width, right.y),
+                new Point(right.x + right.width, right.y + right.height)
+        );
+        return points;
     }
 
     private MatOfPoint2f findBoundingBoxCorners(CVPipeline2d.TrackedTarget target) {
@@ -102,7 +115,7 @@ public class BoundingBoxSolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTa
 
         // extract the corners
         var points = new Point[4];
-        target.rawPoint.points(points);
+        target.minAreaRect.points(points);
 
         // find the tl/tr/bl/br corners
         // first, min by left/right

@@ -6,7 +6,6 @@ import com.chameleonvision.vision.pipeline.Pipe;
 import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.FastMath;
-import org.opencv.core.RotatedRect;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -16,13 +15,13 @@ public class SortContoursPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, 
 
     private final Comparator<CVPipeline2d.TrackedTarget> SortByCentermostComparator = Comparator.comparingDouble(this::calcSquareCenterDistance);
 
-    private static final Comparator<CVPipeline2d.TrackedTarget> SortByLargestComparator = (rect1, rect2) -> Double.compare(rect2.rawPoint.size.area(), rect1.rawPoint.size.area());
+    private static final Comparator<CVPipeline2d.TrackedTarget> SortByLargestComparator = (rect1, rect2) -> Double.compare(rect2.minAreaRect.size.area(), rect1.minAreaRect.size.area());
     private static final Comparator<CVPipeline2d.TrackedTarget> SortBySmallestComparator = SortByLargestComparator.reversed();
 
-    private static final Comparator<CVPipeline2d.TrackedTarget> SortByHighestComparator = (rect1, rect2) -> Double.compare(rect2.rawPoint.center.y, rect1.rawPoint.center.y);
+    private static final Comparator<CVPipeline2d.TrackedTarget> SortByHighestComparator = (rect1, rect2) -> Double.compare(rect2.minAreaRect.center.y, rect1.minAreaRect.center.y);
     private static final Comparator<CVPipeline2d.TrackedTarget> SortByLowestComparator = SortByHighestComparator.reversed();
 
-    public static final Comparator<CVPipeline2d.TrackedTarget> SortByLeftmostComparator = Comparator.comparingDouble(target -> target.rawPoint.center.x);
+    public static final Comparator<CVPipeline2d.TrackedTarget> SortByLeftmostComparator = Comparator.comparingDouble(target -> target.minAreaRect.center.x);
     private static final Comparator<CVPipeline2d.TrackedTarget> SortByRightmostComparator = SortByLeftmostComparator.reversed();
 
     private SortMode sort;
@@ -84,6 +83,6 @@ public class SortContoursPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, 
     }
 
     private double calcSquareCenterDistance(CVPipeline2d.TrackedTarget rect) {
-        return FastMath.sqrt(FastMath.pow(camProps.centerX - rect.rawPoint.center.x, 2) + FastMath.pow(camProps.centerY - rect.rawPoint.center.y, 2));
+        return FastMath.sqrt(FastMath.pow(camProps.centerX - rect.minAreaRect.center.x, 2) + FastMath.pow(camProps.centerY - rect.minAreaRect.center.y, 2));
     }
 }

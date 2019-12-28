@@ -34,7 +34,7 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
     private Draw2dContoursPipe draw2dContoursPipe;
     private Draw2dCrosshairPipe draw2dCrosshairPipe;
     private DrawSolvePNPPipe drawSolvePNPPipe;
-    private BoundingBoxSolvePNPPipe solvePNPBoundingBoxPipe;
+    private SolvePNPPipe solvePNPPipe;
     private Draw2dCrosshairPipe.Draw2dCrosshairPipeSettings draw2dCrosshairPipeSettings;
     private OutputMatPipe outputMatPipe;
 
@@ -75,7 +75,7 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
         draw2dContoursSettings = new Draw2dContoursPipe.Draw2dContoursSettings();
         draw2dCrosshairPipeSettings = new Draw2dCrosshairPipe.Draw2dCrosshairPipeSettings();
 
-        solvePNPBoundingBoxPipe = new BoundingBoxSolvePNPPipe(settings, cameraCapture.getCurrentCalibrationData());
+        solvePNPPipe = new SolvePNPPipe(settings, cameraCapture.getCurrentCalibrationData());
         drawSolvePNPPipe = new DrawSolvePNPPipe(cameraCapture.getCurrentCalibrationData());
 
         // TODO: make settable from UI? config?
@@ -128,8 +128,8 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
         draw2dCrosshairPipe.setConfig(draw2dCrosshairPipeSettings,settings.calibrationMode,settings.point,settings.dualTargetCalibrationM,settings.dualTargetCalibrationB);
         outputMatPipe.setConfig(settings.isBinary);
 
-        if(settings.wants3dMode) {
-            solvePNPBoundingBoxPipe.setConfig(settings, cameraCapture.getCurrentCalibrationData());
+        if(settings.is3D) {
+            solvePNPPipe.setConfig(settings, cameraCapture.getCurrentCalibrationData());
             drawSolvePNPPipe.setConfig(cameraCapture.getCurrentCalibrationData());
         }
 
@@ -182,9 +182,9 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
 
         Mat outputMat;
 
-        if(settings.wants3dMode) {
+        if(settings.is3D) {
             // once we've sorted our targets, perform solvePNP. The number of "best targets" is limited by the above pipe
-            Pair<List<TrackedTarget>, Long> solvePNPResult = solvePNPBoundingBoxPipe.run(collect2dTargetsResult.getLeft());
+            Pair<List<TrackedTarget>, Long> solvePNPResult = solvePNPPipe.run(collect2dTargetsResult.getLeft());
             totalPipelineTimeNanos += solvePNPResult.getRight();
 
             Pair<Mat, Long> draw3dContoursResult = drawSolvePNPPipe.run(Pair.of(outputMatResult.getLeft(), solvePNPResult.getLeft()));
@@ -237,7 +237,7 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
         public double pitch = 0.0;
         public double yaw = 0.0;
         public double area = 0.0;
-        public RotatedRect rawPoint;
+        public RotatedRect minAreaRect;
         public MatOfPoint2f contour;
 
         // 3d stuff
@@ -245,6 +245,7 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
         public Mat rVector = new Mat();
         public Mat tVector = new Mat();
         public MatOfPoint2f imageCornerPoints = new MatOfPoint2f();
+        public Pair<Rect, Rect> leftRightTarget2019 = null;
     }
 
 

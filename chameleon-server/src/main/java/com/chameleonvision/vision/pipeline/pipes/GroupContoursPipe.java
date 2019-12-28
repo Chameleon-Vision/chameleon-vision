@@ -58,7 +58,7 @@ public class GroupContoursPipe implements Pipe<List<MatOfPoint>, List<CVPipeline
                         if (contour.cols() != 0 && contour.rows() != 0) {
                             RotatedRect rect = Imgproc.minAreaRect(contour);
                             var target = new CVPipeline2d.TrackedTarget();
-                            target.rawPoint = rect;
+                            target.minAreaRect = rect;
                             target.contour = contour;
                             groupedContours.add(target);
                         }
@@ -82,8 +82,6 @@ public class GroupContoursPipe implements Pipe<List<MatOfPoint>, List<CVPipeline
 
                             intersectMatA.release();
                             intersectMatB.release();
-                            firstContour.release();
-                            secondContour.release();
 
                             MatOfPoint2f contour = new MatOfPoint2f();
                             contour.fromList(finalContourList);
@@ -91,8 +89,12 @@ public class GroupContoursPipe implements Pipe<List<MatOfPoint>, List<CVPipeline
                             if (contour.cols() != 0 && contour.rows() != 0) {
                                 RotatedRect rect = Imgproc.minAreaRect(contour);
                                 var target = new CVPipeline2d.TrackedTarget();
-                                target.rawPoint = rect;
+                                target.minAreaRect = rect;
                                 target.contour = contour;
+                                target.leftRightTarget2019 =
+                                        Pair.of(Imgproc.boundingRect(firstContour),
+                                                Imgproc.boundingRect(secondContour));
+
                                 groupedContours.add(target);
                             }
                         } catch (IndexOutOfBoundsException e) {

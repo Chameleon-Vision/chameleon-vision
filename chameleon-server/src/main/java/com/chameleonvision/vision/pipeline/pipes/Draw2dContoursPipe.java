@@ -51,7 +51,8 @@ public class Draw2dContoursPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Trac
                     if (i != 0 && !settings.showMultiple){
                         break;
                     }
-                    RotatedRect r = input.getRight().get(i).rawPoint;
+                    CVPipeline2d.TrackedTarget target = input.getRight().get(i);
+                    RotatedRect r = input.getRight().get(i).minAreaRect;
                     if (r == null) continue;
 
                     drawnContours.forEach(Mat::release);
@@ -73,6 +74,10 @@ public class Draw2dContoursPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Trac
                     if (settings.showMaximumBox) {
                         Rect box = Imgproc.boundingRect(contour);
                         Imgproc.rectangle(input.getLeft(), new Point(box.x, box.y), new Point((box.x + box.width), (box.y + box.height)), Helpers.colorToScalar(settings.maximumBoxColor), settings.boxOutlineSize);
+                    }
+
+                    if(settings.showContor) {
+                        Imgproc.drawContours(input.getLeft(), List.of(new MatOfPoint(target.contour)), 0, new Scalar(255, 255, 255));
                     }
 
 //                    contour.release();
@@ -97,5 +102,6 @@ public class Draw2dContoursPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Trac
         public Color centroidColor = Color.GREEN;
         public Color rotatedBoxColor = Color.BLUE;
         public Color maximumBoxColor = Color.RED;
+        public boolean showContor = true;
     }
 }

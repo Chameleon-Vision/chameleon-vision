@@ -43,5 +43,5 @@ public class StandardCVPipelineSettings extends CVPipelineSettings {
             new Point3(new Point((width/2.0), (height/2.0)))
     );
     public double cameraTiltAngleDeg = 0d;
-    public boolean wants3dMode = false;
+    public boolean is3D = false;
 }

@@ -21,11 +21,9 @@ import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpiutil.CircularBuffer;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Mat;
-import org.opencv.core.Size;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -174,8 +172,8 @@ public class VisionProcess {
                     if (data instanceof CVPipeline2d.CVPipeline2dResult) {
                         CVPipeline2d.CVPipeline2dResult result = (CVPipeline2d.CVPipeline2dResult) data;
                         CVPipeline2d.TrackedTarget bestTarget = result.targets.get(0);
-                        center.add(bestTarget.rawPoint.center.x);
-                        center.add(bestTarget.rawPoint.center.y);
+                        center.add(bestTarget.minAreaRect.center.x);
+                        center.add(bestTarget.minAreaRect.center.y);
                         calculated.put("pitch", bestTarget.pitch);
                         calculated.put("yaw", bestTarget.yaw);
                         calculated.put("area", bestTarget.area);
@@ -266,7 +264,7 @@ public class VisionProcess {
     public void setIs3d(Boolean value) {
         var settings = pipelineManager.getCurrentPipeline().settings;
         if(settings instanceof StandardCVPipelineSettings) {
-            ((StandardCVPipelineSettings) settings).wants3dMode = value;
+            ((StandardCVPipelineSettings) settings).is3D = value;
         }
     }
 

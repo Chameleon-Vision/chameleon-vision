@@ -1,18 +1,14 @@
 package com.chameleonvision.vision.pipeline;
 
-import com.chameleonvision.vision.VisionProcess;
 import com.chameleonvision.vision.image.StaticImageCapture;
 import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
 import com.chameleonvision.vision.pipeline.impl.StandardCVPipelineSettings;
-import com.chameleonvision.vision.pipeline.pipes.BoundingBoxSolvePNPPipe;
 import edu.wpi.cscore.CameraServerCvJNI;
 import edu.wpi.cscore.CameraServerJNI;
-import edu.wpi.first.cameraserver.CameraServer;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class SolvePNPtest {
 

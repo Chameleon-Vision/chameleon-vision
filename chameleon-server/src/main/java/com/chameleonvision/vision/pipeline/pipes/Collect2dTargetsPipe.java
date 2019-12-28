@@ -6,7 +6,6 @@ import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
 import com.chameleonvision.vision.enums.CalibrationMode;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.FastMath;
-import org.opencv.core.RotatedRect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,14 +56,14 @@ public class Collect2dTargetsPipe implements Pipe<Pair<List<CVPipeline2d.Tracked
                         t.calibratedY = camProps.centerY;
                         break;
                     case Dual:
-                        t.calibratedX = (t.rawPoint.center.y - this.calibrationB) / this.calibrationM;
-                        t.calibratedY = (t.rawPoint.center.x * this.calibrationM) + this.calibrationB;
+                        t.calibratedX = (t.minAreaRect.center.y - this.calibrationB) / this.calibrationM;
+                        t.calibratedY = (t.minAreaRect.center.x * this.calibrationM) + this.calibrationB;
                         break;
                 }
 
-                t.pitch = calculatePitch(t.rawPoint.center.y, t.calibratedY);
-                t.yaw = calculateYaw(t.rawPoint.center.x, t.calibratedX);
-                t.area = t.rawPoint.size.area() / imageArea;
+                t.pitch = calculatePitch(t.minAreaRect.center.y, t.calibratedY);
+                t.yaw = calculateYaw(t.minAreaRect.center.x, t.calibratedX);
+                t.area = t.minAreaRect.size.area() / imageArea;
 
                 targets.add(t);
             }
