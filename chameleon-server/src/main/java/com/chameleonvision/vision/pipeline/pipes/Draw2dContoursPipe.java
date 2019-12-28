@@ -77,7 +77,9 @@ public class Draw2dContoursPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Trac
                     }
 
                     if(settings.showContor) {
-                        Imgproc.drawContours(input.getLeft(), List.of(new MatOfPoint(target.contour)), 0, new Scalar(255, 255, 255));
+                        MatOfPoint matOfPoint = new MatOfPoint();
+                        matOfPoint.fromArray(target.contour.toArray());
+                        Imgproc.drawContours(input.getLeft(), List.of(matOfPoint), 0, new Scalar(255, 255, 255));
                     }
 
 //                    contour.release();

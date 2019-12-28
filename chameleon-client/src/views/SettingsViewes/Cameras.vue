@@ -10,7 +10,7 @@
             <span>3D Calibration</span>
             <v-divider color="white" style="margin-bottom: 10px"/>
 
-            <CVselect name="Resolution" v-model="resolutionIndex" :list="resolutionList" @input="sendCurrentResolution()"/>
+            <CVselect name="Resolution" v-model="resolutionIndex" :list="resolutionList"/>
             <v-row>
                 <v-col>
                     <v-btn small :color="calibrationModeButton.color" @click="sendCalibrationMode"
@@ -31,6 +31,9 @@
                 </v-col>
             </v-row>
         </div>
+        <v-snackbar v-model="snack">
+            <span>Calibration Failed</span>
+        </v-snackbar>
     </div>
 </template>
 
@@ -57,7 +60,8 @@
                     color: "red"
                 },
                 snapshotAmount: 0,
-                hasEnough: false
+                hasEnough: false,
+                snack:false
             }
         },
         methods: {
@@ -102,30 +106,22 @@
             },
             sendCalibrationFinish() {
                 const self = this;
-                let connection_string = "/api/settings/";
-                if (this.hasEnough) {
-                    connection_string += "finishCalibration"
-                } else {
-                    connection_string += "cancelCalibration"
-                }
+                let connection_string = "/api/settings/endCalibration";
                 self.axios.post("http://" + this.$address + connection_string).then(
                     function (response) {
-                        if (response.status === 200) {
+                        if (response.status === 500){
+                            self.snack = true;
+                        }
                             self.isCalibrating = false;
                             self.hasEnough = false;
                             self.snapshotAmount = 0;
                             self.calibrationModeButton.text = "Start Calibration";
                             self.cancellationModeButton.text = "Cancel Calibration";
                             self.cancellationModeButton.color = "red";
-                        }
+
                     }
                 );
             },
-            sendCurrentResolution() {
-                console.log("setting " + "videoModeIndex" + " to " + this.resolutionIndex);
-                this.handleInput("videoModeIndex", this.resolutionIndex);
-                this.$emit('update')
-            }
         },
         computed: {
             checkResolution() {

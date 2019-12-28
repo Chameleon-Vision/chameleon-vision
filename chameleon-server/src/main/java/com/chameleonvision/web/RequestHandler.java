@@ -105,11 +105,11 @@ public class RequestHandler {
 
     public static void onCalibrationStart(Context ctx) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        Map data = objectMapper.readValue(ctx.body(), Map.class);
+        var data = objectMapper.readValue(ctx.body(), Map.class);
         int resolutionIndex = (Integer) data.get("resolution");
-        int index = VisionManager.getCurrentUIVisionProcess().pipelineManager.getCurrentPipeline().settings.videoModeIndex;
-        VisionManager.getCurrentUIVisionProcess().pipelineManager.calib3dPipe.settings.videoModeIndex = index;
+        VisionManager.getCurrentUIVisionProcess().pipelineManager.calib3dPipe.settings.videoModeIndex = resolutionIndex;
         VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(true);
+        VisionManager.getCurrentUIVisionProcess().getCamera().setVideoMode(resolutionIndex);
     }
 
     public static void onSnapshot(Context ctx) {
@@ -125,20 +125,18 @@ public class RequestHandler {
         ctx.status(200);
     }
 
-    public static void onCalibrationFinish(Context ctx) {
+    public static void onCalibrationEnding(Context ctx) {
         PipelineManager pipeManager = VisionManager.getCurrentUIVisionProcess().pipelineManager;
         System.out.println("Finishing Cal");
-        if (pipeManager.calib3dPipe.tryCalibration()) {
-            ctx.status(200);
-        } else {
-            System.err.println("CALFAIL");
-            ctx.status(500);
+        if (pipeManager.calib3dPipe.hasEnoughSnapshots()) {
+            if (pipeManager.calib3dPipe.tryCalibration()) {
+                ctx.status(200);
+            } else {
+                System.err.println("CALFAIL");
+                ctx.status(500);
+            }
         }
         pipeManager.setCalibrationMode(false);
-    }
-
-    public static void onCalibrationCancellation(Context ctx) {
-        VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(false);
         ctx.status(200);
     }
 
