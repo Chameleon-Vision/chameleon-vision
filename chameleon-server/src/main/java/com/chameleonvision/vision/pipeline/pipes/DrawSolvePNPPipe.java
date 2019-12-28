@@ -42,21 +42,6 @@ public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Tracke
                 new Point3(targetWidth/2d, targetHeight/2d, -targetDepth),
                 new Point3(targetWidth/2d, -targetHeight/2d, -targetDepth)
         );
-
-//        var temp = new Vector<Point3>();
-//        var size = 4;
-//        temp.add(new Point3(-size, -size, 0));
-//        temp.add(new Point3(-size, size, 0));
-//        temp.add(new Point3(size, size, 0));
-//        temp.add(new Point3(size, -size, 0));
-//        temp.add(new Point3(-size, -size, size));
-//        temp.add(new Point3(-size, size, size));
-//        temp.add(new Point3(size, size, size));
-//        temp.add(new Point3(size, -size, size));
-//        boxCornerMat.fromList(temp);
-
-        var yes = 4;
-
     }
 
     private Mat cameraMatrix = new Mat();
@@ -80,7 +65,6 @@ public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Tracke
         long processStartNanos = System.nanoTime();
 
         var image = targets.getLeft();
-        var rows = boxCornerMat.rows();
         for(var it : targets.getRight()) {
             MatOfPoint2f imagePoints = new MatOfPoint2f();
             try {

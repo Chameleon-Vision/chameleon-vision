@@ -25,10 +25,13 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List
     private Mat tVec = new Mat();
     private Mat rodriguez = new Mat();
     private Mat pzero_world = new Mat();
-    private MatOfPoint2f imagePoints = new MatOfPoint2f();
     private Mat cameraMatrix = new Mat();
+    Mat rot_inv = new Mat();
+    Mat kMat = new Mat();
     private MatOfDouble distortionCoefficients = new MatOfDouble();
     private List<CVPipeline2d.TrackedTarget> poseList = new ArrayList<>();
+    Comparator<Point> leftRightComparator = Comparator.comparingDouble(point -> point.x);
+    Comparator<Point> verticalComparator = Comparator.comparingDouble(point -> point.y);
 
     public SolvePNPPipe(StandardCVPipelineSettings settings, CameraCalibrationConfig calibration) {
         super();
@@ -47,7 +50,6 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List
                 new Point3(targetWidth / 2.0, targetHeight / 2.0, 0.0)
         );
         setObjectCorners(corners);
-
     }
 
     public void setObjectCorners(List<Point3> objectCorners) {
@@ -111,7 +113,6 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List
 //        List<Pair<MatOfPoint2f, CVPipeline2d.Target2d>> list = new ArrayList<>();
 //        // find the corners based on the bounding box
 //        // order is left top, left bottom, right bottom, right top
-        var mat2f = new MatOfPoint2f();
 
         // extract the corners
         var points = new Point[4];
@@ -119,9 +120,6 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List
 
         // find the tl/tr/bl/br corners
         // first, min by left/right
-        Comparator<Point> leftRightComparator = Comparator.comparingDouble(point -> point.x);
-        Comparator<Point> verticalComparator = Comparator.comparingDouble(point -> point.y);
-
         var list_ = Arrays.asList(points);
         list_.sort(leftRightComparator);
         // of this, we now have left and right
@@ -137,8 +135,14 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List
         var tr = right.get(0);
         var br = right.get(1);
 
-        mat2f.fromList(List.of(tl, bl, br, tr));
-        return mat2f;
+        var result = new MatOfPoint2f();
+        result.fromList(List.of(tl, bl, br, tr));
+
+        list_.clear();
+        left.clear();
+        right.clear();
+
+        return result;
     }
 
     @SuppressWarnings("FieldCanBeLocal")
@@ -174,12 +178,11 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List
         var angle1 = FastMath.atan2(x, z);
 
         Calib3d.Rodrigues(rVec, rodriguez);
-        var rot_inv = new Mat();
         Core.transpose(rodriguez, rot_inv);
 
         // This should be pzero_world = numpy.matmul(rot_inv, -tvec)
 //        pzero_world  = rot_inv.mul(matScale(tVec, -1));
-        Core.gemm(rot_inv, matScale(tVec, -1), 1, new Mat(), 0, pzero_world);
+        Core.gemm(rot_inv, matScale(tVec, -1), 1, kMat, 0, pzero_world);
 
         var angle2 = FastMath.atan2(pzero_world.get(0, 0)[0], pzero_world.get(2, 0)[0]);
 
@@ -194,8 +197,6 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List
         target.rVector = rVec;
         target.tVector = tVec;
 
-//        System.out.println("found target at \n" + target.cameraRelativePose.toString());
-//
         return target;
     }
 
@@ -206,7 +207,7 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List
      * @return the scaled matrix
      */
     public Mat matScale(Mat src, double factor) {
-        Mat dst= new Mat(src.rows(),src.cols(),src.type());
+        Mat dst = new Mat(src.rows(),src.cols(),src.type());
         Scalar s = new Scalar(factor);
         Core.multiply(src, s, dst);
         return dst;
