@@ -10,6 +10,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -64,7 +64,7 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List
 
     private void setCameraCoeffs(CameraCalibrationConfig settings) {
         if(settings == null) {
-            System.err.println("got passed a null config! Returning...");
+            System.err.println("SolvePNP can only run on a calibrated resolution, and this one is not! Please calibrate to use solvePNP.");
             return;
         }
         if(cameraMatrix != settings.getCameraMatrixAsMat()) {

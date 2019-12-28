@@ -90,6 +90,14 @@ public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Tracke
             }
             var pts = imagePoints.toList();
 
+            // draw left and right targets if possible
+            if(it.leftRightTarget2019 != null) {
+                var left = it.leftRightTarget2019.getLeft();
+                var right = it.leftRightTarget2019.getRight();
+                Imgproc.rectangle(image, left.tl(), left.br(), new Scalar(200, 200, 0), 4);
+                Imgproc.rectangle(image, right.tl(), right.br(), new Scalar(200, 200, 0), 2);
+            }
+
             // draw corners
             for(int i = 0; i < it.imageCornerPoints.rows(); i++) {
                 var point = new Point(it.imageCornerPoints.get(i, 0));

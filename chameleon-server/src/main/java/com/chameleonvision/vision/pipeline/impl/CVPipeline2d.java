@@ -172,12 +172,18 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
         Pair<Mat, Long> outputMatResult = outputMatPipe.run(Pair.of(rawCameraMat, hsvResult.getLeft()));
         totalPipelineTimeNanos += outputMatResult.getRight();
 
-        // takes pair of (Mat to draw on, List<RotatedRect> of sorted contours)
-        Pair<Mat, Long> draw2dContoursResult = draw2dContoursPipe.run(Pair.of(outputMatResult.getLeft(), sortContoursResult.getLeft()));
-        totalPipelineTimeNanos += draw2dContoursResult.getRight();
+        Pair<Mat, Long> result;
+
+        if(!settings.is3D) {
+            // takes pair of (Mat to draw on, List<RotatedRect> of sorted contours)
+            result = draw2dContoursPipe.run(Pair.of(outputMatResult.getLeft(), sortContoursResult.getLeft()));
+            totalPipelineTimeNanos += result.getRight();
+        } else {
+            result = outputMatResult;
+        }
 
         // takes pair of (Mat to draw on, List<RotatedRect> of sorted contours)
-        Pair<Mat, Long> draw2dCrosshairResult = draw2dCrosshairPipe.run(Pair.of(draw2dContoursResult.getLeft(),collect2dTargetsResult.getLeft()));
+        Pair<Mat, Long> draw2dCrosshairResult = draw2dCrosshairPipe.run(Pair.of(result.getLeft(),collect2dTargetsResult.getLeft()));
         totalPipelineTimeNanos += draw2dCrosshairResult.getRight();
 
         Mat outputMat;
@@ -208,7 +214,7 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
             pipelineTimeString += String.format("SortContours: %.2fms, ", sortContoursResult.getRight() / 1000000.0);
             pipelineTimeString += String.format("Collect2dTargets: %.2fms, ", collect2dTargetsResult.getRight() / 1000000.0);
             pipelineTimeString += String.format("OutputMat: %.2fms, ", outputMatResult.getRight() / 1000000.0);
-            pipelineTimeString += String.format("Draw2dContours: %.2fms, ", draw2dContoursResult.getRight() / 1000000.0);
+            pipelineTimeString += String.format("Draw2dContours: %.2fms, ", result.getRight() / 1000000.0);
             pipelineTimeString += String.format("Draw2dCrosshair: %.2fms, ", draw2dCrosshairResult.getRight() / 1000000.0);
 
             System.out.println(pipelineTimeString);
