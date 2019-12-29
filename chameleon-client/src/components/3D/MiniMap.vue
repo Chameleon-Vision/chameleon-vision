@@ -1,5 +1,7 @@
 <template>
-    <canvas id="canvasId" width="800" height="800"/>
+    <div>
+        <canvas id="canvasId" width="800" height="800"/>
+    </div>
 </template>
 
 <script>
@@ -10,16 +12,18 @@
                 x: Number,
                 y: Number,
             },
-            rotation: Number
+            radians: Number
         },
         data() {
             return {
                 ctx: undefined,
                 canvas: undefined,
+                x:0,
+                y:0
             }
         },
         watch: {
-            location: {
+            translation: {
                 deep: true,
                 handler() {
                     this.draw();
@@ -31,21 +35,23 @@
                 this.clearBoard();
                 this.drawPlayer();
                 // this.drawLine();
+                this.getFieldLocation();
                 this.drawTarget();
                 this.drawText();
             },
             drawText() {
                 this.ctx.fillStyle = "whitesmoke";
-                this.ctx.fillText(`X: ${this.translation.x}, Y: ${this.translation.y}, ∠${Math.PI * this.radians / 180}° `, this.translation.x - 50, this.translation.y - 25);
+                this.ctx.fillText(`X: ${this.translation.x.toFixed(2)}, Y: ${this.translation.y.toFixed(2)}, ∠${(Math.PI * this.radians / 180).toFixed(2)}° `, this.y - 30, this.x - 5);
             },
             drawTarget() {
                 const width = 40;
                 const height = 6;
+
                 // first save the untranslated/unrotated context
                 this.ctx.save();
                 this.ctx.beginPath();
                 // move the rotation point to the center of the rect
-                this.ctx.translate(this.translation.x + width / 2, this.translation.y + height / 2);
+                this.ctx.translate(this.y + width / 2, this.x + height / 2); // wpi lib makes x forward and back and y left to right
                 // rotate the rect
                 this.ctx.rotate(this.radians);
 
@@ -72,6 +78,10 @@
             },
             clearBoard() {
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // clearing the canvas
+            },
+            getFieldLocation() {
+                this.x = 800 - (160 * this.translation.x); // getting meters as pixels
+                this.y = 800 - (160 * this.translation.y);
             }
         },
         mounted: function () {

@@ -12,7 +12,8 @@
             </v-col>
         </v-row>
         <mini-map class="miniMapClass"  :translation="point.pose.translation"
-                  :rotation="(point.pose.rotation.radians * (180/Math.PI))"/>
+                  :radians="point.pose.rotation.radians"/>
+
     </div>
 </template>
 
