@@ -11,6 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.FastMath;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
+import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -145,8 +146,50 @@ public class SolvePNPPipe implements Pipe<List<StandardCVPipeline.TrackedTarget>
         return result;
     }
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private Scalar scalar = new Scalar(new double[] { -1, -1, -1 });
+    private Mat dstNorm = new Mat();
+    private Mat dstNormScaled = new Mat();
+    List<Point> tempCornerList = new ArrayList<>();
+
+    /**
+     * Find the corners in an image.
+     * @param targetImage the image to find corners in.
+     * @return the corners found in the image.
+     */
+    private List<Point> findCornerHarris(Mat targetImage) {
+
+        // convert the image to greyscale
+        var gray = new Mat();
+        Imgproc.cvtColor(targetImage, gray, Imgproc.COLOR_BGR2GRAY);
+        Mat dst = Mat.zeros(targetImage.size(), CvType.CV_8U);
+
+        // constants
+        final int blockSize = 2;
+        final int apertureSize = 3;
+        final double k = 0.04;
+        final int threshold = 200;
+
+        /// Detecting corners
+        Imgproc.cornerHarris(gray, dst, blockSize, apertureSize, k);
+
+        /// Normalizing
+        Core.normalize(dst, dstNorm, 0, 255, Core.NORM_MINMAX);
+        Core.convertScaleAbs(dstNorm, dstNormScaled);
+
+        /// Drawing a circle around corners
+        float[] dstNormData = new float[(int) (dstNorm.total() * dstNorm.channels())];
+        dstNorm.get(0, 0, dstNormData);
+
+        tempCornerList.clear();
+        for (int i = 0; i < dstNorm.rows(); i++) {
+            for (int j = 0; j < dstNorm.cols(); j++) {
+                if ((int) dstNormData[i * dstNorm.cols() + j] > threshold) {
+                    tempCornerList.add(new Point(j, i));
+                }
+            }
+        }
+
+        return tempCornerList;
+    }
 
     private StandardCVPipeline.TrackedTarget calculatePose(MatOfPoint2f imageCornerPoints, StandardCVPipeline.TrackedTarget target) {
         if(objPointsMat.rows() != imageCornerPoints.rows() || cameraMatrix.rows() < 2 || distortionCoefficients.cols() < 4) {
