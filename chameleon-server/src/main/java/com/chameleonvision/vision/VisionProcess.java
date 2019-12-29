@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.networktables.*;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpiutil.CircularBuffer;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Mat;
@@ -163,37 +164,36 @@ public class VisionProcess {
         if (currentMillis - lastUIUpdateMs > 1000 / 30) {
             lastUIUpdateMs = currentMillis;
 
+
+
             if (cameraCapture.getProperties().name.equals(ConfigManager.settings.currentCamera)) {
                 HashMap<String, Object> WebSend = new HashMap<>();
                 HashMap<String, Object> point = new HashMap<>();
                 HashMap<String, Object> calculated = new HashMap<>();
                 List<Double> center = new ArrayList<>();
+
+                center.add(null);
+                center.add(null);
+                calculated.put("pitch", null);
+                calculated.put("yaw", null);
+                calculated.put("area", null);
+                calculated.put("pose", new Pose2d());
+
                 if (data.hasTarget) {
                     if (data instanceof StandardCVPipeline.StandardCVPipelineResult) {
                         StandardCVPipeline.StandardCVPipelineResult result = (StandardCVPipeline.StandardCVPipelineResult) data;
                         StandardCVPipeline.TrackedTarget bestTarget = result.targets.get(0);
-                        center.add(bestTarget.minAreaRect.center.x);
-                        center.add(bestTarget.minAreaRect.center.y);
-                        calculated.put("pitch", bestTarget.pitch);
-                        calculated.put("yaw", bestTarget.yaw);
-                        calculated.put("area", bestTarget.area);
+                        center = List.of(bestTarget.minAreaRect.center.x, bestTarget.minAreaRect.center.y);
+                        calculated.replace("pitch", bestTarget.pitch);
+                        calculated.replace("yaw", bestTarget.yaw);
+                        calculated.replace("area", bestTarget.area);
 
-                        // TODO (High) 3d vision report to UI
-                        calculated.put("pose", bestTarget.cameraRelativePose);
-                    } else {
-                        center.add(null);
-                        center.add(null);
-                        calculated.put("pitch", null);
-                        calculated.put("yaw", null);
-                        calculated.put("area", null);
+                        if (getIs3d()) {
+                            calculated.replace("pose", bestTarget.cameraRelativePose);
+                        }
                     }
-                } else {
-                    center.add(null);
-                    center.add(null);
-                    calculated.put("pitch", null);
-                    calculated.put("yaw", null);
-                    calculated.put("area", null);
                 }
+
                 point.put("fps", visionRunnable.fps);
                 point.put("calculated", calculated);
                 point.put("rawPoint", center);
@@ -266,6 +266,14 @@ public class VisionProcess {
         if(settings instanceof StandardCVPipelineSettings) {
             ((StandardCVPipelineSettings) settings).is3D = value;
         }
+    }
+
+    public boolean getIs3d() {
+        var settings = pipelineManager.getCurrentPipeline().settings;
+        if(settings instanceof StandardCVPipelineSettings) {
+            return ((StandardCVPipelineSettings) settings).is3D;
+        }
+        return false;
     }
 
     /**
