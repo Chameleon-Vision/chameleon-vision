@@ -11,8 +11,8 @@
                 </v-btn>
             </v-col>
         </v-row>
-        <mini-map class="miniMapClass"  :translation="point.pose.translation"
-                  :radians="point.pose.rotation.radians"/>
+        <mini-map class="miniMapClass" :translation="point.pose.translation"
+                  :radians="point.pose.rotation.radians" :horizontal-f-o-v="horizontalFOV"/>
 
     </div>
 </template>
@@ -56,6 +56,18 @@
             point: {
                 get() {
                     return this.$store.state.point.calculated;
+                }
+
+            },
+            horizontalFOV: {
+                get() {
+                    let index = this.$store.state.cameraSettings.resolution;
+                    let FOV = this.$store.state.cameraSettings.fov;
+                    let resolution = this.$store.state.resolutionList[index];
+                    let diagonalView = FOV * (Math.PI / 180);
+                    let diagonalAspect = Math.hypot(resolution.width, resolution.height);
+                    let horizontalFOV = Math.atan(Math.tan(diagonalView / 2) * (resolution.width / diagonalAspect)) * 2 * (180/ Math.PI);
+                    return horizontalFOV
                 }
             }
         }

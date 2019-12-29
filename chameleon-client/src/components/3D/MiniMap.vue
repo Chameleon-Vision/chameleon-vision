@@ -12,14 +12,15 @@
                 x: Number,
                 y: Number,
             },
-            radians: Number
+            radians: Number,
+            horizontalFOV: Number
         },
         data() {
             return {
                 ctx: undefined,
                 canvas: undefined,
-                x:0,
-                y:0
+                x: 0,
+                y: 0
             }
         },
         watch: {
@@ -69,9 +70,11 @@
             },
             drawPlayer() {
                 this.ctx.beginPath();
+                let cFov = this.horizontalFOV / 2 * Math.PI / 180;
+                let xLen = Math.tan(cFov) * 150;
                 this.ctx.moveTo(400, 820);
-                this.ctx.lineTo(700, 650);
-                this.ctx.lineTo(100, 650);
+                this.ctx.lineTo(400 + xLen, 650);
+                this.ctx.lineTo(400 - xLen, 650);
                 this.ctx.closePath();
                 this.ctx.fillStyle = this.grad;
                 this.ctx.fill();
