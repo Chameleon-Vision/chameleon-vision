@@ -99,6 +99,13 @@ public class SolvePNPPipe implements Pipe<List<StandardCVPipeline.TrackedTarget>
         var left = target.leftRightDualTargetPair.getLeft();
         var right = target.leftRightDualTargetPair.getRight();
 
+        // flip if the "left" target is to the right
+        if(left.x > right.x) {
+            var temp = left;
+            left = right;
+            right = temp;
+        }
+
         var points = new MatOfPoint2f();
         points.fromArray(
                 new Point(left.x, left.y + left.height),
