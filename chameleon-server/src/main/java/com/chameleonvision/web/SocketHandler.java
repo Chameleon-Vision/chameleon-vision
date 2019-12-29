@@ -9,7 +9,7 @@ import com.chameleonvision.vision.camera.USBCameraCapture;
 import com.chameleonvision.vision.enums.ImageRotationMode;
 import com.chameleonvision.vision.enums.StreamDivisor;
 import com.chameleonvision.vision.pipeline.CVPipeline;
-import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
+import com.chameleonvision.vision.pipeline.impl.StandardCVPipeline;
 import com.chameleonvision.vision.pipeline.CVPipelineSettings;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -166,8 +166,8 @@ public class SocketHandler {
                                 }
                                 prop = currentCamera.getProperties().getStaticProperties();
                                 currentProcess.cameraStreamer.recalculateDivision();
-                                if (currentPipeline instanceof CVPipeline2d)
-                                    ((CVPipeline2d) currentPipeline).settings.point = Arrays.asList(prop.mode.width / 2, prop.mode.height / 2);//Reset Crosshair in single point calib
+                                if (currentPipeline instanceof StandardCVPipeline)
+                                    ((StandardCVPipeline) currentPipeline).settings.point = Arrays.asList(prop.mode.width / 2, prop.mode.height / 2);//Reset Crosshair in single point calib
                                 break;
                             }
 
@@ -191,8 +191,8 @@ public class SocketHandler {
                                 break;
                             }
                             case "videoModeIndex": {
-                                if (currentPipeline instanceof CVPipeline2d)
-                                    ((CVPipeline2d) currentPipeline).settings.point = new ArrayList<>();//This will reset the calibration
+                                if (currentPipeline instanceof StandardCVPipeline)
+                                    ((StandardCVPipeline) currentPipeline).settings.point = new ArrayList<>();//This will reset the calibration
                                 currentCamera.setVideoMode((Integer) entry.getValue());
                                 currentProcess.cameraStreamer.recalculateDivision();
                                 break;

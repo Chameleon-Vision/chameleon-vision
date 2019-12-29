@@ -2,7 +2,7 @@ package com.chameleonvision.vision.pipeline.pipes;
 
 import com.chameleonvision.vision.camera.CaptureStaticProperties;
 import com.chameleonvision.vision.pipeline.Pipe;
-import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
+import com.chameleonvision.vision.pipeline.impl.StandardCVPipeline;
 import com.chameleonvision.vision.enums.CalibrationMode;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.FastMath;
@@ -10,14 +10,14 @@ import org.apache.commons.math3.util.FastMath;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Collect2dTargetsPipe implements Pipe<Pair<List<CVPipeline2d.TrackedTarget>, CaptureStaticProperties>, List<CVPipeline2d.TrackedTarget>> {
+public class Collect2dTargetsPipe implements Pipe<Pair<List<StandardCVPipeline.TrackedTarget>, CaptureStaticProperties>, List<StandardCVPipeline.TrackedTarget>> {
 
 
     private CaptureStaticProperties camProps;
     private CalibrationMode calibrationMode;
     private List<Number> calibrationPoint;
     private double calibrationM, calibrationB;
-    private List<CVPipeline2d.TrackedTarget> targets = new ArrayList<>();
+    private List<StandardCVPipeline.TrackedTarget> targets = new ArrayList<>();
 
     public Collect2dTargetsPipe(CalibrationMode calibrationMode, List<Number> calibrationPoint, double calibrationM, double calibrationB, CaptureStaticProperties camProps) {
         setConfig(calibrationMode, calibrationPoint, calibrationM, calibrationB, camProps);
@@ -32,7 +32,7 @@ public class Collect2dTargetsPipe implements Pipe<Pair<List<CVPipeline2d.Tracked
     }
 
     @Override
-    public Pair<List<CVPipeline2d.TrackedTarget>, Long> run(Pair<List<CVPipeline2d.TrackedTarget>, CaptureStaticProperties> inputPair) {
+    public Pair<List<StandardCVPipeline.TrackedTarget>, Long> run(Pair<List<StandardCVPipeline.TrackedTarget>, CaptureStaticProperties> inputPair) {
         long processStartNanos = System.nanoTime();
 
         targets.clear();

@@ -3,7 +3,7 @@ package com.chameleonvision.vision.pipeline.pipes;
 import com.chameleonvision.util.Helpers;
 import com.chameleonvision.vision.enums.CalibrationMode;
 import com.chameleonvision.vision.pipeline.Pipe;
-import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
+import com.chameleonvision.vision.pipeline.impl.StandardCVPipeline;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -12,7 +12,7 @@ import org.opencv.imgproc.Imgproc;
 import java.awt.*;
 import java.util.List;
 
-public class Draw2dCrosshairPipe implements Pipe<Pair<Mat, List<CVPipeline2d.TrackedTarget>>, Mat> {
+public class Draw2dCrosshairPipe implements Pipe<Pair<Mat, List<StandardCVPipeline.TrackedTarget>>, Mat> {
 
     //Settings
     private Draw2dCrosshairPipeSettings crosshairSettings;
@@ -36,10 +36,10 @@ public class Draw2dCrosshairPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Tra
     }
 
     @Override
-    public Pair<Mat, Long> run(Pair<Mat, List<CVPipeline2d.TrackedTarget>> inputPair) {
+    public Pair<Mat, Long> run(Pair<Mat, List<StandardCVPipeline.TrackedTarget>> inputPair) {
         long processStartNanos = System.nanoTime();
         Mat image = inputPair.getLeft();
-        List<CVPipeline2d.TrackedTarget> targets = inputPair.getRight();
+        List<StandardCVPipeline.TrackedTarget> targets = inputPair.getRight();
         double x = 0, y = 0, scale = image.cols() / 32.0;
 
         drawCrosshair:

@@ -2,7 +2,7 @@ package com.chameleonvision.vision.pipeline.pipes;
 
 import com.chameleonvision.config.CameraCalibrationConfig;
 import com.chameleonvision.vision.pipeline.Pipe;
-import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
+import com.chameleonvision.vision.pipeline.impl.StandardCVPipeline;
 import com.chameleonvision.vision.pipeline.impl.StandardCVPipelineSettings;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class SolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List<CVPipeline2d.TrackedTarget>> {
+public class SolvePNPPipe implements Pipe<List<StandardCVPipeline.TrackedTarget>, List<StandardCVPipeline.TrackedTarget>> {
 
     private Double tilt_angle;
     private MatOfPoint3f objPointsMat = new MatOfPoint3f();
@@ -29,7 +29,7 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List
     Mat rot_inv = new Mat();
     Mat kMat = new Mat();
     private MatOfDouble distortionCoefficients = new MatOfDouble();
-    private List<CVPipeline2d.TrackedTarget> poseList = new ArrayList<>();
+    private List<StandardCVPipeline.TrackedTarget> poseList = new ArrayList<>();
     Comparator<Point> leftRightComparator = Comparator.comparingDouble(point -> point.x);
     Comparator<Point> verticalComparator = Comparator.comparingDouble(point -> point.y);
 
@@ -80,11 +80,11 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List
     }
 
     @Override
-    public Pair<List<CVPipeline2d.TrackedTarget>, Long> run(List<CVPipeline2d.TrackedTarget> targets) {
+    public Pair<List<StandardCVPipeline.TrackedTarget>, Long> run(List<StandardCVPipeline.TrackedTarget> targets) {
         long processStartNanos = System.nanoTime();
         poseList.clear();
         for(var target: targets) {
-            var corners = (target.leftRightTarget2019 != null) ? findCorner2019(target) : findBoundingBoxCorners(target);
+            var corners = (target.leftRightDualTargetPair != null) ? findCorner2019(target) : findBoundingBoxCorners(target);
             var pose = calculatePose(corners, target);
             if(pose != null) poseList.add(pose);
         }
@@ -92,11 +92,11 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List
         return Pair.of(poseList, processTime);
     }
 
-    private MatOfPoint2f findCorner2019(CVPipeline2d.TrackedTarget target) {
-        if(target.leftRightTarget2019 == null) return null;
+    private MatOfPoint2f findCorner2019(StandardCVPipeline.TrackedTarget target) {
+        if(target.leftRightDualTargetPair == null) return null;
 
-        var left = target.leftRightTarget2019.getLeft();
-        var right = target.leftRightTarget2019.getRight();
+        var left = target.leftRightDualTargetPair.getLeft();
+        var right = target.leftRightDualTargetPair.getRight();
 
         var points = new MatOfPoint2f();
         points.fromArray(
@@ -108,7 +108,7 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List
         return points;
     }
 
-    private MatOfPoint2f findBoundingBoxCorners(CVPipeline2d.TrackedTarget target) {
+    private MatOfPoint2f findBoundingBoxCorners(StandardCVPipeline.TrackedTarget target) {
 
 //        List<Pair<MatOfPoint2f, CVPipeline2d.Target2d>> list = new ArrayList<>();
 //        // find the corners based on the bounding box
@@ -148,7 +148,7 @@ public class SolvePNPPipe implements Pipe<List<CVPipeline2d.TrackedTarget>, List
     @SuppressWarnings("FieldCanBeLocal")
     private Scalar scalar = new Scalar(new double[] { -1, -1, -1 });
 
-    private CVPipeline2d.TrackedTarget calculatePose(MatOfPoint2f imageCornerPoints, CVPipeline2d.TrackedTarget target) {
+    private StandardCVPipeline.TrackedTarget calculatePose(MatOfPoint2f imageCornerPoints, StandardCVPipeline.TrackedTarget target) {
         if(objPointsMat.rows() != imageCornerPoints.rows() || cameraMatrix.rows() < 2 || distortionCoefficients.cols() < 4) {
             System.err.println("can't do solvePNP with invalid params!");
             return null;

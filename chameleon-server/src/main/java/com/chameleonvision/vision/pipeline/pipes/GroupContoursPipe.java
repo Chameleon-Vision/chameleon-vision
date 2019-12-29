@@ -4,7 +4,7 @@ import com.chameleonvision.util.MathHandler;
 import com.chameleonvision.vision.enums.TargetGroup;
 import com.chameleonvision.vision.enums.TargetIntersection;
 import com.chameleonvision.vision.pipeline.Pipe;
-import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
+import com.chameleonvision.vision.pipeline.impl.StandardCVPipeline;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class GroupContoursPipe implements Pipe<List<MatOfPoint>, List<CVPipeline2d.TrackedTarget>> {
+public class GroupContoursPipe implements Pipe<List<MatOfPoint>, List<StandardCVPipeline.TrackedTarget>> {
 
     private static final Comparator<MatOfPoint> sortByMomentsX =
             Comparator.comparingDouble(GroupContoursPipe::calcMomentsX);
@@ -23,7 +23,7 @@ public class GroupContoursPipe implements Pipe<List<MatOfPoint>, List<CVPipeline
     private TargetGroup group;
     private TargetIntersection intersection;
 
-    private List<CVPipeline2d.TrackedTarget> groupedContours = new ArrayList<>();
+    private List<StandardCVPipeline.TrackedTarget> groupedContours = new ArrayList<>();
     private MatOfPoint2f intersectMatA = new MatOfPoint2f();
     private MatOfPoint2f intersectMatB = new MatOfPoint2f();
 
@@ -38,7 +38,7 @@ public class GroupContoursPipe implements Pipe<List<MatOfPoint>, List<CVPipeline
     }
 
     @Override
-    public Pair<List<CVPipeline2d.TrackedTarget>, Long> run(List<MatOfPoint> input) {
+    public Pair<List<StandardCVPipeline.TrackedTarget>, Long> run(List<MatOfPoint> input) {
         long processStartNanos = System.nanoTime();
 
         groupedContours.clear();
@@ -57,7 +57,7 @@ public class GroupContoursPipe implements Pipe<List<MatOfPoint>, List<CVPipeline
                         contour.fromArray(c.toArray());
                         if (contour.cols() != 0 && contour.rows() != 0) {
                             RotatedRect rect = Imgproc.minAreaRect(contour);
-                            var target = new CVPipeline2d.TrackedTarget();
+                            var target = new StandardCVPipeline.TrackedTarget();
                             target.minAreaRect = rect;
                             target.contour = contour;
                             groupedContours.add(target);
@@ -88,10 +88,10 @@ public class GroupContoursPipe implements Pipe<List<MatOfPoint>, List<CVPipeline
 
                             if (contour.cols() != 0 && contour.rows() != 0) {
                                 RotatedRect rect = Imgproc.minAreaRect(contour);
-                                var target = new CVPipeline2d.TrackedTarget();
+                                var target = new StandardCVPipeline.TrackedTarget();
                                 target.minAreaRect = rect;
                                 target.contour = contour;
-                                target.leftRightTarget2019 =
+                                target.leftRightDualTargetPair =
                                         Pair.of(Imgproc.boundingRect(firstContour),
                                                 Imgproc.boundingRect(secondContour));
 

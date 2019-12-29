@@ -33,7 +33,7 @@ public class PipelineManager {
     public PipelineManager(VisionProcess visionProcess, List<CVPipelineSettings> loadedPipelineSettings) {
         parentProcess = visionProcess;
         if (loadedPipelineSettings == null || loadedPipelineSettings.size() == 0) {
-            pipelines.add(new CVPipeline2d("New Pipeline"));
+            pipelines.add(new StandardCVPipeline("New Pipeline"));
         } else {
             for (CVPipelineSettings setting : loadedPipelineSettings) {
                 addInternalPipeline(setting);
@@ -76,7 +76,7 @@ public class PipelineManager {
 
     private void addInternalPipeline(CVPipelineSettings setting) {
         if (setting instanceof StandardCVPipelineSettings) {
-            pipelines.add(new CVPipeline2d((StandardCVPipelineSettings) setting));
+            pipelines.add(new StandardCVPipeline((StandardCVPipelineSettings) setting));
         } else {
             System.out.println("Non 2D/3D pipelines not supported!");
         }
@@ -178,7 +178,7 @@ public class PipelineManager {
     }
 
     public void addNewPipeline(String piplineName) {
-        CVPipeline2d newPipeline = new CVPipeline2d();
+        StandardCVPipeline newPipeline = new StandardCVPipeline();
         newPipeline.settings.nickname = piplineName;
         newPipeline.settings.index = pipelines.size();
         addPipeline(newPipeline);

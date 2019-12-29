@@ -3,21 +3,17 @@ package com.chameleonvision.vision.pipeline.pipes;
 import com.chameleonvision.config.CameraCalibrationConfig;
 import com.chameleonvision.util.Helpers;
 import com.chameleonvision.vision.pipeline.Pipe;
-import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
-import com.chameleonvision.vision.pipeline.impl.StandardCVPipelineSettings;
-import edu.wpi.first.wpilibj.util.Units;
+import com.chameleonvision.vision.pipeline.impl.StandardCVPipeline;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
-import javax.management.remote.TargetedNotification;
 import java.awt.*;
 import java.util.List;
-import java.util.Vector;
 
-public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.TrackedTarget>>, Mat> {
+public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<StandardCVPipeline.TrackedTarget>>, Mat> {
 
     private MatOfPoint3f boxCornerMat = new MatOfPoint3f();
 
@@ -61,7 +57,7 @@ public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Tracke
     }
 
     @Override
-    public Pair<Mat, Long> run(Pair<Mat, List<CVPipeline2d.TrackedTarget>> targets) {
+    public Pair<Mat, Long> run(Pair<Mat, List<StandardCVPipeline.TrackedTarget>> targets) {
         long processStartNanos = System.nanoTime();
 
         var image = targets.getLeft();
@@ -75,9 +71,9 @@ public class DrawSolvePNPPipe implements Pipe<Pair<Mat, List<CVPipeline2d.Tracke
             var pts = imagePoints.toList();
 
             // draw left and right targets if possible
-            if(it.leftRightTarget2019 != null) {
-                var left = it.leftRightTarget2019.getLeft();
-                var right = it.leftRightTarget2019.getRight();
+            if(it.leftRightDualTargetPair != null) {
+                var left = it.leftRightDualTargetPair.getLeft();
+                var right = it.leftRightDualTargetPair.getRight();
                 Imgproc.rectangle(image, left.tl(), left.br(), new Scalar(200, 200, 0), 4);
                 Imgproc.rectangle(image, right.tl(), right.br(), new Scalar(200, 200, 0), 2);
             }

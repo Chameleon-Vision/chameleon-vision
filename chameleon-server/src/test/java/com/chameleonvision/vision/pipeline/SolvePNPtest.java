@@ -1,7 +1,7 @@
 package com.chameleonvision.vision.pipeline;
 
 import com.chameleonvision.vision.image.StaticImageCapture;
-import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
+import com.chameleonvision.vision.pipeline.impl.StandardCVPipeline;
 import com.chameleonvision.vision.pipeline.impl.StandardCVPipelineSettings;
 import edu.wpi.cscore.CameraServerCvJNI;
 import edu.wpi.cscore.CameraServerJNI;
@@ -23,7 +23,7 @@ public class SolvePNPtest {
         }
 
         // mock up pipeline
-        var pipeline = new CVPipeline2d();
+        var pipeline = new StandardCVPipeline();
         var capture = new StaticImageCapture(Path.of(root.toString(), "20in.png"));
         pipeline.initPipeline(capture);
         var settings = new StandardCVPipelineSettings();

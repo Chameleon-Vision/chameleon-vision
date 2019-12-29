@@ -10,7 +10,7 @@ import com.chameleonvision.util.MathHandler;
 import com.chameleonvision.vision.camera.CameraStreamer;
 import com.chameleonvision.vision.camera.USBCameraCapture;
 import com.chameleonvision.vision.pipeline.*;
-import com.chameleonvision.vision.pipeline.impl.CVPipeline2d;
+import com.chameleonvision.vision.pipeline.impl.StandardCVPipeline;
 import com.chameleonvision.vision.pipeline.impl.DriverVisionPipeline;
 import com.chameleonvision.vision.pipeline.impl.StandardCVPipelineSettings;
 import com.chameleonvision.web.SocketHandler;
@@ -169,9 +169,9 @@ public class VisionProcess {
                 HashMap<String, Object> calculated = new HashMap<>();
                 List<Double> center = new ArrayList<>();
                 if (data.hasTarget) {
-                    if (data instanceof CVPipeline2d.CVPipeline2dResult) {
-                        CVPipeline2d.CVPipeline2dResult result = (CVPipeline2d.CVPipeline2dResult) data;
-                        CVPipeline2d.TrackedTarget bestTarget = result.targets.get(0);
+                    if (data instanceof StandardCVPipeline.StandardCVPipelineResult) {
+                        StandardCVPipeline.StandardCVPipelineResult result = (StandardCVPipeline.StandardCVPipelineResult) data;
+                        StandardCVPipeline.TrackedTarget bestTarget = result.targets.get(0);
                         center.add(bestTarget.minAreaRect.center.x);
                         center.add(bestTarget.minAreaRect.center.y);
                         calculated.put("pitch", bestTarget.pitch);
@@ -206,10 +206,10 @@ public class VisionProcess {
     private void updateNetworkTableData(CVPipelineResult data) {
         ntValidEntry.setBoolean(data.hasTarget);
         if (data.hasTarget && !(data instanceof DriverVisionPipeline.DriverPipelineResult)) {
-            if (data instanceof CVPipeline2d.CVPipeline2dResult) {
+            if (data instanceof StandardCVPipeline.StandardCVPipelineResult) {
 
                 //noinspection unchecked
-                List<CVPipeline2d.TrackedTarget> targets = (List<CVPipeline2d.TrackedTarget>) data.targets;
+                List<StandardCVPipeline.TrackedTarget> targets = (List<StandardCVPipeline.TrackedTarget>) data.targets;
                 ntLatencyEntry.setDouble(MathHandler.roundTo(data.processTime * 1e-6, 3));
                 ntPitchEntry.setDouble(targets.get(0).pitch);
                 ntYawEntry.setDouble(targets.get(0).yaw);

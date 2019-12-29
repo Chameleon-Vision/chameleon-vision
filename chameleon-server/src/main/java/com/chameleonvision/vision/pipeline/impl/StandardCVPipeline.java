@@ -13,10 +13,10 @@ import org.opencv.core.*;
 
 import java.util.List;
 
-import static com.chameleonvision.vision.pipeline.impl.CVPipeline2d.*;
+import static com.chameleonvision.vision.pipeline.impl.StandardCVPipeline.*;
 
 @SuppressWarnings("WeakerAccess")
-public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipelineSettings> {
+public class StandardCVPipeline extends CVPipeline<StandardCVPipelineResult, StandardCVPipelineSettings> {
 
     private Mat rawCameraMat = new Mat();
 
@@ -42,15 +42,15 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
     private CaptureStaticProperties camProps;
     private Scalar hsvLower, hsvUpper;
 
-    public CVPipeline2d() {
+    public StandardCVPipeline() {
         super(new StandardCVPipelineSettings());
     }
 
-    public CVPipeline2d(String name) {
+    public StandardCVPipeline(String name) {
         super(name, new StandardCVPipelineSettings());
     }
 
-    public CVPipeline2d(StandardCVPipelineSettings settings) {
+    public StandardCVPipeline(StandardCVPipelineSettings settings) {
         super(settings);
     }
 
@@ -93,7 +93,7 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
     private final MemoryManager memManager = new MemoryManager(120, 20000);
 
     @Override
-    public CVPipeline2dResult runPipeline(Mat inputMat) {
+    public StandardCVPipelineResult runPipeline(Mat inputMat) {
         long totalPipelineTimeNanos = 0;
         long pipelineStartTimeNanos = System.nanoTime();
 
@@ -228,11 +228,11 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
 
         memManager.run();
 
-        return new CVPipeline2dResult(collect2dTargetsResult.getLeft(), outputMat, totalPipelineTimeNanos);
+        return new StandardCVPipelineResult(collect2dTargetsResult.getLeft(), outputMat, totalPipelineTimeNanos);
     }
 
-    public static class CVPipeline2dResult extends CVPipelineResult<TrackedTarget> {
-        public CVPipeline2dResult(List<TrackedTarget> targets, Mat outputMat, long processTimeNanos) {
+    public static class StandardCVPipelineResult extends CVPipelineResult<TrackedTarget> {
+        public StandardCVPipelineResult(List<TrackedTarget> targets, Mat outputMat, long processTimeNanos) {
             super(targets, outputMat, processTimeNanos);
         }
     }
@@ -251,7 +251,7 @@ public class CVPipeline2d extends CVPipeline<CVPipeline2dResult, StandardCVPipel
         public Mat rVector = new Mat();
         public Mat tVector = new Mat();
         public MatOfPoint2f imageCornerPoints = new MatOfPoint2f();
-        public Pair<Rect, Rect> leftRightTarget2019 = null;
+        public Pair<Rect, Rect> leftRightDualTargetPair = null;
     }
 
 
