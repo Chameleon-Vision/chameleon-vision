@@ -286,7 +286,14 @@ public class VisionProcess {
 
                 Mat camFrame = camData.getLeft();
                 if (camFrame.cols() > 0 && camFrame.rows() > 0) {
-                    CVPipelineResult result = pipelineManager.getCurrentPipeline().runPipeline(camFrame);
+                    CVPipelineResult result = null;
+                    try {
+                        result = pipelineManager.getCurrentPipeline().runPipeline(camFrame);
+                    } catch (Exception e) {
+                        System.err.println("Exception in vision process " + getCamera().getProperties().getNickname() + "!");
+                        e.printStackTrace();
+                    }
+
                     camFrame.release();
 
                     if (result != null) {
