@@ -11,8 +11,8 @@
                 </v-btn>
             </v-col>
         </v-row>
-        <mini-map class="miniMapClass" :location="point.pose.translation"
-                  :angle="(point.pose.rotation.radians * (180/Math.PI))"/>
+        <mini-map class="miniMapClass"  :translation="point.pose.translation"
+                  :rotation="(point.pose.rotation.radians * (180/Math.PI))"/>
     </div>
 </template>
 

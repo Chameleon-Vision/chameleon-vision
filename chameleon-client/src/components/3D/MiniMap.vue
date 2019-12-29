@@ -6,11 +6,11 @@
     export default {
         name: "MiniMap",
         props: {
-            location: {
-                x: 0,
-                y: 0,
+            translation: {
+                x: Number,
+                y: Number,
             },
-            radians: Number
+            rotation: Number
         },
         data() {
             return {
@@ -36,7 +36,7 @@
             },
             drawText() {
                 this.ctx.fillStyle = "whitesmoke";
-                this.ctx.fillText(`X: ${this.location.x}, Y: ${this.location.y}, ∠${Math.PI * this.radians / 180}° `, this.location.x - 50, this.location.y - 25);
+                this.ctx.fillText(`X: ${this.translation.x}, Y: ${this.translation.y}, ∠${Math.PI * this.radians / 180}° `, this.translation.x - 50, this.translation.y - 25);
             },
             drawTarget() {
                 const width = 40;
@@ -45,7 +45,7 @@
                 this.ctx.save();
                 this.ctx.beginPath();
                 // move the rotation point to the center of the rect
-                this.ctx.translate(this.location.x + width / 2, this.location.y + height / 2);
+                this.ctx.translate(this.translation.x + width / 2, this.translation.y + height / 2);
                 // rotate the rect
                 this.ctx.rotate(this.radians);
 
