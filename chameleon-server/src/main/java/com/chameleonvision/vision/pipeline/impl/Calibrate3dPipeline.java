@@ -2,8 +2,6 @@ package com.chameleonvision.vision.pipeline.impl;
 
 import com.chameleonvision.config.CameraCalibrationConfig;
 import com.chameleonvision.config.ConfigManager;
-import com.chameleonvision.config.JsonMat;
-import com.chameleonvision.util.JacksonHelper;
 import com.chameleonvision.vision.VisionManager;
 import com.chameleonvision.vision.camera.CameraCapture;
 import com.chameleonvision.vision.pipeline.CVPipeline;
@@ -53,7 +51,7 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
             objP_ORIG.push_back(new MatOfPoint3f(new Point3(i / checkerboardSquaresWide, i % checkerboardSquaresHigh, 0.0f)));
         }
 
-        setObjectSize(checkerboardSquareSizeUnits);
+        setSquareSize(checkerboardSquareSizeUnits);
 
         objpoints.forEach(Mat::release);
         imgpoints.forEach(Mat::release);
@@ -61,8 +59,8 @@ public class Calibrate3dPipeline extends CVPipeline<DriverVisionPipeline.DriverP
         imgpoints.clear();
     }
 
-    private void setObjectSize(double size) {
-        Core.multiply(objP_ORIG, new Scalar(new double[] { -1, -1, -1 }), objP);
+    public void setSquareSize(double size) {
+        Core.multiply(objP_ORIG, new Scalar(new double[] { size, size, size }), objP);
     }
 
     public void takeSnapshot() {

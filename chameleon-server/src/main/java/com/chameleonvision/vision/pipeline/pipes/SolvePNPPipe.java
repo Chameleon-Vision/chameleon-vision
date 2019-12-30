@@ -242,7 +242,6 @@ public class SolvePNPPipe implements Pipe<List<StandardCVPipeline.TrackedTarget>
         var targetDistance = distance; // meters or whatever the calibration was in
 
         var targetLocation = new Translation2d(targetDistance * FastMath.cos(targetAngle), targetDistance * FastMath.sin(targetAngle));
-        targetLocation = targetLocation.times(25.4 / 1000d);
         target.cameraRelativePose = new Pose2d(targetLocation, new Rotation2d(targetRotation));
         target.rVector = rVec;
         target.tVector = tVec;
