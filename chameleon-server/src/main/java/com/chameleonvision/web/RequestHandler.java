@@ -94,9 +94,9 @@ public class RequestHandler {
             } catch (Exception ignored) {
                 newFOV = (Integer) camSettings.get("fov");
             }
-            try{
+            try {
                 tilt = (Double) camSettings.get("tilt");
-            } catch (Exception ignored){
+            } catch (Exception ignored) {
                 tilt = (Integer) camSettings.get("tilt");
             }
             currentCamera.getProperties().setFOV(newFOV);
@@ -111,10 +111,18 @@ public class RequestHandler {
     }
 
     public static void onCalibrationStart(Context ctx) throws JsonProcessingException {
+        PipelineManager pipeManager = VisionManager.getCurrentUIVisionProcess().pipelineManager;
         ObjectMapper objectMapper = new ObjectMapper();
         var data = objectMapper.readValue(ctx.body(), Map.class);
         int resolutionIndex = (Integer) data.get("resolution");
-        double squareSize = (Double) data.get("squareSize");
+        double squareSize;
+        try {
+            squareSize = (Double) data.get("squareSize");
+        } catch (Exception e) {
+            squareSize = (Integer) data.get("squareSize");
+        }
+        // convert from mm to meters
+        pipeManager.calib3dPipe.setSquareSize(squareSize / 1000d);
         VisionManager.getCurrentUIVisionProcess().pipelineManager.calib3dPipe.settings.videoModeIndex = resolutionIndex;
         VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(true);
         VisionManager.getCurrentUIVisionProcess().getCamera().setVideoMode(resolutionIndex);
@@ -137,19 +145,6 @@ public class RequestHandler {
         PipelineManager pipeManager = VisionManager.getCurrentUIVisionProcess().pipelineManager;
         System.out.println("Finishing Cal");
         if (pipeManager.calib3dPipe.hasEnoughSnapshots()) {
-
-            // if we have enough set square size and calibrate
-            ObjectMapper objectMapper = new ObjectMapper();
-            var data = objectMapper.readValue(ctx.body(), Map.class);
-            double squareSize;
-            try {
-                squareSize = (Double) data.get("squareSize");
-            } catch (Exception e) {
-                squareSize = (Integer) data.get("squareSize");
-            }
-            // convert from mm to meters
-            pipeManager.calib3dPipe.setSquareSize(squareSize / 1000d);
-
             if (pipeManager.calib3dPipe.tryCalibration()) {
                 ctx.status(200);
             } else {
