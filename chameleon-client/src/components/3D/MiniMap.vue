@@ -1,6 +1,7 @@
 <template>
-    <div>
+    <div class="minimapClass">
         <canvas id="canvasId" width="800" height="800"/>
+        <span style="position: absolute">X: {{this.translation.x.toFixed(2)}}, Y: {{this.translation.y.toFixed(2)}}, ∠{{(Math.PI * this.radians / 180).toFixed(2)}}°</span>
     </div>
 </template>
 
@@ -20,7 +21,9 @@
                 ctx: undefined,
                 canvas: undefined,
                 x: 0,
-                y: 0
+                y: 0,
+                targetWidth: 40,
+                targetHeight: 6
             }
         },
         watch: {
@@ -30,6 +33,12 @@
                     this.draw();
                 }
             },
+            radians(){
+                this.draw();
+            },
+            horizontalFOV(){
+                this.draw();
+            }
         },
         methods: {
             draw() {
@@ -38,53 +47,67 @@
                 // this.drawLine();
                 this.getFieldLocation();
                 this.drawTarget();
-                this.drawText();
+                // this.drawText();
             },
             drawText() {
                 this.ctx.fillStyle = "whitesmoke";
                 this.ctx.fillText(`X: ${this.translation.x.toFixed(2)}, Y: ${this.translation.y.toFixed(2)}, ∠${(Math.PI * this.radians / 180).toFixed(2)}° `, this.y - 30, this.x - 5);
             },
             drawTarget() {
-                const width = 40;
-                const height = 6;
-
                 // first save the untranslated/unrotated context
                 this.ctx.save();
                 this.ctx.beginPath();
                 // move the rotation point to the center of the rect
-                this.ctx.translate(this.y + width / 2, this.x + height / 2); // wpi lib makes x forward and back and y left to right
+                this.ctx.translate(this.y + this.targetWidth / 2, this.x + this.targetHeight / 2); // wpi lib makes x forward and back and y left to right
                 // rotate the rect
                 this.ctx.rotate(this.radians);
 
                 // draw the rect on the transformed context
                 // Note: after transforming [0,0] is visually [x,y]
                 //       so the rect needs to be offset accordingly when drawn
-                this.ctx.rect(-width / 2, -height / 2, width, height);
+                this.ctx.rect(-this.targetWidth / 2, -this.targetHeight / 2, this.targetWidth, this.targetHeight);
 
                 this.ctx.fillStyle = "#01a209";
                 this.ctx.fill();
 
                 // restore the context to its untranslated/unrotated state
                 this.ctx.restore();
+                this.ctx.fillStyle = "whitesmoke";
+                this.ctx.beginPath();
+                this.ctx.arc(this.y + this.targetWidth / 2, this.x + this.targetHeight / 2, 3, 0, 2 * Math.PI, true);
+                this.ctx.fill();
 
             },
             drawPlayer() {
                 this.ctx.beginPath();
-                let cFov = this.horizontalFOV / 2 * Math.PI / 180;
-                let xLen = Math.tan(cFov) * 150;
                 this.ctx.moveTo(400, 820);
-                this.ctx.lineTo(400 + xLen, 650);
-                this.ctx.lineTo(400 - xLen, 650);
+                this.ctx.lineTo(400 + this.hLen, 650);
+                this.ctx.lineTo(400 - this.hLen, 650);
                 this.ctx.closePath();
                 this.ctx.fillStyle = this.grad;
                 this.ctx.fill();
+                this.ctx.beginPath();
+                this.ctx.moveTo(400, 820);
+                this.ctx.lineTo(400 + this.hLen, 650);
+                this.ctx.stroke();
+                this.ctx.moveTo(400, 820);
+                this.ctx.lineTo(400 - this.hLen, 650);
+                this.ctx.stroke();
+
             },
             clearBoard() {
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // clearing the canvas
             },
             getFieldLocation() {
                 this.x = 800 - (160 * this.translation.x); // getting meters as pixels
-                this.y = 800 - (160 * this.translation.y);
+                this.y = 160 * this.translation.y;
+            }
+        },
+        computed: {
+            hLen: {
+                get() {
+                    return Math.tan(this.horizontalFOV / 2 * Math.PI / 180) * 150;
+                }
             }
         },
         mounted: function () {
@@ -93,17 +116,20 @@
             this.canvas = canvas; // setting the canvas as a vue variable
             this.ctx = ctx; // setting the canvas context as a vue variable
             this.grad = this.ctx.createLinearGradient(400, 800, 400, 600);
-            this.grad.addColorStop(0, "rgba(1,92,9,0.44)");
-            this.grad.addColorStop(0.7, "#2b2b2b");
+            this.grad.addColorStop(0, "rgb(119,119,119)");
+            this.grad.addColorStop(0.05, "rgba(14,92,22,0.96)");
+            this.grad.addColorStop(0.8, "rgba(43,43,43,0.48)");
 
             // setting canvas context values for drawing
 
 
             this.ctx.font = "26px Arial";
             this.ctx.strokeStyle = "whitesmoke";
+            this.ctx.lineWidth = 2;
 
             this.$nextTick(function () {
                 this.drawPlayer();
+
             });
         }
     }
@@ -117,5 +143,9 @@
         border-radius: 5px;
         border: 2px solid grey;
         box-shadow: 0 0 5px 1px;
+    }
+
+    .minimapClass {
+        text-align: center;
     }
 </style>
