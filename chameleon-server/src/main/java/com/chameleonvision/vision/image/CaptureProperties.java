@@ -8,7 +8,7 @@ import org.opencv.core.Mat;
 public class CaptureProperties {
 
     protected CaptureStaticProperties staticProperties;
-    private Rotation2d tilt;
+    private Rotation2d tilt = new Rotation2d();
 
     protected CaptureProperties() {
     }
