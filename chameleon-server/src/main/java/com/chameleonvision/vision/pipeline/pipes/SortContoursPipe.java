@@ -49,7 +49,7 @@ public class SortContoursPipe implements Pipe<List<StandardCVPipeline.TrackedTar
         sortedContours.clear();
 
         if (input.size() > 0) {
-            sortedContours.addAll(input.subList(0, Math.min(input.size(), maxTargets - 1)));
+            sortedContours.addAll(input);
 
             switch (sort) {
                 case Largest:
@@ -78,6 +78,7 @@ public class SortContoursPipe implements Pipe<List<StandardCVPipeline.TrackedTar
             }
         }
 
+        sortedContours = sortedContours.subList(0, Math.min(input.size(), maxTargets - 1));
         long processTime = System.nanoTime() - processStartNanos;
         return Pair.of(sortedContours, processTime);
     }
