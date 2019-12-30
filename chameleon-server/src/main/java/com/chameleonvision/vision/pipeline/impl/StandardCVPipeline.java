@@ -75,9 +75,6 @@ public class StandardCVPipeline extends CVPipeline<StandardCVPipelineResult, Sta
         draw2dContoursSettings = new Draw2dContoursPipe.Draw2dContoursSettings();
         draw2dCrosshairPipeSettings = new Draw2dCrosshairPipe.Draw2dCrosshairPipeSettings();
 
-        solvePNPPipe = new SolvePNPPipe(settings, cameraCapture.getCurrentCalibrationData(), cameraCapture.getProperties().getTilt());
-        drawSolvePNPPipe = new DrawSolvePNPPipe(cameraCapture.getCurrentCalibrationData());
-
         // TODO: make settable from UI? config?
         draw2dContoursSettings.showCentroid = false;
         draw2dContoursSettings.boxOutlineSize = 2;
@@ -129,8 +126,12 @@ public class StandardCVPipeline extends CVPipeline<StandardCVPipelineResult, Sta
         outputMatPipe.setConfig(settings.isBinary);
 
         if(settings.is3D) {
+            if(solvePNPPipe == null) solvePNPPipe = new SolvePNPPipe(settings, cameraCapture.getCurrentCalibrationData(), cameraCapture.getProperties().getTilt());
+            if(drawSolvePNPPipe == null) drawSolvePNPPipe = new DrawSolvePNPPipe(cameraCapture.getCurrentCalibrationData());
+            
             solvePNPPipe.setConfig(settings, cameraCapture.getCurrentCalibrationData(), cameraCapture.getProperties().getTilt());
             drawSolvePNPPipe.setConfig(cameraCapture.getCurrentCalibrationData());
+
         }
 
         long pipeInitTimeNanos = System.nanoTime() - pipelineStartTimeNanos;
