@@ -37,7 +37,7 @@ public class SolvePNPPipe implements Pipe<List<StandardCVPipeline.TrackedTarget>
     public SolvePNPPipe(StandardCVPipelineSettings settings, CameraCalibrationConfig calibration) {
         super();
         setCameraCoeffs(calibration);
-        setObjectCorners(settings.targetCorners);
+        setTarget(settings.targetWidth, settings.targetHeight);
         this.tilt_angle = Math.toRadians(settings.cameraTiltAngleDeg);
     }
 
@@ -61,7 +61,7 @@ public class SolvePNPPipe implements Pipe<List<StandardCVPipeline.TrackedTarget>
 
     public void setConfig(StandardCVPipelineSettings settings, CameraCalibrationConfig camConfig) {
         setCameraCoeffs(camConfig);
-        setObjectCorners(settings.targetCorners);
+        setTarget(settings.targetWidth, settings.targetHeight);
         tilt_angle = Math.toRadians(settings.cameraTiltAngleDeg);
     }
 
@@ -247,7 +247,7 @@ public class SolvePNPPipe implements Pipe<List<StandardCVPipeline.TrackedTarget>
         target.rVector = rVec;
         target.tVector = tVec;
 
-        System.out.println("Found target at pose: " + targetLocation.toString());
+        System.out.println("Found target at pose: " + target.cameraRelativePose.toString());
 
         return target;
     }

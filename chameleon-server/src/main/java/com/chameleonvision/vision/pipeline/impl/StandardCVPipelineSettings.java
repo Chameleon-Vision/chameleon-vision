@@ -5,6 +5,7 @@ import com.chameleonvision.vision.enums.SortMode;
 import com.chameleonvision.vision.enums.TargetGroup;
 import com.chameleonvision.vision.enums.TargetIntersection;
 import com.chameleonvision.vision.pipeline.CVPipelineSettings;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.wpi.first.wpilibj.util.Units;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;
@@ -35,13 +36,8 @@ public class StandardCVPipelineSettings extends CVPipelineSettings {
     public double dualTargetCalibrationB = 0;
 
     // 3d stuff
-    public static final double width = 14.5, height = 6.0;
-    public List<Point3> targetCorners = List.of(
-            new Point3(new Point((-width/2.0), (height/2.0))),
-            new Point3(new Point((-width/2.0), (-height/2.0))),
-            new Point3(new Point((width/2.0), (-height/2.0))),
-            new Point3(new Point((width/2.0), (height/2.0)))
-    );
+    public double targetWidth = 15.5, targetHeight = 6.0;
+
     public double cameraTiltAngleDeg = 0d;
     public boolean is3D = false;
 }
