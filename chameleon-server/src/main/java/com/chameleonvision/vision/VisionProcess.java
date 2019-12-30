@@ -178,6 +178,7 @@ public class VisionProcess {
                 calculated.put("yaw", null);
                 calculated.put("area", null);
                 calculated.put("pose", new Pose2d());
+                calculated.put("allTargets", new ArrayList<StandardCVPipeline.TrackedTarget>());
 
                 if (data.hasTarget) {
                     if (data instanceof StandardCVPipeline.StandardCVPipelineResult) {
@@ -187,9 +188,10 @@ public class VisionProcess {
                         calculated.replace("pitch", bestTarget.pitch);
                         calculated.replace("yaw", bestTarget.yaw);
                         calculated.replace("area", bestTarget.area);
+                        calculated.replace("pose", bestTarget.cameraRelativePose);
 
-                        if (getIs3d()) {
-                            calculated.replace("pose", bestTarget.cameraRelativePose);
+                        if(((StandardCVPipelineSettings) pipelineManager.getCurrentPipeline().settings).multiple) {
+                            calculated.replace("allTargets", result.targets);
                         }
                     }
                 }
