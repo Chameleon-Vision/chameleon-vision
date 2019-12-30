@@ -2,6 +2,7 @@ package com.chameleonvision.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;
@@ -29,6 +30,22 @@ public class CameraCalibrationConfig {
         this.resolution = resolution;
         this.cameraMatrix = JsonMat.fromMat(cameraMatrix);
         this.distortionCoeffs = JsonMat.fromMat(distortionCoeffs);
+    }
+
+    @JsonIgnoreType
+    public static class UICameraCalibrationConfig {
+        public final int width;
+        public final int height;
+        public final double[] cameraMatrix;
+        public final double[] distortionCoeffs;
+
+        public UICameraCalibrationConfig(CameraCalibrationConfig config) {
+            width = (int) config.resolution.width;
+            height = (int) config.resolution.height;
+            cameraMatrix = config.cameraMatrix.data;
+            distortionCoeffs = config.distortionCoeffs.data;
+        }
+
     }
 
     @JsonIgnore

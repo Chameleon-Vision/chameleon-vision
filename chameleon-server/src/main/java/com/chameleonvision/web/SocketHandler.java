@@ -1,5 +1,6 @@
 package com.chameleonvision.web;
 
+import com.chameleonvision.config.CameraCalibrationConfig;
 import com.chameleonvision.config.ConfigManager;
 import com.chameleonvision.vision.VisionManager;
 import com.chameleonvision.vision.VisionProcess;
@@ -26,6 +27,7 @@ import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class SocketHandler {
@@ -279,10 +281,16 @@ public class SocketHandler {
         HashMap<String, Object> tmp = new HashMap<>();
         VisionProcess currentVisionProcess = VisionManager.getCurrentUIVisionProcess();
         USBCameraCapture currentCamera = VisionManager.getCurrentUIVisionProcess().getCamera();
+
         tmp.put("fov", currentCamera.getProperties().getFOV());
         tmp.put("streamDivisor", currentVisionProcess.cameraStreamer.getDivisor().ordinal());
         tmp.put("resolution", currentVisionProcess.getCamera().getProperties().getCurrentVideoModeIndex());
         tmp.put("tilt", currentVisionProcess.getCamera().getProperties().getTilt().getDegrees());
+        
+        List<CameraCalibrationConfig.UICameraCalibrationConfig> calibrations = currentCamera.getAllCalibrationData().stream()
+                .map(CameraCalibrationConfig.UICameraCalibrationConfig::new).collect(Collectors.toList());
+        tmp.put("calibration", calibrations);
+        
         return tmp;
     }
 

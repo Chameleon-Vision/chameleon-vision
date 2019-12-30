@@ -60,7 +60,7 @@ public class JsonMat {
         if (isDistortionCoeffsMat(mat)) dataLen = 5;
 
         // truncate Mat data to correct number data points.
-        return Arrays.copyOfRange(data, 0, dataLen - 1);
+        return Arrays.copyOfRange(data, 0, dataLen);
     }
 
     public static JsonMat fromMat(Mat mat) {
