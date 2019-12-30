@@ -9,8 +9,10 @@
         <div style="margin-top: 15px">
             <span>3D Calibration</span>
             <v-divider color="white" style="margin-bottom: 10px"/>
-
-            <CVselect name="Resolution" v-model="resolutionIndex" :list="resolutionList"/>
+            <v-row>
+                <CVselect name="Resolution" v-model="resolutionIndex" :list="resolutionList"/>
+                <CVnumberinput name="Square Size (mm)" v-model="this.squareSize"/>
+            </v-row>
             <v-row>
                 <v-col>
                     <v-btn small :color="calibrationModeButton.color" @click="sendCalibrationMode"
@@ -59,6 +61,7 @@
                     text: "Cancel Calibration",
                     color: "red"
                 },
+                squareSize: 2.54,
                 snapshotAmount: 0,
                 hasEnough: false,
                 snack:false
@@ -107,7 +110,9 @@
             sendCalibrationFinish() {
                 const self = this;
                 let connection_string = "/api/settings/endCalibration";
-                self.axios.post("http://" + this.$address + connection_string).then(
+                let data = {};
+                data['squareSize'] = this.squareSize;
+                self.axios.post("http://" + this.$address + connection_string, data).then(
                     function (response) {
                         if (response.status === 500){
                             self.snack = true;
