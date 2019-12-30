@@ -22,7 +22,7 @@
                 x: 0,
                 y: 0,
                 targetWidth: 40,
-                targetHeight:6
+                targetHeight: 6
             }
         },
         watch: {
@@ -51,14 +51,14 @@
                 this.ctx.save();
                 this.ctx.beginPath();
                 // move the rotation point to the center of the rect
-                this.ctx.translate(this.y + this.targetWidth / 2, this.x + this.targetheight / 2); // wpi lib makes x forward and back and y left to right
+                this.ctx.translate(this.y + this.targetWidth / 2, this.x + this.targetHeight / 2); // wpi lib makes x forward and back and y left to right
                 // rotate the rect
                 this.ctx.rotate(this.radians);
 
                 // draw the rect on the transformed context
                 // Note: after transforming [0,0] is visually [x,y]
                 //       so the rect needs to be offset accordingly when drawn
-                this.ctx.rect(-this.targetWidth / 2, -this.targetheight / 2, this.targetWidth, this.targetheight);
+                this.ctx.rect(-this.targetWidth / 2, -this.targetHeight / 2, this.targetWidth, this.targetHeight);
 
                 this.ctx.fillStyle = "#01a209";
                 this.ctx.fill();
@@ -82,7 +82,7 @@
             },
             getFieldLocation() {
                 this.x = 800 - (160 * this.translation.x); // getting meters as pixels
-                this.y = 800 - (160 * this.translation.y);
+                this.y = 160 * this.translation.y;
             }
         },
         computed: {

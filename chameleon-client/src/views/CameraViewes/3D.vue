@@ -66,7 +66,7 @@
                     let resolution = this.$store.state.resolutionList[index];
                     let diagonalView = FOV * (Math.PI / 180);
                     let diagonalAspect = Math.hypot(resolution.width, resolution.height);
-                    let horizontalFOV = Math.atan(Math.tan(diagonalView / 2) * (resolution.width / diagonalAspect)) * 2 * (180/ Math.PI);
+                    let horizontalFOV = Math.atan(Math.tan(diagonalView / 2) * (resolution.width / diagonalAspect)) * 2 * (180 / Math.PI);
                     return horizontalFOV
                 }
             }
