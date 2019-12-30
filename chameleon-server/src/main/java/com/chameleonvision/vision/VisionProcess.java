@@ -230,7 +230,9 @@ public class VisionProcess {
                 ntYawEntry.setDouble(targets.get(0).yaw);
                 ntAreaEntry.setDouble(targets.get(0).area);
                 try {
-                    ntAuxListEntry.setString(objectMapper.writeValueAsString(targets));
+                    ntAuxListEntry.setString(objectMapper.writeValueAsString(targets.stream()
+                            .map(it -> List.of(it.pitch, it.yaw, it.area, it.cameraRelativePose))
+                            .collect(Collectors.toList())));
 
                     // TODO: (2.1) 3d stuff...
                     ntPoseEntry.setString(objectMapper.writeValueAsString(targets.stream().map(target -> target.cameraRelativePose).collect(Collectors.toList())));
