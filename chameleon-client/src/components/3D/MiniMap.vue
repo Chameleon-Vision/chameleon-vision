@@ -13,14 +13,16 @@
                 y: Number,
             },
             radians: Number,
-            horizontalFOV: Number
+            horizontalFOV: Number,
         },
         data() {
             return {
                 ctx: undefined,
                 canvas: undefined,
                 x: 0,
-                y: 0
+                y: 0,
+                targetWidth: 40,
+                targetHeight:6
             }
         },
         watch: {
@@ -45,21 +47,18 @@
                 this.ctx.fillText(`X: ${this.translation.x.toFixed(2)}, Y: ${this.translation.y.toFixed(2)}, ∠${(Math.PI * this.radians / 180).toFixed(2)}° `, this.y - 30, this.x - 5);
             },
             drawTarget() {
-                const width = 40;
-                const height = 6;
-
                 // first save the untranslated/unrotated context
                 this.ctx.save();
                 this.ctx.beginPath();
                 // move the rotation point to the center of the rect
-                this.ctx.translate(this.y + width / 2, this.x + height / 2); // wpi lib makes x forward and back and y left to right
+                this.ctx.translate(this.y + this.targetWidth / 2, this.x + this.targetheight / 2); // wpi lib makes x forward and back and y left to right
                 // rotate the rect
                 this.ctx.rotate(this.radians);
 
                 // draw the rect on the transformed context
                 // Note: after transforming [0,0] is visually [x,y]
                 //       so the rect needs to be offset accordingly when drawn
-                this.ctx.rect(-width / 2, -height / 2, width, height);
+                this.ctx.rect(-this.targetWidth / 2, -this.targetheight / 2, this.targetWidth, this.targetheight);
 
                 this.ctx.fillStyle = "#01a209";
                 this.ctx.fill();
@@ -70,11 +69,10 @@
             },
             drawPlayer() {
                 this.ctx.beginPath();
-                let cFov = this.horizontalFOV / 2 * Math.PI / 180;
-                let xLen = Math.tan(cFov) * 150;
+
                 this.ctx.moveTo(400, 820);
-                this.ctx.lineTo(400 + xLen, 650);
-                this.ctx.lineTo(400 - xLen, 650);
+                this.ctx.lineTo(400 + this.hLen, 650);
+                this.ctx.lineTo(400 - this.hLen, 650);
                 this.ctx.closePath();
                 this.ctx.fillStyle = this.grad;
                 this.ctx.fill();
@@ -85,6 +83,13 @@
             getFieldLocation() {
                 this.x = 800 - (160 * this.translation.x); // getting meters as pixels
                 this.y = 800 - (160 * this.translation.y);
+            }
+        },
+        computed: {
+            hLen: {
+                get() {
+                    return Math.tan(this.horizontalFOV / 2 * Math.PI / 180) * 150;
+                }
             }
         },
         mounted: function () {
