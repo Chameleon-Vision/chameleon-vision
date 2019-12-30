@@ -11,6 +11,7 @@ import com.chameleonvision.vision.pipeline.impl.Calibrate3dPipeline;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.cscore.VideoMode;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 
@@ -87,13 +88,16 @@ public class RequestHandler {
             VisionProcess currentVisionProcess = VisionManager.getCurrentUIVisionProcess();
             USBCameraCapture currentCamera = currentVisionProcess.getCamera();
 
-            double newFOV;
+            double newFOV, tilt;
             try {
                 newFOV = (Double) camSettings.get("fov");
+                tilt = (Double) camSettings.get("tilt");
             } catch (Exception ignored) {
                 newFOV = (Integer) camSettings.get("fov");
+                tilt = (Integer) camSettings.get("tilt");
             }
             currentCamera.getProperties().setFOV(newFOV);
+            currentCamera.getProperties().setTilt(Rotation2d.fromDegrees(tilt));
             VisionManager.saveCurrentCameraSettings();
             SocketHandler.sendFullSettings();
             ctx.status(200);

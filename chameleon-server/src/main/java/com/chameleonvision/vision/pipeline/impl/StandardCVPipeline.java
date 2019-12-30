@@ -75,7 +75,7 @@ public class StandardCVPipeline extends CVPipeline<StandardCVPipelineResult, Sta
         draw2dContoursSettings = new Draw2dContoursPipe.Draw2dContoursSettings();
         draw2dCrosshairPipeSettings = new Draw2dCrosshairPipe.Draw2dCrosshairPipeSettings();
 
-        solvePNPPipe = new SolvePNPPipe(settings, cameraCapture.getCurrentCalibrationData());
+        solvePNPPipe = new SolvePNPPipe(settings, cameraCapture.getCurrentCalibrationData(), cameraCapture.getProperties().getTilt());
         drawSolvePNPPipe = new DrawSolvePNPPipe(cameraCapture.getCurrentCalibrationData());
 
         // TODO: make settable from UI? config?
@@ -129,7 +129,7 @@ public class StandardCVPipeline extends CVPipeline<StandardCVPipelineResult, Sta
         outputMatPipe.setConfig(settings.isBinary);
 
         if(settings.is3D) {
-            solvePNPPipe.setConfig(settings, cameraCapture.getCurrentCalibrationData());
+            solvePNPPipe.setConfig(settings, cameraCapture.getCurrentCalibrationData(), cameraCapture.getProperties().getTilt());
             drawSolvePNPPipe.setConfig(cameraCapture.getCurrentCalibrationData());
         }
 

@@ -34,11 +34,11 @@ public class SolvePNPPipe implements Pipe<List<StandardCVPipeline.TrackedTarget>
     Comparator<Point> leftRightComparator = Comparator.comparingDouble(point -> point.x);
     Comparator<Point> verticalComparator = Comparator.comparingDouble(point -> point.y);
 
-    public SolvePNPPipe(StandardCVPipelineSettings settings, CameraCalibrationConfig calibration) {
+    public SolvePNPPipe(StandardCVPipelineSettings settings, CameraCalibrationConfig calibration, Rotation2d tilt) {
         super();
         setCameraCoeffs(calibration);
         setTarget(settings.targetWidth, settings.targetHeight);
-        this.tilt_angle = Math.toRadians(settings.cameraTiltAngleDeg);
+        this.tilt_angle = tilt.getRadians();
     }
 
     public void setTarget(double targetWidth, double targetHeight) {
@@ -59,10 +59,10 @@ public class SolvePNPPipe implements Pipe<List<StandardCVPipeline.TrackedTarget>
         objPointsMat.fromList(objectCorners);
     }
 
-    public void setConfig(StandardCVPipelineSettings settings, CameraCalibrationConfig camConfig) {
+    public void setConfig(StandardCVPipelineSettings settings, CameraCalibrationConfig camConfig, Rotation2d tilt) {
         setCameraCoeffs(camConfig);
         setTarget(settings.targetWidth, settings.targetHeight);
-        tilt_angle = Math.toRadians(settings.cameraTiltAngleDeg);
+        tilt_angle = tilt.getRadians();
     }
 
     private void setCameraCoeffs(CameraCalibrationConfig settings) {

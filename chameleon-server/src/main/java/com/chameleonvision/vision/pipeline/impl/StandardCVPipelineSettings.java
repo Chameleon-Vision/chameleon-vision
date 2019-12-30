@@ -38,6 +38,5 @@ public class StandardCVPipelineSettings extends CVPipelineSettings {
     // 3d stuff
     public double targetWidth = 15.5, targetHeight = 6.0;
 
-    public double cameraTiltAngleDeg = 0d;
     public boolean is3D = false;
 }
