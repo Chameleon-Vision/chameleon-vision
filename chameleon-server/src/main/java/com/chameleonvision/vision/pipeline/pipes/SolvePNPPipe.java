@@ -146,10 +146,6 @@ public class SolvePNPPipe implements Pipe<List<StandardCVPipeline.TrackedTarget>
         var result = new MatOfPoint2f();
         result.fromList(List.of(tl, bl, br, tr));
 
-        list_.clear();
-        left.clear();
-        right.clear();
-
         return result;
     }
 
