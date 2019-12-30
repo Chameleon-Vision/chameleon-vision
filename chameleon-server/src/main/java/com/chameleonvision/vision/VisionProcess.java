@@ -180,6 +180,7 @@ public class VisionProcess {
                         StandardCVPipeline.TrackedTarget bestTarget = result.targets.get(0);
                         if (((StandardCVPipelineSettings) pipelineManager.getCurrentPipeline().settings).multiple) {
                             for (var target : result.targets) {
+                                pointMap = new HashMap<>();
                                 pointMap.put("pitch", target.pitch);
                                 pointMap.put("yaw", target.yaw);
                                 pointMap.put("area", target.area);
@@ -187,7 +188,6 @@ public class VisionProcess {
                                 webTargets.add(pointMap);
                             }
                         } else {
-
                             pointMap.put("pitch", bestTarget.pitch);
                             pointMap.put("yaw", bestTarget.yaw);
                             pointMap.put("area", bestTarget.area);
