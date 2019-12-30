@@ -282,6 +282,7 @@ public class SocketHandler {
         tmp.put("fov", currentCamera.getProperties().getFOV());
         tmp.put("streamDivisor", currentVisionProcess.cameraStreamer.getDivisor().ordinal());
         tmp.put("resolution", currentVisionProcess.getCamera().getProperties().getCurrentVideoModeIndex());
+        tmp.put("tilt", currentVisionProcess.getCamera().getProperties().getTilt().getDegrees());
         return tmp;
     }
 

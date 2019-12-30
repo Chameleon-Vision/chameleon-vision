@@ -91,9 +91,12 @@ public class RequestHandler {
             double newFOV, tilt;
             try {
                 newFOV = (Double) camSettings.get("fov");
-                tilt = (Double) camSettings.get("tilt");
             } catch (Exception ignored) {
                 newFOV = (Integer) camSettings.get("fov");
+            }
+            try{
+                tilt = (Double) camSettings.get("tilt");
+            } catch (Exception ignored){
                 tilt = (Integer) camSettings.get("tilt");
             }
             currentCamera.getProperties().setFOV(newFOV);
@@ -111,6 +114,7 @@ public class RequestHandler {
         ObjectMapper objectMapper = new ObjectMapper();
         var data = objectMapper.readValue(ctx.body(), Map.class);
         int resolutionIndex = (Integer) data.get("resolution");
+        double squareSize = (Double) data.get("squareSize");
         VisionManager.getCurrentUIVisionProcess().pipelineManager.calib3dPipe.settings.videoModeIndex = resolutionIndex;
         VisionManager.getCurrentUIVisionProcess().pipelineManager.setCalibrationMode(true);
         VisionManager.getCurrentUIVisionProcess().getCamera().setVideoMode(resolutionIndex);

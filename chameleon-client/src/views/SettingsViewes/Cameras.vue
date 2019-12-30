@@ -3,6 +3,9 @@
         <div>
             <CVselect name="Camera" :list="cameraList" v-model="currentCameraIndex"/>
             <CVnumberinput name="Diagonal FOV" v-model="cameraSettings.fov"/>
+            <br>
+            <CVnumberinput name="Camera pitch" v-model="cameraSettings.tilt"/>
+            <br>
             <v-btn style="margin-top:10px" small color="#4baf62" @click="sendCameraSettings">Save Camera Settings
             </v-btn>
         </div>
@@ -10,8 +13,12 @@
             <span>3D Calibration</span>
             <v-divider color="white" style="margin-bottom: 10px"/>
             <v-row>
-                <CVselect name="Resolution" v-model="resolutionIndex" :list="resolutionList"/>
-                <CVnumberinput name="Square Size (mm)" v-model="this.squareSize"/>
+                <v-col>
+                    <CVselect name="Resolution" v-model="resolutionIndex" :list="resolutionList"/>
+                </v-col>
+                <v-col>
+                    <CVnumberinput name="Square Size (mm)" v-model="squareSize"/>
+                </v-col>
             </v-row>
             <v-row>
                 <v-col>
@@ -24,6 +31,12 @@
                     <v-btn small :color="cancellationModeButton.color" @click="sendCalibrationFinish"
                            :disabled="checkCancelation">
                         {{cancellationModeButton.text}}
+                    </v-btn>
+                </v-col>
+                <v-col>
+                    <v-btn color="whitesmoke" small><a style="color: black; text-decoration: none"
+                                                       :href="require('../../assets/chessboard.png')"
+                                                       download="Calibration Board.png">Download Checkerboard</a>
                     </v-btn>
                 </v-col>
             </v-row>
@@ -64,7 +77,7 @@
                 squareSize: 2.54,
                 snapshotAmount: 0,
                 hasEnough: false,
-                snack:false
+                snack: false
             }
         },
         methods: {
@@ -87,6 +100,7 @@
                 } else {
                     connection_string += "startCalibration";
                     data['resolution'] = this.resolutionIndex;
+                    data['squareSize'] = this.squareSize;
                     self.hasEnough = false;
                 }
                 this.axios.post("http://" + this.$address + connection_string, data).then(
@@ -114,30 +128,34 @@
                 data['squareSize'] = this.squareSize;
                 self.axios.post("http://" + this.$address + connection_string, data).then(
                     function (response) {
-                        if (response.status === 500){
+                        if (response.status === 500) {
                             self.snack = true;
                         }
-                            self.isCalibrating = false;
-                            self.hasEnough = false;
-                            self.snapshotAmount = 0;
-                            self.calibrationModeButton.text = "Start Calibration";
-                            self.cancellationModeButton.text = "Cancel Calibration";
-                            self.cancellationModeButton.color = "red";
-
+                        self.isCalibrating = false;
+                        self.hasEnough = false;
+                        self.snapshotAmount = 0;
+                        self.calibrationModeButton.text = "Start Calibration";
+                        self.cancellationModeButton.text = "Cancel Calibration";
+                        self.cancellationModeButton.color = "red";
                     }
                 );
             },
+            download() {
+                let file = require('../../assets/chessboard.png');
+                let blob = new Blob([file], {type: 'image/png'});
+                window.open(URL.createObjectURL(blob));
+            }
         },
         computed: {
             checkResolution() {
                 return this.resolutionIndex === undefined;
             },
-            checkCancelation(){
-                if (this.isCalibrating){
+            checkCancelation() {
+                if (this.isCalibrating) {
                     return false
-                } else if (this.checkResolution){
+                } else if (this.checkResolution) {
                     return true;
-                } else{
+                } else {
                     return true
                 }
             },
