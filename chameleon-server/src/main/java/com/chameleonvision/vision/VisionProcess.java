@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.stream.Collectors;
 
 
 public class VisionProcess {
@@ -232,7 +233,7 @@ public class VisionProcess {
                     ntAuxListEntry.setString(objectMapper.writeValueAsString(targets));
 
                     // TODO: (2.1) 3d stuff...
-                    ntPoseEntry.setString(objectMapper.writeValueAsString(targets.stream().map(target -> target.cameraRelativePose)));
+                    ntPoseEntry.setString(objectMapper.writeValueAsString(targets.stream().map(target -> target.cameraRelativePose).collect(Collectors.toList())));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
