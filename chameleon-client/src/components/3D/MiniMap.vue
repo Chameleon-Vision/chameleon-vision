@@ -1,6 +1,7 @@
 <template>
-    <div>
+    <div class="minimapClass">
         <canvas id="canvasId" width="800" height="800"/>
+        <span style="position: absolute">X: {{this.translation.x.toFixed(2)}}, Y: {{this.translation.y.toFixed(2)}}, ∠{{(Math.PI * this.radians / 180).toFixed(2)}}°</span>
     </div>
 </template>
 
@@ -40,7 +41,7 @@
                 // this.drawLine();
                 this.getFieldLocation();
                 this.drawTarget();
-                this.drawText();
+                // this.drawText();
             },
             drawText() {
                 this.ctx.fillStyle = "whitesmoke";
@@ -122,5 +123,8 @@
         border-radius: 5px;
         border: 2px solid grey;
         box-shadow: 0 0 5px 1px;
+    }
+    .minimapClass{
+        text-align: center;
     }
 </style>
