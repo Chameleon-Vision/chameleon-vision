@@ -165,39 +165,51 @@ public class VisionProcess {
             lastUIUpdateMs = currentMillis;
 
 
-
             if (cameraCapture.getProperties().name.equals(ConfigManager.settings.currentCamera)) {
                 HashMap<String, Object> WebSend = new HashMap<>();
                 HashMap<String, Object> point = new HashMap<>();
-                HashMap<String, Object> calculated = new HashMap<>();
+                HashMap<String, Object> pointMap = new HashMap<>();
+                ArrayList<Object> webTargets = new ArrayList<Object>();
                 List<Double> center = new ArrayList<>();
 
-                center.add(null);
-                center.add(null);
-                calculated.put("pitch", null);
-                calculated.put("yaw", null);
-                calculated.put("area", null);
-                calculated.put("pose", new Pose2d());
-                calculated.put("allTargets", new ArrayList<StandardCVPipeline.TrackedTarget>());
+
 
                 if (data.hasTarget) {
                     if (data instanceof StandardCVPipeline.StandardCVPipelineResult) {
                         StandardCVPipeline.StandardCVPipelineResult result = (StandardCVPipeline.StandardCVPipelineResult) data;
                         StandardCVPipeline.TrackedTarget bestTarget = result.targets.get(0);
-                        center = List.of(bestTarget.minAreaRect.center.x, bestTarget.minAreaRect.center.y);
-                        calculated.replace("pitch", bestTarget.pitch);
-                        calculated.replace("yaw", bestTarget.yaw);
-                        calculated.replace("area", bestTarget.area);
-                        calculated.replace("pose", bestTarget.cameraRelativePose);
+                        if (((StandardCVPipelineSettings) pipelineManager.getCurrentPipeline().settings).multiple) {
+                            for (var target : result.targets) {
+                                pointMap.put("pitch", target.pitch);
+                                pointMap.put("yaw", target.yaw);
+                                pointMap.put("area", target.area);
+                                pointMap.put("pose", target.cameraRelativePose);
+                                webTargets.add(pointMap);
+                            }
+                        } else {
 
-                        if(((StandardCVPipelineSettings) pipelineManager.getCurrentPipeline().settings).multiple) {
-                            calculated.replace("allTargets", result.targets);
+                            pointMap.put("pitch", bestTarget.pitch);
+                            pointMap.put("yaw", bestTarget.yaw);
+                            pointMap.put("area", bestTarget.area);
+                            pointMap.put("pose", bestTarget.cameraRelativePose);
+                            webTargets.add(pointMap);
                         }
+                        center.add(bestTarget.minAreaRect.center.x);
+                        center.add(bestTarget.minAreaRect.center.y);
+
                     }
+                } else {
+                    pointMap.put("pitch", null);
+                    pointMap.put("yaw", null);
+                    pointMap.put("area", null);
+                    pointMap.put("pose", new Pose2d());
+                    webTargets.add(pointMap);
+                    center.add(null);
+                    center.add(null);
                 }
 
                 point.put("fps", visionRunnable.fps);
-                point.put("calculated", calculated);
+                point.put("targets", webTargets);
                 point.put("rawPoint", center);
                 WebSend.put("point", point);
                 SocketHandler.broadcastMessage(WebSend);
@@ -236,28 +248,28 @@ public class VisionProcess {
 
     }
 
-    public void setVideoMode(VideoMode newMode){
+    public void setVideoMode(VideoMode newMode) {
         cameraCapture.setVideoMode(newMode);
         cameraStreamer.setNewVideoMode(newMode);
     }
 
-    public VideoMode getCurrentVideoMode () {
+    public VideoMode getCurrentVideoMode() {
         return cameraCapture.getCurrentVideoMode();
     }
 
-    public List<VideoMode> getPossibleVideoModes () {
+    public List<VideoMode> getPossibleVideoModes() {
         return cameraCapture.getProperties().videoModes;
     }
 
-    public USBCameraCapture getCamera () {
+    public USBCameraCapture getCamera() {
         return cameraCapture;
     }
 
-    public CVPipelineSettings getDriverModeSettings () {
+    public CVPipelineSettings getDriverModeSettings() {
         return pipelineManager.driverModePipeline.settings;
     }
 
-    public void addCalibration (CameraCalibrationConfig cal){
+    public void addCalibration(CameraCalibrationConfig cal) {
         cameraCapture.addCalibrationData(cal);
         System.out.println("saving to file");
         fileConfig.saveCalibration(cameraCapture.getConfig());
@@ -265,14 +277,14 @@ public class VisionProcess {
 
     public void setIs3d(Boolean value) {
         var settings = pipelineManager.getCurrentPipeline().settings;
-        if(settings instanceof StandardCVPipelineSettings) {
+        if (settings instanceof StandardCVPipelineSettings) {
             ((StandardCVPipelineSettings) settings).is3D = value;
         }
     }
 
     public boolean getIs3d() {
         var settings = pipelineManager.getCurrentPipeline().settings;
-        if(settings instanceof StandardCVPipelineSettings) {
+        if (settings instanceof StandardCVPipelineSettings) {
             return ((StandardCVPipelineSettings) settings).is3D;
         }
         return false;

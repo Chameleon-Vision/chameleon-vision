@@ -1,7 +1,30 @@
 <template>
     <div class="minimapClass">
         <canvas id="canvasId" width="800" height="800"/>
-        <span style="position: absolute">X: {{this.translation.x.toFixed(2)}}, Y: {{this.translation.y.toFixed(2)}}, ∠{{(Math.PI * this.radians / 180).toFixed(2)}}°</span>
+        <div class="tableClass">
+            <v-simple-table
+                    style="text-align: center; background-color: transparent"
+                    dense dark>
+                <template v-slot:default>
+                    <thead>
+                    <tr>
+                        <th class="text-center">Target</th>
+                        <th class="text-center">X</th>
+                        <th class="text-center">Y</th>
+                        <th class="text-center">Angle</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(target, index) in targets" :key="index">
+                        <td>{{ index}}</td>
+                        <td>{{ target.pose.translation.x.toFixed(2) }}</td>
+                        <td>{{ target.pose.translation.y.toFixed(2) }}</td>
+                        <td>{{ target.pose.rotation.radians.toFixed(2) }}</td>
+                    </tr>
+                    </tbody>
+                </template>
+            </v-simple-table>
+        </div>
     </div>
 </template>
 
@@ -9,11 +32,7 @@
     export default {
         name: "MiniMap",
         props: {
-            translation: {
-                x: Number,
-                y: Number,
-            },
-            radians: Number,
+            targets: Array,
             horizontalFOV: Number
         },
         data() {
@@ -27,16 +46,13 @@
             }
         },
         watch: {
-            translation: {
+            targets: {
                 deep: true,
                 handler() {
                     this.draw();
                 }
             },
-            radians(){
-                this.draw();
-            },
-            horizontalFOV(){
+            horizontalFOV() {
                 this.draw();
             }
         },
@@ -44,23 +60,20 @@
             draw() {
                 this.clearBoard();
                 this.drawPlayer();
-                // this.drawLine();
-                this.getFieldLocation();
-                this.drawTarget();
-                // this.drawText();
+                for (let index in this.targets) {
+                    this.drawTarget(index, this.targets[index].pose);
+                }
             },
-            drawText() {
-                this.ctx.fillStyle = "whitesmoke";
-                this.ctx.fillText(`X: ${this.translation.x.toFixed(2)}, Y: ${this.translation.y.toFixed(2)}, ∠${(Math.PI * this.radians / 180).toFixed(2)}° `, this.y - 30, this.x - 5);
-            },
-            drawTarget() {
+            drawTarget(index, target) {
                 // first save the untranslated/unrotated context
+                let x = 800 - (160 * target.translation.x); // getting meters as pixels
+                let y = 160 * target.translation.y;
                 this.ctx.save();
                 this.ctx.beginPath();
                 // move the rotation point to the center of the rect
-                this.ctx.translate(this.y + this.targetWidth / 2, this.x + this.targetHeight / 2); // wpi lib makes x forward and back and y left to right
+                this.ctx.translate(y + this.targetWidth / 2, x + this.targetHeight / 2); // wpi lib makes x forward and back and y left to right
                 // rotate the rect
-                this.ctx.rotate(this.radians);
+                this.ctx.rotate(target.rotation.radians);
 
                 // draw the rect on the transformed context
                 // Note: after transforming [0,0] is visually [x,y]
@@ -74,8 +87,9 @@
                 this.ctx.restore();
                 this.ctx.fillStyle = "whitesmoke";
                 this.ctx.beginPath();
-                this.ctx.arc(this.y + this.targetWidth / 2, this.x + this.targetHeight / 2, 3, 0, 2 * Math.PI, true);
+                this.ctx.arc(y + this.targetWidth / 2, x + this.targetHeight / 2, 3, 0, 2 * Math.PI, true);
                 this.ctx.fill();
+                this.ctx.fillText(index, y - 30, x - 5);
 
             },
             drawPlayer() {
@@ -97,10 +111,6 @@
             },
             clearBoard() {
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // clearing the canvas
-            },
-            getFieldLocation() {
-                this.x = 800 - (160 * this.translation.x); // getting meters as pixels
-                this.y = 160 * this.translation.y;
             }
         },
         computed: {
@@ -146,6 +156,18 @@
     }
 
     .minimapClass {
+        text-align: center;
+    }
+
+    .tableClass {
+        padding-top: 5px;
+        width: 70%;
+        text-align: center;
+        display: contents;
+    }
+
+    th {
+        width: 80px;
         text-align: center;
     }
 </style>

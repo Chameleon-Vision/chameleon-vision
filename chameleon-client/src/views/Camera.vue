@@ -100,7 +100,30 @@
                         <img id="CameraStream" v-if="cameraList.length > 0" :src="streamAddress" @click="onImageClick"
                              crossorigin="Anonymous"/>
                         <span v-else>No Cameras Are connected</span>
-                        <h5 id="Point">{{point}}</h5>
+                        <div class="tableClass">
+                            <v-simple-table
+                                    style="text-align: center; display: inline-flex; position: absolute;background-color: transparent"
+                                    dense dark>
+                                <template v-slot:default>
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center">Target</th>
+                                        <th class="text-center">Pitch</th>
+                                        <th class="text-center">Yaw</th>
+                                        <th class="text-center">Area</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr v-for="(value, index) in targets" :key="index">
+                                        <td>{{ index}}</td>
+                                        <td>{{ parseFloat(value.pitch).toFixed(2) }}</td>
+                                        <td>{{ parseFloat(value.yaw).toFixed(2) }}</td>
+                                        <td>{{ parseFloat(value.area).toFixed(2) }}</td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                            </v-simple-table>
+                        </div>
                     </div>
                 </div>
             </v-col>
@@ -328,15 +351,10 @@
                     return "";
                 }
             },
-            point: {
+            targets: {
                 get: function () {
-                    let p = this.$store.state.point.calculated;
-                    let fps = this.$store.state.point.fps;
-                    if (p !== undefined) {
-                        return `Pitch: ${parseFloat(p['pitch']).toFixed(2)}, Yaw: ${parseFloat(p['yaw']).toFixed(2)}, Area: ${parseFloat(p['area']).toFixed(2)}, FPS: ${parseFloat(fps).toFixed(2)}`
-                    } else {
-                        return undefined;
-                    }
+
+                    return this.$store.state.point.targets;
                 }
             },
             currentCameraIndex: {
@@ -397,9 +415,15 @@
         vertical-align: middle;
     }
 
-    #Point {
+    .tableClass {
         padding-top: 5px;
+        width: 70%;
         text-align: center;
-        color: #f4f4f4;
     }
+
+    th {
+        width: 80px;
+        text-align: center;
+    }
+
 </style>
