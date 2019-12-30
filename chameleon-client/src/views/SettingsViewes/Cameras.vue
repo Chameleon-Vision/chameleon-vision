@@ -139,11 +139,6 @@
                         self.cancellationModeButton.color = "red";
                     }
                 );
-            },
-            download() {
-                let file = require('../../assets/chessboard.png');
-                let blob = new Blob([file], {type: 'image/png'});
-                window.open(URL.createObjectURL(blob));
             }
         },
         computed: {
