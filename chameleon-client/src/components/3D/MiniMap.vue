@@ -14,7 +14,7 @@
                 y: Number,
             },
             radians: Number,
-            horizontalFOV: Number,
+            horizontalFOV: Number
         },
         data() {
             return {
@@ -33,6 +33,12 @@
                     this.draw();
                 }
             },
+            radians(){
+                this.draw();
+            },
+            horizontalFOV(){
+                this.draw();
+            }
         },
         methods: {
             draw() {
@@ -66,17 +72,28 @@
 
                 // restore the context to its untranslated/unrotated state
                 this.ctx.restore();
+                this.ctx.fillStyle = "whitesmoke";
+                this.ctx.beginPath();
+                this.ctx.arc(this.y + this.targetWidth / 2, this.x + this.targetHeight / 2, 3, 0, 2 * Math.PI, true);
+                this.ctx.fill();
 
             },
             drawPlayer() {
                 this.ctx.beginPath();
-
                 this.ctx.moveTo(400, 820);
                 this.ctx.lineTo(400 + this.hLen, 650);
                 this.ctx.lineTo(400 - this.hLen, 650);
                 this.ctx.closePath();
                 this.ctx.fillStyle = this.grad;
                 this.ctx.fill();
+                this.ctx.beginPath();
+                this.ctx.moveTo(400, 820);
+                this.ctx.lineTo(400 + this.hLen, 650);
+                this.ctx.stroke();
+                this.ctx.moveTo(400, 820);
+                this.ctx.lineTo(400 - this.hLen, 650);
+                this.ctx.stroke();
+
             },
             clearBoard() {
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // clearing the canvas
@@ -99,17 +116,20 @@
             this.canvas = canvas; // setting the canvas as a vue variable
             this.ctx = ctx; // setting the canvas context as a vue variable
             this.grad = this.ctx.createLinearGradient(400, 800, 400, 600);
-            this.grad.addColorStop(0, "rgba(1,92,9,0.44)");
-            this.grad.addColorStop(0.7, "#2b2b2b");
+            this.grad.addColorStop(0, "rgb(119,119,119)");
+            this.grad.addColorStop(0.05, "rgba(14,92,22,0.96)");
+            this.grad.addColorStop(0.8, "rgba(43,43,43,0.48)");
 
             // setting canvas context values for drawing
 
 
             this.ctx.font = "26px Arial";
             this.ctx.strokeStyle = "whitesmoke";
+            this.ctx.lineWidth = 2;
 
             this.$nextTick(function () {
                 this.drawPlayer();
+
             });
         }
     }
@@ -124,7 +144,8 @@
         border: 2px solid grey;
         box-shadow: 0 0 5px 1px;
     }
-    .minimapClass{
+
+    .minimapClass {
         text-align: center;
     }
 </style>
