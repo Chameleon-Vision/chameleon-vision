@@ -247,6 +247,8 @@ public class SolvePNPPipe implements Pipe<List<StandardCVPipeline.TrackedTarget>
         target.rVector = rVec;
         target.tVector = tVec;
 
+        System.out.println("Found target at pose: " + targetLocation.toString());
+
         return target;
     }
 
