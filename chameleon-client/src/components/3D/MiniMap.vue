@@ -67,7 +67,7 @@
             drawTarget(index, target) {
                 // first save the untranslated/unrotated context
                 let x = 800 - (160 * target.translation.x); // getting meters as pixels
-                let y = 400 + (160 * target.translation.y);
+                let y = 400 - (160 * target.translation.y);
                 this.ctx.save();
                 this.ctx.beginPath();
                 // move the rotation point to the center of the rect
