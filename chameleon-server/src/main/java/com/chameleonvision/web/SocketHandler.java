@@ -35,6 +35,8 @@ public class SocketHandler {
     private static List<WsContext> users;
     private static ObjectMapper objectMapper;
 
+    private static final Object broadcastLock = new Object();
+
     SocketHandler() {
         users = new ArrayList<>();
         objectMapper = new ObjectMapper(new MessagePackFactory());
@@ -229,17 +231,19 @@ public class SocketHandler {
     }
 
     private static void broadcastMessage(Object obj, WsContext userToSkip) {
-        if (users != null) {
-            var userList = users;
-            for (WsContext user : userList) {
-                if (userToSkip != null && user.getSessionId().equals(userToSkip.getSessionId())) {
-                    continue;
-                }
-                try {
-                    ByteBuffer b = ByteBuffer.wrap(objectMapper.writeValueAsBytes(obj));
-                    user.send(b);
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+        synchronized (broadcastLock) {
+            if (users != null) {
+                var userList = users;
+                for (WsContext user : userList) {
+                    if (userToSkip != null && user.getSessionId().equals(userToSkip.getSessionId())) {
+                        continue;
+                    }
+                    try {
+                        ByteBuffer b = ByteBuffer.wrap(objectMapper.writeValueAsBytes(obj));
+                        user.send(b);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
