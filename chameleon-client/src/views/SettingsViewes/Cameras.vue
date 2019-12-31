@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>
-            <CVselect name="Camera" :list="cameraList" v-model="currentCameraIndex"/>
+            <CVselect name="Camera" :list="cameraList" v-model="currentCameraIndex" @input="handleInput('currentCamera',currentCameraIndex)"/>
             <CVnumberinput name="Diagonal FOV" v-model="cameraSettings.fov"/>
             <br>
             <CVnumberinput name="Camera pitch"  v-model="cameraSettings.tilt" :step="0.01"/>
