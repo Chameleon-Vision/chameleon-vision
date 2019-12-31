@@ -4,7 +4,7 @@
             <CVselect name="Camera" :list="cameraList" v-model="currentCameraIndex"/>
             <CVnumberinput name="Diagonal FOV" v-model="cameraSettings.fov"/>
             <br>
-            <CVnumberinput name="Camera pitch" v-model="cameraSettings.tilt"/>
+            <CVnumberinput name="Camera pitch"  v-model="cameraSettings.tilt" :step="0.01"/>
             <br>
             <v-btn style="margin-top:10px" small color="#4baf62" @click="sendCameraSettings">Save Camera Settings
             </v-btn>

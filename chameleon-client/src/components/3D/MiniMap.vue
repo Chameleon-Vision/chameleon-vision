@@ -1,9 +1,11 @@
 <template>
-    <div class="minimapClass">
-        <canvas id="canvasId" width="800" height="800"/>
-        <div class="tableClass">
+    <div>
+        <v-row style="width: 400px;" align="center">
+            <canvas id="canvasId" width="800" height="800"/>
+        </v-row>
+        <v-row style="width: 400px;" align="center" justify="middle">
             <v-simple-table
-                    style="text-align: center; background-color: transparent"
+                    style="text-align: center;background-color: transparent; display: block;margin: auto"
                     dense dark>
                 <template v-slot:default>
                     <thead>
@@ -24,8 +26,9 @@
                     </tbody>
                 </template>
             </v-simple-table>
-        </div>
+        </v-row>
     </div>
+
 </template>
 
 <script>
@@ -153,17 +156,6 @@
         border-radius: 5px;
         border: 2px solid grey;
         box-shadow: 0 0 5px 1px;
-    }
-
-    .minimapClass {
-        text-align: center;
-    }
-
-    .tableClass {
-        padding-top: 5px;
-        width: 70%;
-        text-align: center;
-        display: contents;
     }
 
     th {

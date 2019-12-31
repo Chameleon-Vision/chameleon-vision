@@ -97,12 +97,19 @@
                     <div v-else style="height: 58px"></div>
                     <!-- camera image stream -->
                     <div class="videoClass">
-                        <img id="CameraStream" v-if="cameraList.length > 0" :src="streamAddress" @click="onImageClick"
-                             crossorigin="Anonymous"/>
-                        <span v-else>No Cameras Are connected</span>
-                        <div class="tableClass">
+                        <v-row align="center">
+                            <img id="CameraStream" style="display: block;margin: auto; width: 70%;height: 70%;"
+                                 v-if="cameraList.length > 0"
+                                 :src="streamAddress" @click="onImageClick"
+                                 crossorigin="Anonymous"/>
+                            <span v-else>No Cameras Are connected</span>
+                        </v-row>
+                        <v-row justify="end">
+                            <span style="margin-right: 45px">FPS:{{fps.toFixed(2)}}</span>
+                        </v-row>
+                        <v-row align="center">
                             <v-simple-table
-                                    style="text-align: center; display: inline-flex; position: absolute;background-color: transparent"
+                                    style="text-align: center;background-color: transparent; display: block;margin: auto"
                                     dense dark>
                                 <template v-slot:default>
                                     <thead>
@@ -123,7 +130,7 @@
                                     </tbody>
                                 </template>
                             </v-simple-table>
-                        </div>
+                        </v-row>
                     </div>
                 </div>
             </v-col>
@@ -357,6 +364,11 @@
                     return this.$store.state.point.targets;
                 }
             },
+            fps: {
+                get() {
+                    return this.$store.state.point.fps;
+                }
+            },
             currentCameraIndex: {
                 get() {
                     return this.$store.state.currentCameraIndex;
@@ -407,13 +419,6 @@
         text-align: center;
     }
 
-    .videoClass img {
-        max-height: 70vh;
-        max-width: 70%;
-        width: 70%;
-        object-fit: cover;
-        vertical-align: middle;
-    }
 
     .tableClass {
         padding-top: 5px;
