@@ -5,6 +5,7 @@ import com.chameleonvision.network.NetworkManager;
 import com.chameleonvision.scripting.ScriptEventType;
 import com.chameleonvision.scripting.ScriptManager;
 import com.chameleonvision.util.Platform;
+import com.chameleonvision.util.ShellExec;
 import com.chameleonvision.util.Utilities;
 import com.chameleonvision.vision.VisionManager;
 import com.chameleonvision.web.Server;
