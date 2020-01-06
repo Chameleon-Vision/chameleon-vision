@@ -71,19 +71,18 @@ public class StandardCVPipeline extends CVPipeline<StandardCVPipelineResult, Sta
         speckleRejectPipe = new SpeckleRejectPipe(settings.speckle.doubleValue());
         groupContoursPipe = new GroupContoursPipe(settings.targetGroup, settings.targetIntersection);
         sortContoursPipe = new SortContoursPipe(settings.sortMode, camProps, 5);
-        collect2dTargetsPipe = new Collect2dTargetsPipe(settings.calibrationMode,settings.point,settings.dualTargetCalibrationM,settings.dualTargetCalibrationB, camProps);
+        collect2dTargetsPipe = new Collect2dTargetsPipe(settings.calibrationMode, settings.targetRegion, settings.point, settings.dualTargetCalibrationM, settings.dualTargetCalibrationB, camProps);
         draw2dContoursSettings = new Draw2dContoursPipe.Draw2dContoursSettings();
         draw2dCrosshairPipeSettings = new Draw2dCrosshairPipe.Draw2dCrosshairPipeSettings();
 
-        // TODO: make settable from UI? config?
-        draw2dContoursSettings.showCentroid = false;
+        draw2dContoursSettings.showCentroid = true;
         draw2dContoursSettings.boxOutlineSize = 2;
         draw2dContoursSettings.showRotatedBox = true;
         draw2dContoursSettings.showMaximumBox = true;
         draw2dContoursSettings.showMultiple = settings.multiple;
-        draw2dCrosshairPipeSettings.showCrosshair=true;
+        draw2dCrosshairPipeSettings.showCrosshair = true;
         draw2dContoursPipe = new Draw2dContoursPipe(draw2dContoursSettings, camProps);
-        draw2dCrosshairPipe=new Draw2dCrosshairPipe(draw2dCrosshairPipeSettings,settings.calibrationMode,settings.point,settings.dualTargetCalibrationM,settings.dualTargetCalibrationB);
+        draw2dCrosshairPipe = new Draw2dCrosshairPipe(draw2dCrosshairPipeSettings, settings.calibrationMode, settings.point, settings.dualTargetCalibrationM, settings.dualTargetCalibrationB);
         outputMatPipe = new OutputMatPipe(settings.isBinary);
     }
 
@@ -124,14 +123,16 @@ public class StandardCVPipeline extends CVPipeline<StandardCVPipelineResult, Sta
         speckleRejectPipe.setConfig(settings.speckle.doubleValue());
         groupContoursPipe.setConfig(settings.targetGroup, settings.targetIntersection);
         sortContoursPipe.setConfig(settings.sortMode, camProps, 5);
-        collect2dTargetsPipe = new Collect2dTargetsPipe(settings.calibrationMode,settings.point,settings.dualTargetCalibrationM,settings.dualTargetCalibrationB, camProps);
+        collect2dTargetsPipe = new Collect2dTargetsPipe(settings.calibrationMode, settings.targetRegion, settings.point, settings.dualTargetCalibrationM, settings.dualTargetCalibrationB, camProps);
         draw2dContoursPipe.setConfig(settings.multiple, camProps);
-        draw2dCrosshairPipe.setConfig(draw2dCrosshairPipeSettings,settings.calibrationMode,settings.point,settings.dualTargetCalibrationM,settings.dualTargetCalibrationB);
+        draw2dCrosshairPipe.setConfig(draw2dCrosshairPipeSettings, settings.calibrationMode, settings.point, settings.dualTargetCalibrationM, settings.dualTargetCalibrationB);
         outputMatPipe.setConfig(settings.isBinary);
 
-        if(settings.is3D) {
-            if(solvePNPPipe == null) solvePNPPipe = new SolvePNPPipe(settings, cameraCapture.getCurrentCalibrationData(), cameraCapture.getProperties().getTilt());
-            if(drawSolvePNPPipe == null) drawSolvePNPPipe = new DrawSolvePNPPipe(cameraCapture.getCurrentCalibrationData());
+        if (settings.is3D) {
+            if (solvePNPPipe == null)
+                solvePNPPipe = new SolvePNPPipe(settings, cameraCapture.getCurrentCalibrationData(), cameraCapture.getProperties().getTilt());
+            if (drawSolvePNPPipe == null)
+                drawSolvePNPPipe = new DrawSolvePNPPipe(cameraCapture.getCurrentCalibrationData());
 
             solvePNPPipe.setConfig(settings, cameraCapture.getCurrentCalibrationData(), cameraCapture.getProperties().getTilt());
             drawSolvePNPPipe.setConfig(cameraCapture.getCurrentCalibrationData());
@@ -179,7 +180,7 @@ public class StandardCVPipeline extends CVPipeline<StandardCVPipelineResult, Sta
 
         Pair<Mat, Long> result;
 
-        if(!settings.is3D) {
+        if (!settings.is3D) {
             // takes pair of (Mat to draw on, List<RotatedRect> of sorted contours)
             result = draw2dContoursPipe.run(Pair.of(outputMatResult.getLeft(), sortContoursResult.getLeft()));
             totalPipelineTimeNanos += result.getRight();
@@ -188,12 +189,12 @@ public class StandardCVPipeline extends CVPipeline<StandardCVPipelineResult, Sta
         }
 
         // takes pair of (Mat to draw on, List<RotatedRect> of sorted contours)
-        Pair<Mat, Long> draw2dCrosshairResult = draw2dCrosshairPipe.run(Pair.of(result.getLeft(),collect2dTargetsResult.getLeft()));
+        Pair<Mat, Long> draw2dCrosshairResult = draw2dCrosshairPipe.run(Pair.of(result.getLeft(), collect2dTargetsResult.getLeft()));
         totalPipelineTimeNanos += draw2dCrosshairResult.getRight();
 
         Mat outputMat;
 
-        if(settings.is3D) {
+        if (settings.is3D) {
             // once we've sorted our targets, perform solvePNP. The number of "best targets" is limited by the above pipe
             Pair<List<TrackedTarget>, Long> solvePNPResult = solvePNPPipe.run(Pair.of(collect2dTargetsResult.getLeft(), hsvResult.getLeft()));
             totalPipelineTimeNanos += solvePNPResult.getRight();
@@ -254,6 +255,7 @@ public class StandardCVPipeline extends CVPipeline<StandardCVPipelineResult, Sta
         public double pitch = 0.0;
         public double yaw = 0.0;
         public double area = 0.0;
+        public Point point = new Point();
         public RotatedRect minAreaRect;
 
         // 3d stuff

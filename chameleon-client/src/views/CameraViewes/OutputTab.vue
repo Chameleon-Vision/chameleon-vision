@@ -1,8 +1,9 @@
 <template>
     <div>
-        <CVselect name="SortMode" v-model="value.sortMode"
+        <CVselect name="Sort Mode" v-model="value.sortMode"
                   :list="['Largest','Smallest','Highest','Lowest','Rightmost','Leftmost','Centermost']"
                   @input="handleData('sortMode')"/>
+        <CVselect v-model="value.targetRegion" name="Target Region" :list="['Center','Top','Bottom','Left','Right']" @input="handleData('targetRegion')"/>
         <CVswitch name="Output multiple" v-model="value.multiple" @input="handleData('multiple')"/>
         <span>Calibrate:</span>
         <v-divider dark color="white"/>
@@ -41,7 +42,7 @@
             doUpdate() {
                 this.$emit('update')
             },
-            showSnackbar(message){
+            showSnackbar(message) {
                 this.snackbarText = message;
                 this.snackbar = true;
             },
@@ -50,7 +51,7 @@
         data() {
             return {
                 snackbar: false,
-                snackbarText:""
+                snackbarText: ""
             }
         },
         computed: {
