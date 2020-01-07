@@ -20,6 +20,7 @@ public class Collect2dTargetsPipe implements Pipe<Pair<List<StandardCVPipeline.T
     private double calibrationM, calibrationB;
     private TargetRegion targetRegion;
     private List<StandardCVPipeline.TrackedTarget> targets = new ArrayList<>();
+    private Point[] vertices = new Point[4];
 
     public Collect2dTargetsPipe(CalibrationMode calibrationMode, TargetRegion targetRegion, List<Number> calibrationPoint, double calibrationM, double calibrationB, CaptureStaticProperties camProps) {
         setConfig(calibrationMode, targetRegion, calibrationPoint, calibrationM, calibrationB, camProps);
@@ -44,96 +45,68 @@ public class Collect2dTargetsPipe implements Pipe<Pair<List<StandardCVPipeline.T
 
         if (input.size() > 0) {
             for (var t : input) {
-                if (this.targetRegion == TargetRegion.Center) {
-                    t.point.x = t.minAreaRect.center.x;
-                    t.point.y = t.minAreaRect.center.y;
-                } else {
-                    Point[] points = new Point[4];
-                    t.minAreaRect.points(points);
-                    double angle = t.minAreaRect.angle;
-                    Point tl, tr, bl, br, result;
-//                    if (t.minAreaRect.size.width < t.minAreaRect.size.height) {
-//                        angle -= 90;
-//                    }
+                t.minAreaRect.points(vertices);
+                Point bl = getMiddle(vertices[0], vertices[1]);
+                Point tl = getMiddle(vertices[1], vertices[2]);
+                Point tr = getMiddle(vertices[2], vertices[3]);
+                Point br = getMiddle(vertices[3], vertices[0]);
 
-
-                    bl = getMiddle(points[0], points[1]);
-                    tl = getMiddle(points[1], points[2]);
-                    tr = getMiddle(points[2], points[3]);
-                    br = getMiddle(points[3], points[0]);
-
-                    switch (this.targetRegion) {
-                        case Top: {
-                            if (t.minAreaRect.size.width > t.minAreaRect.size.height) {
-                                result = tl;
-                            } else {
-                                result = tr;
-                            }
-                            break;
-                        }
-                        case Bottom:{
-                            if (t.minAreaRect.size.width > t.minAreaRect.size.height) {
-                                result = br;
-                            } else {
-                                result = bl;
-                            }
-                            break;
-                        }
-                        case Left:{
-                            if (t.minAreaRect.size.width > t.minAreaRect.size.height) {
-                                result = bl;
-                            } else {
-                                result = tl;
-                            }
-                            break;
-                        }
-                        case Right:{
-                            if (t.minAreaRect.size.width > t.minAreaRect.size.height) {
-                                result = tr;
-                            } else {
-                                result = br;
-                            }
-                            break;
-                        }
-                        default:{
-                            result = t.minAreaRect.center;
-                        }
-
+                double angle = t.minAreaRect.angle;
+                if (t.minAreaRect.size.width < t.minAreaRect.size.height) {
+                    angle -= 90;
+                }
+                boolean orientation = t.minAreaRect.size.width > t.minAreaRect.size.height;
+                Point result = t.minAreaRect.center;
+                switch (this.targetRegion) {
+                    case Top: {
+                        result = orientation ? tl : tr;
+                        break;
                     }
-                    t.point = result;
-
-
+                    case Bottom: {
+                        result = orientation ? br : bl;
+                        break;
+                    }
+                    case Left: {
+                        result = orientation ? bl : tl;
+                        break;
+                    }
+                    case Right: {
+                        result = orientation ? tr : br;
+                        break;
+                    }
                 }
-                switch (this.calibrationMode) {
-                    case Single:
-                        if (this.calibrationPoint.isEmpty()) {
-                            this.calibrationPoint.add(camProps.centerX);
-                            this.calibrationPoint.add(camProps.centerY);
-                        }
-                        t.calibratedX = this.calibrationPoint.get(0).doubleValue();
-                        t.calibratedY = this.calibrationPoint.get(1).doubleValue();
-                        break;
-                    case None:
-                        t.calibratedX = camProps.centerX;
-                        t.calibratedY = camProps.centerY;
-                        break;
-                    case Dual:
-                        t.calibratedX = (t.point.x - this.calibrationB) / this.calibrationM;
-                        t.calibratedY = (t.point.y * this.calibrationM) + this.calibrationB;
-                        break;
-                }
+                t.point = result;
 
-                t.pitch = calculatePitch(t.point.y, t.calibratedY);
-                t.yaw = calculateYaw(t.point.x, t.calibratedX);
-                t.area = t.minAreaRect.size.area() / imageArea;
-
-                targets.add(t);
+            switch (this.calibrationMode) {
+                case Single:
+                    if (this.calibrationPoint.isEmpty()) {
+                        this.calibrationPoint.add(camProps.centerX);
+                        this.calibrationPoint.add(camProps.centerY);
+                    }
+                    t.calibratedX = this.calibrationPoint.get(0).doubleValue();
+                    t.calibratedY = this.calibrationPoint.get(1).doubleValue();
+                    break;
+                case None:
+                    t.calibratedX = camProps.centerX;
+                    t.calibratedY = camProps.centerY;
+                    break;
+                case Dual:
+                    t.calibratedX = (t.point.x - this.calibrationB) / this.calibrationM;
+                    t.calibratedY = (t.point.y * this.calibrationM) + this.calibrationB;
+                    break;
             }
-        }
 
-        long processTime = System.nanoTime() - processStartNanos;
-        return Pair.of(targets, processTime);
+            t.pitch = calculatePitch(t.point.y, t.calibratedY);
+            t.yaw = calculateYaw(t.point.x, t.calibratedX);
+            t.area = t.minAreaRect.size.area() / imageArea;
+
+            targets.add(t);
+        }
     }
+
+    long processTime = System.nanoTime() - processStartNanos;
+        return Pair.of(targets,processTime);
+}
 
     private double calculatePitch(double pixelY, double centerY) {
         double pitch = FastMath.toDegrees(FastMath.atan((pixelY - centerY) / camProps.verticalFocalLength));
@@ -147,5 +120,4 @@ public class Collect2dTargetsPipe implements Pipe<Pair<List<StandardCVPipeline.T
     private Point getMiddle(Point p1, Point p2) {
         return new Point(((p1.x + p2.x) / 2), ((p1.y + p2.y) / 2));
     }
-
 }
