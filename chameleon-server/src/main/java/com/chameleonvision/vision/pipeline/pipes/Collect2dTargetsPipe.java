@@ -48,9 +48,28 @@ public class Collect2dTargetsPipe implements Pipe<Pair<List<StandardCVPipeline.T
                     t.point.x = t.minAreaRect.center.x;
                     t.point.y = t.minAreaRect.center.y;
                 } else {
-                    t.point.x = t.minAreaRect.center.x + FastMath.abs(t.minAreaRect.size.width / 2 * FastMath.sin(t.minAreaRect.angle) - t.minAreaRect.size.height / 2 * FastMath.cos(t.minAreaRect.angle));
-                    t.point.y = t.minAreaRect.center.y + FastMath.abs(t.minAreaRect.size.width / 2 * FastMath.cos(t.minAreaRect.angle) + t.minAreaRect.size.height / 2 * FastMath.sin(t.minAreaRect.angle));;
-//                    t.point.y = t.minAreaRect.center.y + ((FastMath.cos(t.minAreaRect.angle) * t.minAreaRect.size.height) + (FastMath.sin(t.minAreaRect.angle) * t.minAreaRect.size.width));
+                    double angle = FastMath.toRadians(t.minAreaRect.angle);
+                    double cosA = FastMath.cos(angle);
+                    double sinA = FastMath.sin(angle);
+                    switch (this.targetRegion) {
+                        case Right:
+                            t.point.x = t.minAreaRect.center.x + t.minAreaRect.size.width / 2 * cosA;
+                            t.point.y = t.minAreaRect.center.y + t.minAreaRect.size.width / 2 * sinA;
+                            break;
+                        case Left:
+                            t.point.x = t.minAreaRect.center.x - t.minAreaRect.size.width / 2 * cosA;
+                            t.point.y = t.minAreaRect.center.y + t.minAreaRect.size.width / 2 * sinA;
+                            break;
+                        case Top:
+                            t.point.x = t.minAreaRect.center.x + t.minAreaRect.size.height / 2 * sinA;
+                            t.point.y = t.minAreaRect.center.y - t.minAreaRect.size.height / 2 * cosA;
+                            break;
+                        case Bottom:
+                            t.point.x = t.minAreaRect.center.x + t.minAreaRect.size.height / 2 * sinA;
+                            t.point.y = t.minAreaRect.center.y + t.minAreaRect.size.height / 2 * cosA;
+                            break;
+                    }
+
                 }
                 switch (this.calibrationMode) {
                     case Single:

@@ -10,7 +10,9 @@ import com.chameleonvision.vision.pipeline.pipes.*;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.*;
+import org.opencv.core.Point;
 
+import java.awt.*;
 import java.util.List;
 
 import static com.chameleonvision.vision.pipeline.impl.StandardCVPipeline.*;
@@ -76,6 +78,7 @@ public class StandardCVPipeline extends CVPipeline<StandardCVPipelineResult, Sta
         draw2dCrosshairPipeSettings = new Draw2dCrosshairPipe.Draw2dCrosshairPipeSettings();
 
         draw2dContoursSettings.showCentroid = true;
+        draw2dContoursSettings.centroidColor = new Color(25, 239, 0);
         draw2dContoursSettings.boxOutlineSize = 2;
         draw2dContoursSettings.showRotatedBox = true;
         draw2dContoursSettings.showMaximumBox = true;
