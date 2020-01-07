@@ -1,5 +1,6 @@
 package com.chameleonvision.vision.pipeline.pipes;
 
+import com.chameleonvision.util.MathHandler;
 import com.chameleonvision.vision.camera.CaptureStaticProperties;
 import com.chameleonvision.vision.enums.TargetRegion;
 import com.chameleonvision.vision.pipeline.Pipe;
@@ -51,11 +52,11 @@ public class Collect2dTargetsPipe implements Pipe<Pair<List<StandardCVPipeline.T
                 Point tr = getMiddle(vertices[2], vertices[3]);
                 Point br = getMiddle(vertices[3], vertices[0]);
 
-                double angle = t.minAreaRect.angle;
-                if (t.minAreaRect.size.width < t.minAreaRect.size.height) {
-                    angle -= 90;
-                }
-                boolean orientation = t.minAreaRect.size.width > t.minAreaRect.size.height;
+                double m = MathHandler.toSlope(-t.minAreaRect.angle);
+                double b1 = vertices[3].x * m - vertices[3].y;
+                double b2 = vertices[0].x * m - vertices[0].y;
+
+                boolean orientation = b1 < b2 || t.minAreaRect.size.width > t.minAreaRect.size.height;
                 Point result = t.minAreaRect.center;
                 switch (this.targetRegion) {
                     case Top: {
@@ -77,36 +78,36 @@ public class Collect2dTargetsPipe implements Pipe<Pair<List<StandardCVPipeline.T
                 }
                 t.point = result;
 
-            switch (this.calibrationMode) {
-                case Single:
-                    if (this.calibrationPoint.isEmpty()) {
-                        this.calibrationPoint.add(camProps.centerX);
-                        this.calibrationPoint.add(camProps.centerY);
-                    }
-                    t.calibratedX = this.calibrationPoint.get(0).doubleValue();
-                    t.calibratedY = this.calibrationPoint.get(1).doubleValue();
-                    break;
-                case None:
-                    t.calibratedX = camProps.centerX;
-                    t.calibratedY = camProps.centerY;
-                    break;
-                case Dual:
-                    t.calibratedX = (t.point.x - this.calibrationB) / this.calibrationM;
-                    t.calibratedY = (t.point.y * this.calibrationM) + this.calibrationB;
-                    break;
+                switch (this.calibrationMode) {
+                    case Single:
+                        if (this.calibrationPoint.isEmpty()) {
+                            this.calibrationPoint.add(camProps.centerX);
+                            this.calibrationPoint.add(camProps.centerY);
+                        }
+                        t.calibratedX = this.calibrationPoint.get(0).doubleValue();
+                        t.calibratedY = this.calibrationPoint.get(1).doubleValue();
+                        break;
+                    case None:
+                        t.calibratedX = camProps.centerX;
+                        t.calibratedY = camProps.centerY;
+                        break;
+                    case Dual:
+                        t.calibratedX = (t.point.x - this.calibrationB) / this.calibrationM;
+                        t.calibratedY = (t.point.y * this.calibrationM) + this.calibrationB;
+                        break;
+                }
+
+                t.pitch = calculatePitch(t.point.y, t.calibratedY);
+                t.yaw = calculateYaw(t.point.x, t.calibratedX);
+                t.area = t.minAreaRect.size.area() / imageArea;
+
+                targets.add(t);
             }
-
-            t.pitch = calculatePitch(t.point.y, t.calibratedY);
-            t.yaw = calculateYaw(t.point.x, t.calibratedX);
-            t.area = t.minAreaRect.size.area() / imageArea;
-
-            targets.add(t);
         }
-    }
 
-    long processTime = System.nanoTime() - processStartNanos;
-        return Pair.of(targets,processTime);
-}
+        long processTime = System.nanoTime() - processStartNanos;
+        return Pair.of(targets, processTime);
+    }
 
     private double calculatePitch(double pixelY, double centerY) {
         double pitch = FastMath.toDegrees(FastMath.atan((pixelY - centerY) / camProps.verticalFocalLength));
