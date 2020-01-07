@@ -74,7 +74,7 @@ public class Draw2dContoursPipe implements Pipe<Pair<Mat, List<StandardCVPipelin
                         Imgproc.rectangle(input.getLeft(), new Point(box.x, box.y), new Point((box.x + box.width), (box.y + box.height)), Helpers.colorToScalar(settings.maximumBoxColor), settings.boxOutlineSize);
                     }
                     if (settings.showCentroid) {
-                        Imgproc.circle(input.getLeft(), target.point, 4, Helpers.colorToScalar(settings.centroidColor), 1);
+                        Imgproc.circle(input.getLeft(), target.point, 3, Helpers.colorToScalar(settings.centroidColor), 2);
 
                     }
 
