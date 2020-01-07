@@ -73,7 +73,7 @@ public class StandardCVPipeline extends CVPipeline<StandardCVPipelineResult, Sta
         speckleRejectPipe = new SpeckleRejectPipe(settings.speckle.doubleValue());
         groupContoursPipe = new GroupContoursPipe(settings.targetGroup, settings.targetIntersection);
         sortContoursPipe = new SortContoursPipe(settings.sortMode, camProps, 5);
-        collect2dTargetsPipe = new Collect2dTargetsPipe(settings.calibrationMode, settings.targetRegion, settings.point, settings.dualTargetCalibrationM, settings.dualTargetCalibrationB, camProps);
+        collect2dTargetsPipe = new Collect2dTargetsPipe(settings.calibrationMode, settings.targetRegion, settings.targetOrientation, settings.point, settings.dualTargetCalibrationM, settings.dualTargetCalibrationB, camProps);
         draw2dContoursSettings = new Draw2dContoursPipe.Draw2dContoursSettings();
         draw2dCrosshairPipeSettings = new Draw2dCrosshairPipe.Draw2dCrosshairPipeSettings();
 
@@ -126,7 +126,7 @@ public class StandardCVPipeline extends CVPipeline<StandardCVPipelineResult, Sta
         speckleRejectPipe.setConfig(settings.speckle.doubleValue());
         groupContoursPipe.setConfig(settings.targetGroup, settings.targetIntersection);
         sortContoursPipe.setConfig(settings.sortMode, camProps, 5);
-        collect2dTargetsPipe = new Collect2dTargetsPipe(settings.calibrationMode, settings.targetRegion, settings.point, settings.dualTargetCalibrationM, settings.dualTargetCalibrationB, camProps);
+        collect2dTargetsPipe = new Collect2dTargetsPipe(settings.calibrationMode, settings.targetRegion, settings.targetOrientation, settings.point, settings.dualTargetCalibrationM, settings.dualTargetCalibrationB, camProps);
         draw2dContoursPipe.setConfig(settings.multiple, camProps);
         draw2dCrosshairPipe.setConfig(draw2dCrosshairPipeSettings, settings.calibrationMode, settings.point, settings.dualTargetCalibrationM, settings.dualTargetCalibrationB);
         outputMatPipe.setConfig(settings.isBinary);

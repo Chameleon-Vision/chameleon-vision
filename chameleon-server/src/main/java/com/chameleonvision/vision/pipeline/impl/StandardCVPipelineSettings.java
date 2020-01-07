@@ -25,6 +25,7 @@ public class StandardCVPipelineSettings extends CVPipelineSettings {
     public boolean isBinary = false;
     public SortMode sortMode = SortMode.Largest;
     public TargetRegion targetRegion = TargetRegion.Center;
+    public TargetOrientation targetOrientation = TargetOrientation.Landscape;
     public boolean multiple = false;
     public TargetGroup targetGroup = TargetGroup.Single;
     public TargetIntersection targetIntersection = TargetIntersection.Up;

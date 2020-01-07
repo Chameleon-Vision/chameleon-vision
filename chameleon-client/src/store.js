@@ -39,7 +39,8 @@ export default new Vuex.Store({
             videoModeIndex: 0,
             streamDivisor: 0,
             is3D: false,
-            targetRegion:0
+            targetRegion:0,
+            targetOrientation:1
         },
         cameraSettings: {
             calibration: [],
