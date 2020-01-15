@@ -14,8 +14,11 @@ public class NetworkTablesManager {
     private NetworkTablesManager() {}
 
     private static final NetworkTableInstance NTInst = NetworkTableInstance.getDefault();
+
     public static final String kRootTableName = "/chameleon-vision";
     public static final NetworkTable kRootTable = NetworkTableInstance.getDefault().getTable(kRootTableName);
+
+    public static boolean isServer = false;
 
     private static int getTeamNumber() {
         return ConfigManager.settings.teamNumber;
@@ -43,6 +46,7 @@ public class NetworkTablesManager {
     }
 
     public static void setClientMode(String host) {
+        isServer = false;
         System.out.println("Starting NT Client");
         NTInst.stopServer();
         if (host != null) {
@@ -52,7 +56,12 @@ public class NetworkTablesManager {
         }
     }
 
+    public static void setTeamClientMode() {
+        setClientMode(null);
+    }
+
     public static void setServerMode() {
+        isServer = true;
         System.out.println("Starting NT Server");
         NTInst.stopClient();
         NTInst.startServer();
