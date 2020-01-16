@@ -23,7 +23,6 @@ public class StandardCVPipelineSettingsSerializer extends BaseSerializer<Standar
         gen.writeNumberField("index", pipeline.index);
 
         writeEnum("flipMode", pipeline.flipMode);
-
         writeEnum("rotationMode", pipeline.rotationMode);
 
         gen.writeStringField("nickname", pipeline.nickname);
@@ -45,10 +44,10 @@ public class StandardCVPipelineSettingsSerializer extends BaseSerializer<Standar
 
         writeNumberListAsDoubleArray("area", pipeline.area);
         writeNumberListAsDoubleArray("ratio", pipeline.ratio);
-        writeNumberListAsIntArray("extend", pipeline.extent);
+        writeNumberListAsDoubleArray("extent", pipeline.extent);
 
         // speckle rejection
-        gen.writeNumberField("speckle", (int)pipeline.speckle);
+        gen.writeNumberField("speckle", (Integer) pipeline.speckle);
 
         // stream output (camera feed, or thresholded feed)
         gen.writeBooleanField("isBinary", pipeline.isBinary);
