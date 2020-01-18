@@ -2,8 +2,12 @@ package com.chameleonvision.config.serializers;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import org.opencv.core.MatOfPoint3f;
+import org.opencv.core.Point;
+import org.opencv.core.Point3;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseSerializer<T> extends StdSerializer<T> {
@@ -15,14 +19,14 @@ public abstract class BaseSerializer<T> extends StdSerializer<T> {
 
     void writeNumberListAsIntArray(String name, List<Number> list) throws IOException {
         generator.writeArrayFieldStart(name);
-        int[] vals = list.stream().mapToInt(i->(Integer)i).toArray();
+        int[] vals = list.stream().mapToInt(i -> (Integer) i).toArray();
         generator.writeArray(vals, 0, vals.length);
         generator.writeEndArray();
     }
 
     void writeNumberListAsDoubleArray(String name, List<Number> list) throws IOException {
         generator.writeArrayFieldStart(name);
-        double[] vals = list.stream().mapToDouble(i->(Double)i).toArray();
+        double[] vals = list.stream().mapToDouble(i -> (Double) i).toArray();
         generator.writeArray(vals, 0, vals.length);
         generator.writeEndArray();
     }
@@ -30,5 +34,21 @@ public abstract class BaseSerializer<T> extends StdSerializer<T> {
     <E extends Enum<E>> void writeEnum(String name, E num) throws IOException {
         generator.writeFieldName(name);
         generator.writeString(num.name());
+    }
+
+    void writeMatOfPoint3f(String name, MatOfPoint3f mat) throws IOException {
+        List<Point3> point3List = mat.toList();
+        List<List<Double>> doubleList = new ArrayList<>();
+        for (Point3 point3 : point3List) {
+            List<Double> tmp = new ArrayList<>() {{
+                add(point3.x);
+                add(point3.y);
+                add(point3.z);
+            }};
+            doubleList.add(tmp);
+        }
+        generator.writeObjectFieldStart(name);
+        generator.writeObject(doubleList);
+        generator.writeEndObject();
     }
 }
