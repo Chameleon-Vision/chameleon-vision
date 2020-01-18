@@ -75,7 +75,7 @@ public class StandardCVPipelineSettingsSerializer extends BaseSerializer<Standar
         // TODO: how tf do we do 'targetCornerMat'
 
         gen.writeBooleanField("is3D", pipeline.is3D);
-
+        writeMatOfPoint3f("targetCornerMat", pipeline.targetCornerMat);
         gen.writeEndObject();
     }
 }
