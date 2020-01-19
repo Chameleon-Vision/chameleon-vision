@@ -11,7 +11,11 @@ import com.fasterxml.jackson.databind.node.IntNode;
 import java.io.IOException;
 
 public class StandardCVPipelineSettingsDeserializer extends BaseDeserializer<StandardCVPipelineSettings> {
-    protected StandardCVPipelineSettingsDeserializer(Class<?> vc) {
+    public StandardCVPipelineSettingsDeserializer() {
+        this(null);
+    }
+
+    private StandardCVPipelineSettingsDeserializer(Class<?> vc) {
         super(vc);
     }
 

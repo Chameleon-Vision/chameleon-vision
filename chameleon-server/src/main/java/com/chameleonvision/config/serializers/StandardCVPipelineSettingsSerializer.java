@@ -3,13 +3,15 @@ package com.chameleonvision.config.serializers;
 import com.chameleonvision.vision.pipeline.impl.StandardCVPipelineSettings;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
-import java.util.List;
 
 public class StandardCVPipelineSettingsSerializer extends BaseSerializer<StandardCVPipelineSettings> {
-    protected StandardCVPipelineSettingsSerializer(Class<StandardCVPipelineSettings> t) {
+    public StandardCVPipelineSettingsSerializer() {
+        this(null);
+    }
+
+    private StandardCVPipelineSettingsSerializer(Class<StandardCVPipelineSettings> t) {
         super(t);
     }
 
