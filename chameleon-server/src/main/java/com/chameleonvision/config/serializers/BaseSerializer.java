@@ -26,7 +26,7 @@ public abstract class BaseSerializer<T> extends StdSerializer<T> {
 
     void writeNumberListAsDoubleArray(String name, List<Number> list) throws IOException {
         generator.writeArrayFieldStart(name);
-        double[] vals = list.stream().mapToDouble(i -> (Double) i).toArray();
+        double[] vals = list.stream().mapToDouble(Number::doubleValue).toArray();
         generator.writeArray(vals, 0, vals.length);
         generator.writeEndArray();
     }
@@ -38,17 +38,12 @@ public abstract class BaseSerializer<T> extends StdSerializer<T> {
 
     void writeMatOfPoint3f(String name, MatOfPoint3f mat) throws IOException {
         List<Point3> point3List = mat.toList();
-        List<List<Double>> doubleList = new ArrayList<>();
+        generator.writeArrayFieldStart(name);
+
         for (Point3 point3 : point3List) {
-            List<Double> tmp = new ArrayList<>() {{
-                add(point3.x);
-                add(point3.y);
-                add(point3.z);
-            }};
-            doubleList.add(tmp);
+            double[] tmp = {point3.x, point3.y, point3.z};
+            generator.writeObject(tmp);
         }
-        generator.writeObjectFieldStart(name);
-        generator.writeObject(doubleList);
-        generator.writeEndObject();
+        generator.writeEndArray();
     }
 }
