@@ -17,17 +17,11 @@ public abstract class BaseSerializer<T> extends StdSerializer<T> {
 
     JsonGenerator generator;
 
-    void writeNumberListAsIntArray(String name, List<Number> list) throws IOException {
+    void writeNumberListAsNumberArray(String name, List<Number> list) throws IOException {
         generator.writeArrayFieldStart(name);
-        int[] vals = list.stream().mapToInt(i -> (Integer) i).toArray();
-        generator.writeArray(vals, 0, vals.length);
-        generator.writeEndArray();
-    }
-
-    void writeNumberListAsDoubleArray(String name, List<Number> list) throws IOException {
-        generator.writeArrayFieldStart(name);
-        double[] vals = list.stream().mapToDouble(Number::doubleValue).toArray();
-        generator.writeArray(vals, 0, vals.length);
+        for (Number i : list) {
+            generator.writeObject(i);
+        }
         generator.writeEndArray();
     }
 

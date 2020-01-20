@@ -26,14 +26,14 @@ public abstract class BaseDeserializer<T> extends StdDeserializer<T> {
     private CollectionType pointListColType = TypeFactory.defaultInstance().constructCollectionType(List.class, Object.class);
     private static final ObjectMapper mapper = new ObjectMapper();
     private static boolean nodeGood(JsonNode node) {
-        return (nodeGood(node));
+        return node != null && !node.toString().equals("");
     }
 
     List<Number> getNumberList(String name, List<Number> defaultValue) throws JsonProcessingException {
         JsonNode node = baseNode.get(name);
 
         if (nodeGood(node)) {
-            return mapper.readValue(node.asText(), numberListColType);
+            return mapper.readValue(node.toString(), numberListColType);
         }
         return defaultValue;
     }
@@ -49,14 +49,14 @@ public abstract class BaseDeserializer<T> extends StdDeserializer<T> {
     }
 
     int getInt(String name, int defaultValue) {
-        return (int) getDouble(name, defaultValue);
+        return (int)  getDouble(name, defaultValue);
     }
 
     double getDouble(String name, double defaultValue) {
         JsonNode node = baseNode.get(name);
 
         if (nodeGood(node)) {
-            return (double) node.numberValue();
+            return node.numberValue().doubleValue();
         }
 
         return defaultValue;
@@ -91,13 +91,13 @@ public abstract class BaseDeserializer<T> extends StdDeserializer<T> {
     MatOfPoint3f getMatOfPoint3f(String name, MatOfPoint3f defaultValue) throws JsonProcessingException {
         JsonNode node = baseNode.get(name);
         if (nodeGood(node)){
-            List<List<Double>> doubleList = mapper.readValue(node.asText(), pointListColType);
+            List<List<Number>> numberList = mapper.readValue(node.toString(), pointListColType);
             List<Point3> point3List = new ArrayList<>();
-            for (List<Double> tmp : doubleList){
+            for (List<Number> tmp : numberList){
                 Point3 p = new Point3();
-                p.x = tmp.get(0);
-                p.y = tmp.get(1);
-                p.z = tmp.get(2);
+                p.x = tmp.get(0).doubleValue();
+                p.y = tmp.get(1).doubleValue();
+                p.z = tmp.get(2).doubleValue();
                 point3List.add(p);
             }
             MatOfPoint3f mat = new MatOfPoint3f();

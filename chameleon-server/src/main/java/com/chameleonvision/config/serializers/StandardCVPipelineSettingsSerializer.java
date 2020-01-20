@@ -37,16 +37,16 @@ public class StandardCVPipelineSettingsSerializer extends BaseSerializer<Standar
 
         writeEnum("streamDivisor", pipeline.streamDivisor);
 
-        writeNumberListAsIntArray("hue", pipeline.hue);
-        writeNumberListAsIntArray("saturation", pipeline.saturation);
-        writeNumberListAsIntArray("value", pipeline.value);
+        writeNumberListAsNumberArray("hue", pipeline.hue);
+        writeNumberListAsNumberArray("saturation", pipeline.saturation);
+        writeNumberListAsNumberArray("value", pipeline.value);
 
         gen.writeBooleanField("erode", pipeline.erode);
         gen.writeBooleanField("dilate", pipeline.dilate);
 
-        writeNumberListAsDoubleArray("area", pipeline.area);
-        writeNumberListAsDoubleArray("ratio", pipeline.ratio);
-        writeNumberListAsDoubleArray("extent", pipeline.extent);
+        writeNumberListAsNumberArray("area", pipeline.area);
+        writeNumberListAsNumberArray("ratio", pipeline.ratio);
+        writeNumberListAsNumberArray("extent", pipeline.extent);
 
         // speckle rejection
         gen.writeNumberField("speckle", (Integer) pipeline.speckle);
@@ -65,7 +65,7 @@ public class StandardCVPipelineSettingsSerializer extends BaseSerializer<Standar
         writeEnum("targetIntersection", pipeline.targetIntersection);
 
         // single calibration point
-        writeNumberListAsIntArray("point", pipeline.point);
+        writeNumberListAsNumberArray("point", pipeline.point);
 
         // target X/Y calibration
         writeEnum("calibrationMode", pipeline.calibrationMode);
@@ -74,7 +74,6 @@ public class StandardCVPipelineSettingsSerializer extends BaseSerializer<Standar
         gen.writeNumberField("dualTargetCalibrationM", pipeline.dualTargetCalibrationM);
         gen.writeNumberField("dualTargetCalibrationB", pipeline.dualTargetCalibrationB);
 
-        // TODO: how tf do we do 'targetCornerMat'
 
         gen.writeBooleanField("is3D", pipeline.is3D);
         writeMatOfPoint3f("targetCornerMat", pipeline.targetCornerMat);
