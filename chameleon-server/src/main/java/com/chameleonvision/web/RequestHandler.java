@@ -236,11 +236,10 @@ public class RequestHandler {
                 ctx.status(200);
             } else {
                 ctx.result("Only Linux Platforms Support this feature");
-                ctx.status(501);
+                ctx.status(500);
             }
-
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            ctx.result(e.toString());
             ctx.status(500);
         }
     }
