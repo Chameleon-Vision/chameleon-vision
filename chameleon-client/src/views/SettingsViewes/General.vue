@@ -26,6 +26,9 @@
             </v-col>
         </v-row>
         <v-btn small @click="installOrUpdate">{{fileUploadText}}</v-btn>
+        <v-snackbar v-model="snack" top :color="snackbar.color">
+            <span>{{snackbar.text}}</span>
+        </v-snackbar>
     </div>
 </template>
 
@@ -43,7 +46,12 @@
         },
         data() {
             return {
-                file: undefined
+                file: undefined,
+                snackbar: {
+                    color: "success",
+                    text: ""
+                },
+                snack: false
             }
         },
         methods: {
@@ -64,7 +72,19 @@
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
-                });
+                }).then(() => {
+                    this.snackbar = {
+                        color: "success",
+                        text: "Installation successful"
+                    };
+                    this.snack = true;
+                }).catch(error => {
+                    this.snackbar = {
+                        color: "error",
+                        text: error.response.data
+                    };
+                    this.snack = true;
+                })
             }
         },
         computed: {

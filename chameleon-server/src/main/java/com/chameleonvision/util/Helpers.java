@@ -45,12 +45,12 @@ public class Helpers {
         }};
     }
 
-    public static void setService(Path filePath) throws IOException {
+    public static void setService(Path filePath) throws IOException, InterruptedException {
         String newService = String.format(kServiceString, filePath.toString());
         Writer writer = new FileWriter(kServicePath, false);
         writer.write(newService);
         writer.close();
-        ShellExec shell = new ShellExec(true, true);
-        shell.execute("systemctl enable chameleonVision.service");
+        Process p = Runtime.getRuntime().exec("systemctl enable chameleonVision.service");
+        p.waitFor();
     }
 }

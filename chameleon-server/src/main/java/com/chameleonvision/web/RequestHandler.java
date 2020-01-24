@@ -217,25 +217,31 @@ public class RequestHandler {
         }
     }
 
-    public static void onInstallOrUpdate(Context ctx) throws IOException, URISyntaxException {
+    public static void onInstallOrUpdate(Context ctx) {
         Platform p = Platform.getCurrentPlatform();
-        if (p == Platform.LINUX_RASPBIAN || p == Platform.LINUX_64) {
-            UploadedFile file = ctx.uploadedFile("file");
-            Path filePath;
-            if (file != null) {
-                filePath = Paths.get(ProgramDirectoryUtilities.getProgramDirectory(), file.getFilename());
-                File target = new File(filePath.toString());
-                OutputStream stream = new FileOutputStream(target);
-                file.getContent().transferTo(stream);
-                stream.close();
+        try {
+            if (p == Platform.LINUX_RASPBIAN || p == Platform.LINUX_64) {
+                UploadedFile file = ctx.uploadedFile("file");
+                Path filePath;
+                if (file != null) {
+                    filePath = Paths.get(ProgramDirectoryUtilities.getProgramDirectory(), file.getFilename());
+                    File target = new File(filePath.toString());
+                    OutputStream stream = new FileOutputStream(target);
+                    file.getContent().transferTo(stream);
+                    stream.close();
+                } else {
+                    filePath = Paths.get(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath()); // quirk to get the current file directory
+                }
+                Helpers.setService(filePath);
+                ctx.status(200);
             } else {
-                filePath = Paths.get(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath()); // quirk to get the current file directory
+                ctx.result("Only Linux Platforms Support this feature");
+                ctx.status(501);
             }
-            Helpers.setService(filePath);
-            ctx.status(200);
-        } else {
-            ctx.result("Only Linux Platforms Support this feature");
-            ctx.status(501);
+
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            ctx.status(500);
         }
     }
 }
