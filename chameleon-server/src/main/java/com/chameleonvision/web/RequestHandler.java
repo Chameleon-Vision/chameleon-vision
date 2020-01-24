@@ -5,6 +5,9 @@ import com.chameleonvision.Main;
 import com.chameleonvision.config.ConfigManager;
 import com.chameleonvision.network.NetworkIPMode;
 import com.chameleonvision.networktables.NetworkTablesManager;
+import com.chameleonvision.util.Helpers;
+import com.chameleonvision.util.Platform;
+import com.chameleonvision.util.ProgramDirectoryUtilities;
 import com.chameleonvision.vision.VisionManager;
 import com.chameleonvision.vision.VisionProcess;
 import com.chameleonvision.vision.camera.USBCameraCapture;
@@ -21,14 +24,16 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import io.javalin.core.util.FileUtil;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
+import io.javalin.http.UploadedFile;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.ml.neuralnet.Network;
 import org.opencv.core.Point;
 import org.opencv.core.Point3;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -207,16 +212,30 @@ public class RequestHandler {
                 var settings = (StandardCVPipelineSettings) VisionManager.getCurrentUIVisionProcess().pipelineManager.getCurrentPipeline().settings;
                 settings.targetCornerMat.fromList(pointsList);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             ctx.status(500);
         }
     }
-    public static void onInstallOrUpdate(Context ctx) throws URISyntaxException {
-        var file = ctx.uploadedFile("file");
-        if (file != null){
-            FileUtil.streamToFile(file.getContent(), "//" + file.getFilename());
+
+    public static void onInstallOrUpdate(Context ctx) throws IOException, URISyntaxException {
+        Platform p = Platform.getCurrentPlatform();
+        if (p == Platform.LINUX_RASPBIAN || p == Platform.LINUX_64) {
+            UploadedFile file = ctx.uploadedFile("file");
+            Path filePath;
+            if (file != null) {
+                filePath = Paths.get(ProgramDirectoryUtilities.getProgramDirectory(), file.getFilename());
+                File target = new File(filePath.toString());
+                OutputStream stream = new FileOutputStream(target);
+                file.getContent().transferTo(stream);
+                stream.close();
+            } else {
+                filePath = Paths.get(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath()); // quirk to get the current file directory
+            }
+            Helpers.setService(filePath);
+            ctx.status(200);
+        } else {
+            ctx.result("Only Linux Platforms Support this feature");
+            ctx.status(501);
         }
-//        var t = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath(); // gets the current file directory
-//        System.out.println(t);
     }
 }
