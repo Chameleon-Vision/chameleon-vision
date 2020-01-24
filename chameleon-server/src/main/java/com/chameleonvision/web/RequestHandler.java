@@ -1,6 +1,7 @@
 package com.chameleonvision.web;
 
 import com.chameleonvision.Exceptions.DuplicatedKeyException;
+import com.chameleonvision.Main;
 import com.chameleonvision.config.ConfigManager;
 import com.chameleonvision.network.NetworkIPMode;
 import com.chameleonvision.networktables.NetworkTablesManager;
@@ -17,13 +18,17 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import io.javalin.core.util.FileUtil;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.math3.ml.neuralnet.Network;
 import org.opencv.core.Point;
 import org.opencv.core.Point3;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -205,5 +210,13 @@ public class RequestHandler {
         } catch (Exception e){
             ctx.status(500);
         }
+    }
+    public static void onInstallOrUpdate(Context ctx) throws URISyntaxException {
+        var file = ctx.uploadedFile("file");
+        if (file != null){
+            FileUtil.streamToFile(file.getContent(), "//" + file.getFilename());
+        }
+//        var t = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath(); // gets the current file directory
+//        System.out.println(t);
     }
 }
