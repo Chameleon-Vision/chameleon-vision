@@ -184,6 +184,9 @@ public class RequestHandler {
         System.out.println("Finishing Cal");
         if (pipeManager.calib3dPipe.hasEnoughSnapshots()) {
             if (pipeManager.calib3dPipe.tryCalibration()) {
+                HashMap<String, Double> tmp = new HashMap<String, Double>();
+                tmp.put("accuracy", pipeManager.calib3dPipe.getCalibrationAccuracy());
+                ctx.json(tmp);
                 ctx.status(200);
             } else {
                 System.err.println("CALFAIL");
@@ -191,7 +194,7 @@ public class RequestHandler {
             }
         }
         pipeManager.setCalibrationMode(false);
-        ctx.status(200);
+        ctx.status(201);
     }
 
     public static void onPnpModel(Context ctx) throws JsonProcessingException {
