@@ -17,15 +17,23 @@
             <span>Install or Update:</span>
             <v-divider color="white"></v-divider>
         </div>
-        <v-row dense align="center">
-            <v-col :cols="3">
-                <span>Choose a newer version: </span>
-            </v-col>
-            <v-col :cols="6">
-                <v-file-input accept=".jar" dark v-model="file"></v-file-input>
-            </v-col>
-        </v-row>
-        <v-btn small @click="installOrUpdate">{{fileUploadText}}</v-btn>
+        <div v-if="!isLoading">
+            <v-row dense align="center">
+                <v-col :cols="3">
+                    <span>Choose a newer version: </span>
+                </v-col>
+                <v-col :cols="6">
+                    <v-file-input accept=".jar" dark v-model="file"></v-file-input>
+                </v-col>
+            </v-row>
+            <v-btn small @click="installOrUpdate">{{fileUploadText}}</v-btn>
+        </div>
+        <div v-else style="text-align: center; margin-top: 20px">
+            <v-progress-circular color="white" :indeterminate="true" size="32"
+                                 width="4"></v-progress-circular>
+            <br>
+            <span>Please wait this may take a while</span>
+        </div>
         <v-snackbar v-model="snack" top :color="snackbar.color">
             <span>{{snackbar.text}}</span>
         </v-snackbar>
@@ -51,7 +59,8 @@
                     color: "success",
                     text: ""
                 },
-                snack: false
+                snack: false,
+                isLoading: false
             }
         },
         methods: {
@@ -68,6 +77,9 @@
             installOrUpdate() {
                 let formData = new FormData();
                 formData.append('file', this.file);
+                if (this.file !== undefined) {
+                    this.isLoading = true;
+                }
                 this.axios.post("http://" + this.$address + "/api/install", formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -77,12 +89,14 @@
                         color: "success",
                         text: "Installation successful"
                     };
+                    this.isLoading = false;
                     this.snack = true;
                 }).catch(error => {
                     this.snackbar = {
                         color: "error",
                         text: error.response.data
                     };
+                    this.isLoading = false;
                     this.snack = true;
                 })
             }
