@@ -54,6 +54,7 @@ workflows:
   version: 2
   release:
     jobs:
+      - build_ui
       - build_jar:
           requires:
             - build_ui
