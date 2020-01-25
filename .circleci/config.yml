@@ -63,11 +63,6 @@ workflows:
       - build_jar:
           requires:
             - build_ui
-          filters:
-            branches:
-              only:
-                - master
-                - dev
       - deploy:
           requires:
             - build_jar
