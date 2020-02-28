@@ -69,11 +69,19 @@
                 this.axios.post("http://" + this.$address + "/api/settings/general", this.settings).then(
                     function (response) {
                         if (response.status === 200) {
-                            this.snackbar = {
+                            self.snackbar = {
                                 color: "success",
                                 text: "Save successful, Please restart for changes to take action"
-                            }
+                            };
+                            self.snack = true;
                         }
+                    },
+                    function (error) {
+                        self.snackbar = {
+                            color: "error",
+                            text: error.response.data
+                        };
+                        self.snack = true;
                     }
                 )
             },

@@ -74,6 +74,7 @@ public class LinuxNetworking extends SysNetworking {
             lines.add("static ip_address=" + ipAddress + "/" + prefix);
             lines.add("static routers=" + gateway);
             FileUtils.writeLines(dhcpConf, lines);
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
         }
