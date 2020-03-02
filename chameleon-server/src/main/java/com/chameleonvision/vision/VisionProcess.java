@@ -86,18 +86,13 @@ public class VisionProcess {
     }
 
     public void start() {
-        System.out.println("Starting NetworkTables.");
+        System.out.printf("[%s Process] Creating network table...", getCamera().getProperties().getNickname());
         initNT(defaultTable);
 
-        System.out.println("Starting vision thread.");
+        System.out.printf("[%s Process] Starting vision thread...", getCamera().getProperties().getNickname());
         var visionThread = new Thread(visionRunnable);
         visionThread.setName(getCamera().getProperties().name + " - Vision Thread");
         visionThread.start();
-
-//        System.out.println("Starting stream thread.");
-//        var streamThread = new Thread(streamRunnable);
-//        streamThread.setName(getCamera().getProperties().name + " - Stream Thread");
-//        streamThread.start();
     }
 
     /**
@@ -329,6 +324,9 @@ public class VisionProcess {
         public void run() {
             var lastUpdateTimeNanos = System.nanoTime();
             var lastStreamTimeMs = System.currentTimeMillis();
+
+            System.out.printf("[%s Process] Vision Process Thread running!", getCamera().getProperties().getNickname());
+
             while (!Thread.interrupted()) {
 
                 // blocking call, will block until camera has a new frame.
@@ -364,7 +362,9 @@ public class VisionProcess {
                     }
 
                 } catch (Exception e) {
-                    Debug.printInfo("Vision running faster than stream.");
+//                    Debug.printInfo("Vision running faster than stream.");
+                    System.err.printf("[%s Process] Exception in vision thread!", getCamera().getProperties().getNickname());
+                    e.printStackTrace();
                 }
 
                 var deltaTimeNanos = System.nanoTime() - lastUpdateTimeNanos;
