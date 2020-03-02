@@ -1,5 +1,7 @@
 package com.chameleonvision.config;
 
+import com.chameleonvision.config.serializers.GeneralSettingsDeserializer;
+import com.chameleonvision.config.serializers.GeneralSettingsSerializer;
 import com.chameleonvision.util.*;
 import com.chameleonvision.vision.pipeline.CVPipelineSettings;
 
@@ -42,18 +44,18 @@ public class ConfigManager {
         }
     }
 
-    private static void checkSettingsFile() {
+    private static void checkAndLoadSettingsFile() {
         boolean settingsFileEmpty = settingsFileExists() && new File(settingsFilePath.toString()).length() == 0;
         if (settingsFileEmpty || !settingsFileExists()) {
             try {
-                JacksonHelper.serializer(settingsFilePath, settings);
+                JacksonHelper.serialize(settingsFilePath, settings, GeneralSettings.class, new GeneralSettingsSerializer());
                 FileHelper.setFilePerms(settingsFilePath);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
             try {
-                settings = JacksonHelper.deserialize(settingsFilePath, GeneralSettings.class);
+                settings = JacksonHelper.deserialize(settingsFilePath, GeneralSettings.class, new GeneralSettingsDeserializer());
             } catch (IOException e) {
                 System.err.println("Failed to load settings.json, using defaults.");
             }
@@ -63,13 +65,13 @@ public class ConfigManager {
     public static void initializeSettings() {
         System.out.println("Settings folder: " + SettingsPath.toString());
         checkSettingsFolder();
-        checkSettingsFile();
+        checkAndLoadSettingsFile();
         FileHelper.setAllPerms(SettingsPath);
     }
 
     private static void saveSettingsFile() {
         try {
-            JacksonHelper.serializer(settingsFilePath, settings);
+            JacksonHelper.serialize(settingsFilePath, settings, GeneralSettings.class, new GeneralSettingsSerializer());
             FileHelper.setFilePerms(settingsFilePath);
         } catch (IOException e) {
             System.err.println("Failed to save settings.json!");
