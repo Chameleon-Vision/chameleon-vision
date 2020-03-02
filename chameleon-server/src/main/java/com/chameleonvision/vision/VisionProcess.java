@@ -86,10 +86,10 @@ public class VisionProcess {
     }
 
     public void start() {
-        System.out.printf("[%s Process] Creating network table...", getCamera().getProperties().getNickname());
+        System.out.printf("[%s Process] Creating network table...\n", getCamera().getProperties().getNickname());
         initNT(defaultTable);
 
-        System.out.printf("[%s Process] Starting vision thread...", getCamera().getProperties().getNickname());
+        System.out.printf("[%s Process] Starting vision thread...\n", getCamera().getProperties().getNickname());
         var visionThread = new Thread(visionRunnable);
         visionThread.setName(getCamera().getProperties().name + " - Vision Thread");
         visionThread.start();
@@ -325,7 +325,7 @@ public class VisionProcess {
             var lastUpdateTimeNanos = System.nanoTime();
             var lastStreamTimeMs = System.currentTimeMillis();
 
-            System.out.printf("[%s Process] Vision Process Thread running!", getCamera().getProperties().getNickname());
+            System.out.printf("[%s Process] Vision Process Thread -- first run!\n", getCamera().getProperties().getNickname());
 
             while (!Thread.interrupted()) {
 
@@ -355,15 +355,18 @@ public class VisionProcess {
                 try {
                     var currentTime = System.currentTimeMillis();
                     if ((currentTime - lastStreamTimeMs) / 1000d > 1.0 / 30.0) {
-                        cameraStreamer.runStream(lastPipelineResult.outputMat);
-//                        System.out.println("Ran stream in " + (System.currentTimeMillis() - currentTime) + "ms!");
-                        lastStreamTimeMs = currentTime;
-                        lastPipelineResult.outputMat.release();
+                        if(lastPipelineResult != null) {
+                            cameraStreamer.runStream(lastPipelineResult.outputMat);
+                            lastStreamTimeMs = currentTime;
+                            lastPipelineResult.outputMat.release();
+                        } else {
+                            System.err.printf("[%s Process] Last pipeline result was null!\n", getCamera().getProperties().getNickname());
+                        }
                     }
 
                 } catch (Exception e) {
 //                    Debug.printInfo("Vision running faster than stream.");
-                    System.err.printf("[%s Process] Exception in vision thread!", getCamera().getProperties().getNickname());
+                    System.err.printf("[%s Process] Exception in vision thread!\n", getCamera().getProperties().getNickname());
                     e.printStackTrace();
                 }
 
