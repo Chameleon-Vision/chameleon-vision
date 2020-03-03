@@ -294,7 +294,7 @@ public class VisionProcess {
     public void addCalibration(CameraCalibrationConfig cal) {
         cameraCapture.addCalibrationData(cal);
         System.out.println("saving to file");
-        fileConfig.saveCalibration(cameraCapture.getConfig());
+        fileConfig.saveCalibration(cameraCapture.getAllCalibrationData());
     }
 
     public void setIs3d(Boolean value) {

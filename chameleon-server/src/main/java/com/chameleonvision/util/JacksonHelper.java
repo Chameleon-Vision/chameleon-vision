@@ -1,6 +1,5 @@
 package com.chameleonvision.util;
 
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -18,11 +17,11 @@ public class JacksonHelper {
 
     @Deprecated
     public static <T> void serializer(Path path, T object) throws IOException {
-        Helpers.setWritable();
+        FileHelper.setWritable();
         PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder().allowIfBaseType(object.getClass()).build();
         ObjectMapper objectMapper = JsonMapper.builder().activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT).build();
         objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(path.toString()), object);
-        Helpers.setReadOnly();
+        FileHelper.setReadOnly();
     }
 
     @Deprecated
@@ -50,12 +49,12 @@ public class JacksonHelper {
     }
 
     public static <T> void serialize(Path path, T object, Class<T> ref, StdSerializer<T> serializer) throws IOException {
-        Helpers.setWritable();
+        FileHelper.setWritable();
         ObjectMapper objectMapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
         module.addSerializer(ref, serializer);
         objectMapper.registerModule(module);
         objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(path.toString()), object);
-        Helpers.setReadOnly();
+        FileHelper.setReadOnly();
     }
 }
