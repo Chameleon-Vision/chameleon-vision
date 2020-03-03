@@ -27,6 +27,8 @@ public class Helpers {
             "WantedBy=multi-user.target\n" +
             "\n";
 
+
+
     private Helpers() {
     }
 
@@ -55,4 +57,25 @@ public class Helpers {
         Process p = Runtime.getRuntime().exec("systemctl enable chameleonVision.service");
         p.waitFor();
     }
+
+    public static void setReadOnly() {
+        // set readonly
+        try {
+            var p = Runtime.getRuntime().exec("ro");
+            p.waitFor();
+        } catch (InterruptedException | IOException e) {
+//            e.printStackTrace();
+        }
+    }
+
+    public static void setWritable() {
+        // set readonly
+        try {
+            var p = Runtime.getRuntime().exec("rw");
+            p.waitFor();
+        } catch (InterruptedException | IOException e) {
+//            e.printStackTrace();
+        }
+    }
+
 }
