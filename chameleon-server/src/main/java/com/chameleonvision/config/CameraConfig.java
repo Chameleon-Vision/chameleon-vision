@@ -1,5 +1,9 @@
 package com.chameleonvision.config;
 
+import com.chameleonvision.config.serializers.CameraJsonConfigDeserializer;
+import com.chameleonvision.config.serializers.CameraJsonConfigSerializer;
+import com.chameleonvision.config.serializers.DriverModePipelineSettingsDeserializer;
+import com.chameleonvision.config.serializers.DriverModePipelineSettingsSerializer;
 import com.chameleonvision.util.FileHelper;
 import com.chameleonvision.util.JacksonHelper;
 import com.chameleonvision.vision.pipeline.CVPipelineSettings;
@@ -51,7 +55,7 @@ public class CameraConfig {
     private CameraJsonConfig loadConfig() {
         CameraJsonConfig config = preliminaryConfig;
         try {
-            config = JacksonHelper.deserialize(configPath, CameraJsonConfig.class);
+            config = JacksonHelper.deserialize(configPath, CameraJsonConfig.class, new CameraJsonConfigDeserializer());
         } catch (IOException e) {
             System.err.printf("Failed to load camera config: %s - using default.\n", configPath.toString());
         }
@@ -61,7 +65,7 @@ public class CameraConfig {
     private CVPipelineSettings loadDriverMode() {
         CVPipelineSettings driverMode = new CVPipelineSettings();
         try {
-            driverMode = JacksonHelper.deserialize(driverModePath, CVPipelineSettings.class);
+            driverMode = JacksonHelper.deserialize(driverModePath, CVPipelineSettings.class, new DriverModePipelineSettingsDeserializer());
         } catch (IOException e) {
             System.err.println("Failed to load camera drivermode: " + driverModePath.toString());
         }
@@ -84,7 +88,7 @@ public class CameraConfig {
 
     void saveConfig(CameraJsonConfig config) {
         try {
-            JacksonHelper.serializer(configPath, config);
+            JacksonHelper.serialize(configPath, config, CameraJsonConfig.class, new CameraJsonConfigSerializer());
             FileHelper.setFilePerms(configPath);
         } catch (IOException e) {
             System.err.println("Failed to save camera config file: " + configPath.toString());
@@ -97,7 +101,7 @@ public class CameraConfig {
 
     public void saveDriverMode(CVPipelineSettings driverMode) {
         try {
-            JacksonHelper.serializer(driverModePath, driverMode);
+            JacksonHelper.serialize(driverModePath, driverMode, CVPipelineSettings.class, new DriverModePipelineSettingsSerializer());
             FileHelper.setFilePerms(driverModePath);
         } catch (IOException e) {
             System.err.println("Failed to save camera drivermode file: " + driverModePath.toString());
@@ -131,7 +135,7 @@ public class CameraConfig {
     private void checkConfig() {
         if (!configExists()) {
             try {
-                JacksonHelper.serializer(configPath, preliminaryConfig);
+                JacksonHelper.serialize(configPath, preliminaryConfig, CameraJsonConfig.class, new CameraJsonConfigSerializer());
                 FileHelper.setFilePerms(configPath);
             } catch (IOException e) {
                 System.err.println("Failed to create camera config file: " + configPath.toString());
@@ -144,7 +148,7 @@ public class CameraConfig {
             try {
                 CVPipelineSettings newDriverModeSettings = new CVPipelineSettings();
                 newDriverModeSettings.nickname = "DRIVERMODE";
-                JacksonHelper.serializer(driverModePath, newDriverModeSettings);
+                JacksonHelper.serialize(driverModePath, newDriverModeSettings, CVPipelineSettings.class, new DriverModePipelineSettingsSerializer());
                 FileHelper.setFilePerms(driverModePath);
             } catch (IOException e) {
                 System.err.println("Failed to create camera drivermode file: " + driverModePath.toString());

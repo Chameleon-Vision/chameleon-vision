@@ -4,7 +4,6 @@ import com.chameleonvision.vision.enums.ImageFlipMode;
 import com.chameleonvision.vision.enums.ImageRotationMode;
 import com.chameleonvision.vision.enums.StreamDivisor;
 
-@SuppressWarnings("ALL")
 public class CVPipelineSettings {
     public int index = 0;
     public ImageFlipMode flipMode = ImageFlipMode.NONE;
