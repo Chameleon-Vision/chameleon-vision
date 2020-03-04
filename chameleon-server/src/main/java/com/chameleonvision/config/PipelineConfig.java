@@ -76,7 +76,7 @@ public class PipelineConfig {
 
         if (settings instanceof StandardCVPipelineSettings) {
             try {
-                JacksonHelper.serialize(path, (StandardCVPipelineSettings) settings, StandardCVPipelineSettings.class, new StandardCVPipelineSettingsSerializer());
+                JacksonHelper.serialize(path, (StandardCVPipelineSettings) settings, StandardCVPipelineSettings.class, new StandardCVPipelineSettingsSerializer(), true);
                 FileHelper.setFilePerms(path);
             } catch (IOException e) {
                 e.printStackTrace();
