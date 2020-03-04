@@ -97,7 +97,7 @@ public class CameraConfig {
 
     public void saveDriverMode(CVPipelineSettings driverMode) {
         try {
-            JacksonHelper.serializer(driverModePath, driverMode);
+            JacksonHelper.serializer(driverModePath, driverMode, true);
             FileHelper.setFilePerms(driverModePath);
         } catch (IOException e) {
             System.err.println("Failed to save camera drivermode file: " + driverModePath.toString());
@@ -131,7 +131,7 @@ public class CameraConfig {
     private void checkConfig() {
         if (!configExists()) {
             try {
-                JacksonHelper.serializer(configPath, preliminaryConfig);
+                JacksonHelper.serializer(configPath, preliminaryConfig, true);
                 FileHelper.setFilePerms(configPath);
             } catch (IOException e) {
                 System.err.println("Failed to create camera config file: " + configPath.toString());
@@ -144,7 +144,7 @@ public class CameraConfig {
             try {
                 CVPipelineSettings newDriverModeSettings = new CVPipelineSettings();
                 newDriverModeSettings.nickname = "DRIVERMODE";
-                JacksonHelper.serializer(driverModePath, newDriverModeSettings);
+                JacksonHelper.serializer(driverModePath, newDriverModeSettings, true);
                 FileHelper.setFilePerms(driverModePath);
             } catch (IOException e) {
                 System.err.println("Failed to create camera drivermode file: " + driverModePath.toString());
@@ -156,7 +156,7 @@ public class CameraConfig {
         if (!calibrationExists()) {
             try {
                 List<CameraCalibrationConfig> calibrations = new ArrayList<>();
-                JacksonHelper.serializer(calibrationPath, calibrations.toArray());
+                JacksonHelper.serializer(calibrationPath, calibrations.toArray(), true);
             } catch (IOException e) {
                 System.err.println("Failed to create camera calibration file: " + calibrationPath.toString());
             }

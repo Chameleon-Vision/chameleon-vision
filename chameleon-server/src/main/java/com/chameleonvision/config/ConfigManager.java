@@ -52,7 +52,7 @@ public class ConfigManager {
         boolean settingsFileEmpty = settingsFileExists() && new File(settingsFilePath.toString()).length() == 0;
         if (settingsFileEmpty || !settingsFileExists()) {
             try {
-                JacksonHelper.serializer(settingsFilePath, settings);
+                JacksonHelper.serializer(settingsFilePath, settings, true);
                 FileHelper.setFilePerms(settingsFilePath);
             } catch (IOException e) {
                 e.printStackTrace();
