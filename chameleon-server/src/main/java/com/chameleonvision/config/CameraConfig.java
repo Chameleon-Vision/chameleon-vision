@@ -84,7 +84,7 @@ public class CameraConfig {
 
     void saveConfig(CameraJsonConfig config) {
         try {
-            JacksonHelper.serializer(configPath, config);
+            JacksonHelper.serializer(configPath, config, true);
             FileHelper.setFilePerms(configPath);
         } catch (IOException e) {
             System.err.println("Failed to save camera config file: " + configPath.toString());
@@ -108,7 +108,7 @@ public class CameraConfig {
     public void saveCalibration(List<CameraCalibrationConfig> cal) {
         CameraCalibrationConfig[] configs = cal.toArray(new CameraCalibrationConfig[0]);
         try {
-            JacksonHelper.serializer(calibrationPath, configs);
+            JacksonHelper.serializer(calibrationPath, configs, true);
             FileHelper.setFilePerms(calibrationPath);
         } catch (IOException e) {
             System.err.println("Failed to save camera calibration file: " + calibrationPath.toString());
@@ -122,7 +122,7 @@ public class CameraConfig {
                     System.err.println("Failed to create camera config folder: " + configFolderPath.toString());
                 }
                 FileHelper.setFilePerms(configFolderPath);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 System.err.println("Failed to create camera config folder: " + configFolderPath.toString());
             }
         }
