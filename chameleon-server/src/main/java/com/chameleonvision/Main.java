@@ -160,16 +160,20 @@ public class Main {
 
         ScriptManager.queueEvent(ScriptEventType.kProgramInit);
 
-        boolean visionSourcesOk = VisionManager.initializeSources();
-        if (!visionSourcesOk) {
-            System.err.println("No cameras connected!");
-            return;
+        try {
+            if (! VisionManager.initializeSources()) {
+                System.err.println("No cameras connected!");
+                Runtime.getRuntime().exit(1);
+            }
+        } catch (RuntimeException e) {
+            System.err.println("Error trying to enumerate cameras. Do you have a USB camera connected?");
+            Runtime.getRuntime().exit(1);
         }
 
         boolean visionProcessesOk = VisionManager.initializeProcesses();
         if (!visionProcessesOk) {
             System.err.println("Failed to initialize vision processes!");
-            return;
+            Runtime.getRuntime().exit(1);
         }
 
         System.out.println("Starting vision processes...");
