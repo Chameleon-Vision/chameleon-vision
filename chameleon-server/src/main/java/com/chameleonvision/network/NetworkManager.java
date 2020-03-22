@@ -1,12 +1,12 @@
 package com.chameleonvision.network;
 
 
-import com.chameleonvision.config.ConfigManager;
-import com.chameleonvision.util.Platform;
-
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.chameleonvision.config.ConfigManager;
+import com.chameleonvision.util.Platform;
 
 public class NetworkManager {
     private NetworkManager() {
@@ -25,14 +25,11 @@ public class NetworkManager {
 
         if (platform.isLinux()) {
             networking = new LinuxNetworking();
-        } else if (platform.isWindows()) {
-//			networking = new WindowsNetworking();
-            System.out.println("Windows networking is not yet supported. Running unmanaged.");
-            return;
-        }
+        } 
 
         if (networking == null) {
-            throw new RuntimeException("Failed to detect platform!");
+            System.out.println("This platform does not support managed networking, so will not try.");
+            return;
         }
 
         List<java.net.NetworkInterface> interfaces = new ArrayList<>();

@@ -85,7 +85,7 @@ public enum Platform {
 		}
 
 		if (OS_NAME.contains("Mac")) {
-			if (OS_ARCH.equals("amd64")) return Platform.MACOS_64;
+			if (OS_ARCH.equals("amd64") || OS_ARCH.equals("x86_64")) return Platform.MACOS_64;
 		}
 
 		System.out.printf("Unknown Platform! OS: %s, Architecture: %s", OS_NAME, OS_ARCH);
