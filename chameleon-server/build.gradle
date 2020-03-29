@@ -123,5 +123,6 @@ spotless {
   java {
     googleJavaFormat()
     paddedCell()
+    indentWithTabs(2)
   }
 }
