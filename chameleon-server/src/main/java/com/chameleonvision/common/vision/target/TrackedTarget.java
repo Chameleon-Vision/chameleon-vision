@@ -10,37 +10,7 @@ import org.opencv.core.RotatedRect;
 // TODO: banks fix
 public class TrackedTarget {
     final Contour mainContour;
-    final List<Contour> subContours = new ArrayList<>(); // can be empty
-
-    private Point targetOffsetPoint = null;
-    private Point robotOffsetPoint = null;
-
-    public RotatedRect minAreaRect;
-
-    public Point getPoint() {
-        return targetOffsetPoint;
-    }
-
-    private double pitch, yaw, area;
-
-    // Single Grouped
-    public TrackedTarget(Contour inputContour) {
-        mainContour = inputContour;
-    }
-
-    // Dual grouping
-    public TrackedTarget(
-            List<Contour> subContours,
-            TargetContourIntersection intersection,
-            TargetContourGrouping grouping) {
-        // do contour grouping
-        mainContour = calculateMultiContour(subContours, intersection, grouping);
-        if (mainContour == null) {
-            // this means we don't have a valid grouped target. what do we do???
-            throw new RuntimeException("Something went fucky wucky");
-        }
-        this.subContours.addAll(subContours);
-    }
+    List<Contour> subContours; // can be empty
 
     private Point targetOffsetPoint;
     private Point robotOffsetPoint;
@@ -83,7 +53,7 @@ public class TrackedTarget {
             boolean isLandscape, TargetOffsetPointRegion offsetRegion) {
         Point[] vertices = new Point[4];
 
-        minAreaRect = mainContour.getMinAreaRect();
+        var minAreaRect = getMinAreaRect();
         minAreaRect.points(vertices);
 
         Point bl = getMiddle(vertices[0], vertices[1]);
@@ -97,7 +67,7 @@ public class TrackedTarget {
             orientation = minAreaRect.size.width < minAreaRect.size.height;
         }
 
-        Point result = minAreaRect.center;
+        Point resultPoint = minAreaRect.center;
         switch (offsetRegion) {
             case Top:
                 {
@@ -148,7 +118,7 @@ public class TrackedTarget {
                 break;
         }
 
-        return resultPoint;
+        robotOffsetPoint = resultPoint;
     }
 
     private void calculatePitch(double verticalFocalLength) {
@@ -234,10 +204,6 @@ public class TrackedTarget {
     public enum TargetOrientation {
         Portrait,
         Landscape
-    }
-
-    public enum TargetOrientation {
-        Portrait, Landscape
     }
 
     public enum TargetOffsetPointRegion {
