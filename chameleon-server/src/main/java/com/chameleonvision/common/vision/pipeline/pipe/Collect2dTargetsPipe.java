@@ -9,18 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 import org.opencv.core.Point;
 
-/**
- * Represents a pipe that collects available 2d targets.
- */
+/** Represents a pipe that collects available 2d targets. */
 public class Collect2dTargetsPipe
         extends CVPipe<
                 List<PotentialTarget>, List<TrackedTarget>, Collect2dTargetsPipe.Collect2dTargetsParams> {
 
     /**
-     * Processes this pipeline.
-     * @param in Input for pipe processing.
-     * @return A list of tracked targets.
-     */
+    * Processes this pipeline.
+    *
+    * @param in Input for pipe processing.
+    * @return A list of tracked targets.
+    */
     @Override
     protected List<TrackedTarget> process(List<PotentialTarget> in) {
         List<TrackedTarget> targets = new ArrayList<>();

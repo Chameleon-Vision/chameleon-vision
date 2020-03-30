@@ -5,16 +5,14 @@ import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-/**
- * Represents a pipeline that blurs the image.
- */
+/** Represents a pipeline that blurs the image. */
 public class BlurPipe extends CVPipe<Mat, Mat, BlurPipe.BlurParams> {
     /**
-     * Processes thos pipe.
-     *
-     * @param in Input for pipe processing.
-     * @return The processed frame.
-     */
+    * Processes thos pipe.
+    *
+    * @param in Input for pipe processing.
+    * @return The processed frame.
+    */
     @Override
     protected Mat process(Mat in) {
         Imgproc.blur(in, in, params.getBlurSize());
