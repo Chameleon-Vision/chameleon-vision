@@ -1,18 +1,18 @@
 package com.chameleonvision.common.vision.pipeline.pipe;
 
-import com.chameleonvision._2.vision.enums.CalibrationMode;
+import java.awt.Color;
+import java.util.List;
+
 import com.chameleonvision.common.util.ColorHelper;
 import com.chameleonvision.common.vision.pipeline.CVPipe;
 import com.chameleonvision.common.vision.target.TrackedTarget;
-import java.awt.Color;
-import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
 public class Draw2dCrosshairPipe
-        extends CVPipe<Pair<Mat, List<TrackedTarget>>, Mat, Draw2dCrosshairPipe.Draw2dCrosshairParams> {
+    extends CVPipe<Pair<Mat, List<TrackedTarget>>, Mat, Draw2dCrosshairPipe.Draw2dCrosshairParams> {
 
     @Override
     protected Mat process(Pair<Mat, List<TrackedTarget>> in) {
@@ -28,7 +28,7 @@ public class Draw2dCrosshairPipe
             switch (params.calibrationMode) {
                 case Single:
                     if (params.calibrationPoint.equals(new Point())) {
-                        params.calibrationPoint.set(new double[] {x, y});
+                        params.calibrationPoint.set(new double[]{x, y});
                     }
                     x = (int) params.calibrationPoint.x;
                     y = (int) params.calibrationPoint.y;
@@ -49,7 +49,7 @@ public class Draw2dCrosshairPipe
     }
 
     public static class Draw2dCrosshairParams {
-        public CalibrationMode calibrationMode;
+        public TrackedTarget.RobotOffsetPointMode calibrationMode;
         public Point calibrationPoint;
         public boolean showCrosshair = true;
         public Color crosshairColor = Color.GREEN;
