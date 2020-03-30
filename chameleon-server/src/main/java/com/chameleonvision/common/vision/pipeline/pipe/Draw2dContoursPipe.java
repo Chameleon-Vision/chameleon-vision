@@ -1,12 +1,11 @@
 package com.chameleonvision.common.vision.pipeline.pipe;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.chameleonvision.common.util.ColorHelper;
 import com.chameleonvision.common.vision.pipeline.CVPipe;
 import com.chameleonvision.common.vision.target.TrackedTarget;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -15,8 +14,8 @@ import org.opencv.core.Rect;
 import org.opencv.core.RotatedRect;
 import org.opencv.imgproc.Imgproc;
 
-public class Draw2dContoursPipe extends CVPipe<Pair<Mat, List<TrackedTarget>>,
-    Mat, Draw2dContoursPipe.Draw2dContoursParams> {
+public class Draw2dContoursPipe
+        extends CVPipe<Pair<Mat, List<TrackedTarget>>, Mat, Draw2dContoursPipe.Draw2dContoursParams> {
 
     private List<MatOfPoint> m_drawnContours = new ArrayList<>();
 
@@ -32,7 +31,7 @@ public class Draw2dContoursPipe extends CVPipe<Pair<Mat, List<TrackedTarget>>,
                 }
 
                 TrackedTarget target = in.getRight().get(i);
-                RotatedRect r = target.minAreaRect;
+                RotatedRect r = target.getMinAreaRect();
 
                 if (r == null) continue;
 
@@ -45,20 +44,31 @@ public class Draw2dContoursPipe extends CVPipe<Pair<Mat, List<TrackedTarget>>,
                 m_drawnContours.add(contour);
 
                 if (params.showRotatedBox) {
-                    Imgproc.drawContours(in.getLeft(), m_drawnContours, 0,
-                        ColorHelper.colorToScalar(params.rotatedBoxColor), params.boxOutlineSize);
+                    Imgproc.drawContours(
+                            in.getLeft(),
+                            m_drawnContours,
+                            0,
+                            ColorHelper.colorToScalar(params.rotatedBoxColor),
+                            params.boxOutlineSize);
                 }
 
                 if (params.showMaximumBox) {
                     Rect box = Imgproc.boundingRect(contour);
-                    Imgproc.rectangle(in.getLeft(), new Point(box.x, box.y),
-                        new Point(box.x + box.width, box.y + box.height),
-                        ColorHelper.colorToScalar(params.maximumBoxColor), params.boxOutlineSize);
+                    Imgproc.rectangle(
+                            in.getLeft(),
+                            new Point(box.x, box.y),
+                            new Point(box.x + box.width, box.y + box.height),
+                            ColorHelper.colorToScalar(params.maximumBoxColor),
+                            params.boxOutlineSize);
                 }
 
                 if (params.showCentroid) {
-                    Imgproc.circle(in.getLeft(), target.getPoint(), 3,
-                        ColorHelper.colorToScalar(params.centroidColor), 2);
+                    Imgproc.circle(
+                            in.getLeft(),
+                            target.getTargetOffsetPoint(),
+                            3,
+                            ColorHelper.colorToScalar(params.centroidColor),
+                            2);
                 }
             }
         }

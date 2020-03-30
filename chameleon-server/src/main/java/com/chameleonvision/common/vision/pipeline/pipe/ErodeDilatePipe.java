@@ -25,7 +25,8 @@ public class ErodeDilatePipe extends CVPipe<Mat, Mat, ErodeDilatePipe.ErodeDilat
         public ErodeDilateParams(boolean erode, boolean dilate, int kernelSize) {
             m_erode = erode;
             m_dilate = dilate;
-            m_kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(kernelSize, kernelSize));
+            m_kernel =
+                    Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(kernelSize, kernelSize));
         }
 
         public boolean shouldErode() {

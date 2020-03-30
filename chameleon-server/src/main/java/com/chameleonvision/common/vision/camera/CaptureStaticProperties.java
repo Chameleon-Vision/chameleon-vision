@@ -1,9 +1,9 @@
 package com.chameleonvision.common.vision.camera;
 
-
 import edu.wpi.cscore.VideoMode;
 import org.apache.commons.math3.fraction.Fraction;
 import org.apache.commons.math3.util.FastMath;
+import org.opencv.core.Point;
 
 public class CaptureStaticProperties {
     public final int imageWidth;
@@ -12,6 +12,7 @@ public class CaptureStaticProperties {
     public final double imageArea;
     public final double centerX;
     public final double centerY;
+    public final Point centerPoint;
     public final double horizontalFocalLength;
     public final double verticalFocalLength;
     public final VideoMode mode;
@@ -26,6 +27,7 @@ public class CaptureStaticProperties {
         imageArea = imageHeight * imageWidth;
         centerX = imageWidth / 2.0 - 0.5;
         centerY = imageHeight / 2.0 - 0.5;
+        centerPoint = new Point(centerX, centerY);
 
         // Calculations from pinhole-model.
         double diagonalView = FastMath.toRadians(this.fov);
@@ -36,13 +38,12 @@ public class CaptureStaticProperties {
 
         double diagonalAspect = FastMath.hypot(horizontalRatio, verticalRatio);
 
-        double horizontalView = FastMath.atan(FastMath.tan(diagonalView / 2) *
-            (horizontalRatio / diagonalAspect)) * 2;
-        double verticalView = FastMath.atan(FastMath.tan(diagonalView / 2) *
-            (verticalRatio / diagonalAspect)) * 2;
+        double horizontalView =
+                FastMath.atan(FastMath.tan(diagonalView / 2) * (horizontalRatio / diagonalAspect)) * 2;
+        double verticalView =
+                FastMath.atan(FastMath.tan(diagonalView / 2) * (verticalRatio / diagonalAspect)) * 2;
 
         horizontalFocalLength = imageWidth / (2 * FastMath.tan(horizontalView / 2));
         verticalFocalLength = imageHeight / (2 * FastMath.tan(verticalView / 2));
     }
 }
-

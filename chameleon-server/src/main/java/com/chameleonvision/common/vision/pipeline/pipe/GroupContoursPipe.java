@@ -1,171 +1,75 @@
 package com.chameleonvision.common.vision.pipeline.pipe;
 
+import com.chameleonvision.common.vision.opencv.Contour;
+import com.chameleonvision.common.vision.pipeline.CVPipe;
+import com.chameleonvision.common.vision.target.PotentialTarget;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-import com.chameleonvision.common.util.math.MathUtils;
-import com.chameleonvision.common.vision.pipeline.CVPipe;
-import com.chameleonvision.common.vision.target.TrackedTarget;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.RotatedRect;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.imgproc.Moments;
+public class GroupContoursPipe
+        extends CVPipe<List<Contour>, List<PotentialTarget>, GroupContoursPipe.GroupContoursParams> {
 
-public class GroupContoursPipe extends CVPipe<List<MatOfPoint>, List<TrackedTarget>,
-    GroupContoursPipe.GroupContoursParams> {
-
-    private static final Comparator<MatOfPoint> sortByMomentsX =
-        Comparator.comparingDouble(GroupContoursPipe::calcMomentsX);
-
-    private MatOfPoint2f m_contourBuffer = new MatOfPoint2f();
-    private List<TrackedTarget> m_groupedContours = new ArrayList<>();
-    private MatOfPoint2f m_intersectMatA = new MatOfPoint2f();
-    private MatOfPoint2f m_intersectMatB = new MatOfPoint2f();
-
-    private static double calcMomentsX(MatOfPoint c) {
-        Moments m = Imgproc.moments(c);
-        return (m.get_m10() / m.get_m00());
-    }
+    private List<PotentialTarget> m_targets = new ArrayList<>();
 
     @Override
-    protected List<TrackedTarget> process(List<MatOfPoint> in) {
-        m_groupedContours.clear();
-        m_contourBuffer.release();
+    protected List<PotentialTarget> process(List<Contour> input) {
+        m_targets.clear();
 
-        if (in.size() > (params.getGroup().equals(TrackedTarget.TargetContourGrouping.Single) ? 0 : 1)) {
-            List<MatOfPoint> sorted = new ArrayList<>(in);
-            sorted.sort(sortByMomentsX);
-            Collections.reverse(sorted);
+        if (params.getGroup() == Contour.ContourGrouping.Single) {
+            for (var contour : input) {
+                m_targets.add(new PotentialTarget(contour));
+            }
+        } else {
+            int groupingCount = params.getGroup().count;
 
-            switch (params.getGroup()) {
-                case Single:
-                    in.forEach(c -> {
-                        m_contourBuffer.fromArray(c.toArray());
-                        if (m_contourBuffer.cols() != 0 && m_contourBuffer.rows() != 0) {
-                            RotatedRect rect = Imgproc.minAreaRect(m_contourBuffer);
-                            Rect boundingRect = Imgproc.boundingRect(m_contourBuffer);
+            if (input.size() > groupingCount) {
+                // todo: is it OK to mutate the input list?
+                //  or should we clone it like before?
+                //  what is the perf hit on cloning?
+                input.sort(Contour.SortByMomentsX);
+                // also why reverse? shouldn't the sort comparator just get reversed?
+                Collections.reverse(input);
+                // find out next time on Code Mysteries...
 
-                            // TODO: Create Target
-                            // m_groupedContours.add(target);
-                        }
-                    });
-                    break;
-                case Dual:
-                    for (int i = 0; i < in.size() - 1; i++) {
-                        List<Point> finalContourList = new ArrayList<>(in.get(i).toList());
-
-                        try {
-                            MatOfPoint firstContour = in.get(i);
-                            MatOfPoint secondContour = in.get(i + 1);
-
-                            if (isIntersecting(firstContour, secondContour)) {
-                                finalContourList.addAll(secondContour.toList());
-                            } else {
-                                finalContourList.clear();
-                                continue;
-                            }
-
-                            m_intersectMatA.release();
-                            m_intersectMatB.release();
-
-                            m_contourBuffer.fromList(finalContourList);
-
-                            if (m_contourBuffer.cols() != 0 && m_contourBuffer.rows() != 0) {
-                                RotatedRect rect = Imgproc.minAreaRect(m_contourBuffer);
-                                Rect boundingRect = Imgproc.boundingRect(m_contourBuffer);
-
-                                // TODO: Create Target
-                                // m_groupedContours.add(target);
-
-                                firstContour.release();
-                                secondContour.release();
-
-                                i += 1;
-                            }
-                        } catch (IndexOutOfBoundsException e) {
-                            finalContourList.clear();
-                        }
+                for (int i = 0; i < input.size() - 1; i++) {
+                    // make a list of the desired count of contours to group
+                    List<Contour> groupingSet;
+                    try {
+                        groupingSet = input.subList(i, i + groupingCount - 1);
+                    } catch (IndexOutOfBoundsException e) {
+                        continue;
                     }
-                    break;
+
+                    // FYI: This method only takes 2 contours!
+                    Contour groupedContour =
+                            Contour.groupContoursByIntersection(
+                                    groupingSet.get(0), groupingSet.get(1), params.getIntersection());
+
+                    if (groupedContour != null) {
+                        m_targets.add(new PotentialTarget(groupedContour, groupingSet));
+                    }
+                }
             }
         }
-        return m_groupedContours;
-    }
-
-    private boolean isIntersecting(MatOfPoint contourOne, MatOfPoint contourTwo) {
-        if (params.getIntersection().equals(TrackedTarget.TargetContourIntersection.None)) {
-            return true;
-        }
-
-        try {
-            m_intersectMatA.fromArray(contourOne.toArray());
-            m_intersectMatB.fromArray(contourTwo.toArray());
-            RotatedRect a = Imgproc.fitEllipse(m_intersectMatA);
-            RotatedRect b = Imgproc.fitEllipse(m_intersectMatB);
-            double mA = MathUtils.toSlope(a.angle);
-            double mB = MathUtils.toSlope(b.angle);
-            double x0A = a.center.x;
-            double y0A = a.center.y;
-            double x0B = b.center.x;
-            double y0B = b.center.y;
-            double intersectionX = ((mA * x0A) - y0A - (mB * x0B) + y0B) / (mA - mB);
-            double intersectionY = (mA * (intersectionX - x0A)) + y0A;
-            double massX = (x0A + x0B) / 2;
-            double massY = (y0A + y0B) / 2;
-            switch (params.getIntersection()) {
-                case Up: {
-                    if (intersectionY < massY) {
-                        return true;
-                    }
-                    break;
-                }
-                case Down: {
-                    if (intersectionY > massY) {
-                        return true;
-                    }
-
-                    break;
-                }
-                case Left: {
-                    if (intersectionX < massX) {
-
-                        return true;
-                    }
-                    break;
-                }
-                case Right: {
-                    if (intersectionX > massX) {
-                        return true;
-                    }
-                    break;
-                }
-            }
-            return false;
-        } catch (Exception e) {
-            return false;
-        }
+        return m_targets;
     }
 
     public static class GroupContoursParams {
-        private TrackedTarget.TargetContourGrouping m_group;
-        private TrackedTarget.TargetContourIntersection m_intersection;
+        private Contour.ContourGrouping m_group;
+        private Contour.ContourIntersection m_intersection;
 
-        public GroupContoursParams(TrackedTarget.TargetContourGrouping group,
-                                   TrackedTarget.TargetContourIntersection intersection) {
+        public GroupContoursParams(
+                Contour.ContourGrouping group, Contour.ContourIntersection intersection) {
             m_group = group;
             m_intersection = intersection;
         }
 
-        public TrackedTarget.TargetContourGrouping getGroup() {
+        public Contour.ContourGrouping getGroup() {
             return m_group;
         }
 
-        public TrackedTarget.TargetContourIntersection getIntersection() {
+        public Contour.ContourIntersection getIntersection() {
             return m_intersection;
         }
     }

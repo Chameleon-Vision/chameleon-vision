@@ -20,19 +20,19 @@ public class BlurPipe extends CVPipe<Mat, Mat, BlurPipe.BlurParams> {
         private int m_blurSize;
 
         /**
-         * Constructs a new BlurImageParams.
-         *
-         * @param blurSize The blur size.
-         */
+        * Constructs a new BlurImageParams.
+        *
+        * @param blurSize The blur size.
+        */
         public BlurParams(int blurSize) {
             m_blurSize = blurSize;
         }
 
         /**
-         * Returns the blur size.
-         *
-         * @return The blur size.
-         */
+        * Returns the blur size.
+        *
+        * @return The blur size.
+        */
         public Size getBlurSize() {
             return new Size(m_blurSize, m_blurSize);
         }

@@ -1,32 +1,32 @@
 package com.chameleonvision.common.vision.pipeline.pipe;
 
+import com.chameleonvision.common.vision.opencv.Contour;
+import com.chameleonvision.common.vision.pipeline.CVPipe;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.chameleonvision.common.vision.pipeline.CVPipe;
-import org.opencv.core.MatOfPoint;
-import org.opencv.imgproc.Imgproc;
+public class SpeckleRejectPipe
+        extends CVPipe<List<Contour>, List<Contour>, SpeckleRejectPipe.SpeckleRejectParams> {
 
-public class SpeckleRejectPipe extends CVPipe<List<MatOfPoint>, List<MatOfPoint>,
-    SpeckleRejectPipe.SpeckleRejectParams> {
-
-    private List<MatOfPoint> m_despeckledContours = new ArrayList<>();
+    private List<Contour> m_despeckledContours = new ArrayList<>();
 
     @Override
-    protected List<MatOfPoint> process(List<MatOfPoint> in) {
-        m_despeckledContours.forEach(MatOfPoint::release);
+    protected List<Contour> process(List<Contour> in) {
+        for (var c : m_despeckledContours) {
+            c.mat.release();
+        }
         m_despeckledContours.clear();
 
         if (in.size() > 0) {
             double averageArea = 0.0;
-            for (MatOfPoint c : in) {
-                averageArea += Imgproc.contourArea(c);
+            for (Contour c : in) {
+                averageArea += c.getArea();
             }
             averageArea /= in.size();
 
             double minAllowedArea = params.getMinPercentOfAvg() / 100.0 * averageArea;
-            for (MatOfPoint c : in) {
-                if (Imgproc.contourArea(c) >= minAllowedArea) {
+            for (Contour c : in) {
+                if (c.getArea() >= minAllowedArea) {
                     m_despeckledContours.add(c);
                 }
             }
