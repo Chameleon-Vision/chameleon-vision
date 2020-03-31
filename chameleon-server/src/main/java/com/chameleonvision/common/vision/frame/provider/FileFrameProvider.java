@@ -58,16 +58,6 @@ public class FileFrameProvider implements FrameProvider {
     }
 
     /**
-    * Set the fov of the image.
-    *
-    * @param fov The fov of the image.
-    */
-    public void setFov(double fov) {
-        m_fov = fov;
-        m_properties = new FrameStaticProperties(m_properties.imageWidth, m_properties.imageHeight, m_fov);
-    }
-
-    /**
     * Set image reloading. If true this will reload the image from the path set in the constructor
     * every time {@link FileFrameProvider#getFrame()} is called.
     *
