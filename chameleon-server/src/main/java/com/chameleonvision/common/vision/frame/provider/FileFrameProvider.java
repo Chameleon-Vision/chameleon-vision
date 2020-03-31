@@ -2,6 +2,7 @@ package com.chameleonvision.common.vision.frame.provider;
 
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.FrameProvider;
+import com.chameleonvision.common.vision.frame.FrameStaticProperties;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,16 +17,21 @@ public class FileFrameProvider implements FrameProvider {
     private Frame m_frame;
     private Path m_path;
 
+    private double m_fov;
+    private FrameStaticProperties m_properties;
+
     private boolean m_reloadImage;
 
     /**
     * Instantiates a new FileFrameProvider.
     *
     * @param path The path of the image to read from.
+    * @param fov The fov of the image.
     */
-    public FileFrameProvider(Path path) {
+    public FileFrameProvider(Path path, double fov) {
         if (!Files.exists(path)) throw new RuntimeException("Invalid path for image!");
         m_path = path;
+        m_fov = fov;
 
         loadImage();
     }
@@ -34,19 +40,30 @@ public class FileFrameProvider implements FrameProvider {
     * Instantiates a new File frame provider.
     *
     * @param pathAsString The path of the image to read from as a string.
+    * @param fov The fov of the image.
     */
-    public FileFrameProvider(String pathAsString) {
-        this(Paths.get(pathAsString));
+    public FileFrameProvider(String pathAsString, double fov) {
+        this(Paths.get(pathAsString), fov);
     }
 
     private void loadImage() {
         Mat image = Imgcodecs.imread(m_path.toString());
 
         if (image.cols() > 0 && image.rows() > 0) {
+            m_properties = new FrameStaticProperties(image.width(), image.height(), m_fov);
             m_frame = new Frame(image);
         } else {
             throw new RuntimeException("Image loading failed!");
         }
+    }
+
+    /**
+    * Set the fov of the image.
+    *
+    * @param fov The fov of the image.
+    */
+    public void setFov(double fov) {
+        m_fov = fov;
     }
 
     /**
@@ -66,6 +83,11 @@ public class FileFrameProvider implements FrameProvider {
     */
     public boolean isImageReloading() {
         return m_reloadImage;
+    }
+
+    @Override
+    public FrameStaticProperties getFrameProperties() {
+        return m_properties;
     }
 
     @Override
