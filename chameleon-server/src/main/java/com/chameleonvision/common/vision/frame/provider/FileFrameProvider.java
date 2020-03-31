@@ -64,6 +64,7 @@ public class FileFrameProvider implements FrameProvider {
     */
     public void setFov(double fov) {
         m_fov = fov;
+        m_properties = new FrameStaticProperties(m_properties.imageWidth, m_properties.imageHeight, m_fov);
     }
 
     /**
