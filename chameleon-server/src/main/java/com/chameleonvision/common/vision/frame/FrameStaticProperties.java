@@ -4,9 +4,7 @@ import edu.wpi.cscore.VideoMode;
 import org.apache.commons.math3.fraction.Fraction;
 import org.apache.commons.math3.util.FastMath;
 
-/**
- * Represents the properties of a frame.
- */
+/** Represents the properties of a frame. */
 public class FrameStaticProperties {
     public final int imageWidth;
     public final int imageHeight;
@@ -18,22 +16,22 @@ public class FrameStaticProperties {
     public final double verticalFocalLength;
 
     /**
-     * Instantiates a new Frame static properties.
-     *
-     * @param mode The Video Mode of the camera.
-     * @param fov  The fov of the image.
-     */
+    * Instantiates a new Frame static properties.
+    *
+    * @param mode The Video Mode of the camera.
+    * @param fov The fov of the image.
+    */
     public FrameStaticProperties(VideoMode mode, double fov) {
         this(mode.width, mode.height, fov);
     }
 
     /**
-     * Instantiates a new Frame static properties.
-     *
-     * @param imageWidth  The width of the image.
-     * @param imageHeight The width of the image.
-     * @param fov         The fov of the image.
-     */
+    * Instantiates a new Frame static properties.
+    *
+    * @param imageWidth The width of the image.
+    * @param imageHeight The width of the image.
+    * @param fov The fov of the image.
+    */
     public FrameStaticProperties(int imageWidth, int imageHeight, double fov) {
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
