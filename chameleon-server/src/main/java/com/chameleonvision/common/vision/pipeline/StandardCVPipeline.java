@@ -3,7 +3,7 @@ package com.chameleonvision.common.vision.pipeline;
 import com.chameleonvision.common.vision.frame.Frame;
 import java.util.List;
 
-public class StandardCVPipeline implements CVPipeline {
+public class StandardCVPipeline implements CVPipeline<CVPipelineResult, CVPipelineSettings> {
     @Override
     public CVPipelineResult run(Frame frame, CVPipelineSettings settings) {
 

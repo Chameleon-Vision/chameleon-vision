@@ -1,6 +1,7 @@
 package com.chameleonvision.common.vision.pipe.impl;
 
 import com.chameleonvision.common.util.ColorHelper;
+import com.chameleonvision.common.util.numbers.DoubleCouple;
 import com.chameleonvision.common.vision.pipe.CVPipe;
 import com.chameleonvision.common.vision.target.RobotOffsetPointMode;
 import com.chameleonvision.common.vision.target.TrackedTarget;
@@ -18,40 +19,44 @@ public class Draw2dCrosshairPipe
     protected Mat process(Pair<Mat, List<TrackedTarget>> in) {
         Mat image = in.getLeft();
 
-        double x, y;
-        double scale = image.cols() / 32.0;
+        if (params.m_showCrosshair) {
+            double x = image.cols() / 2.0;
+            double y = image.rows() / 2.0;
+            double scale = image.cols() / 32.0;
 
-        if (params.showCrosshair) {
-            x = image.cols() / 2.0;
-            y = image.rows() / 2.0;
-
-            switch (params.calibrationMode) {
+            switch (params.m_calibrationMode) {
                 case Single:
-                    if (params.calibrationPoint.equals(new Point())) {
-                        params.calibrationPoint.set(new double[] {x, y});
+                    if (!params.m_calibrationPoint.isEmpty()) {
+                        x = params.m_calibrationPoint.getFirst();
+                        y = params.m_calibrationPoint.getSecond();
                     }
-                    x = (int) params.calibrationPoint.x;
-                    y = (int) params.calibrationPoint.y;
                     break;
                 case Dual:
                     // TODO
                     break;
             }
+
             Point xMax = new Point(x + scale, y);
             Point xMin = new Point(x - scale, y);
             Point yMax = new Point(x, y + scale);
             Point yMin = new Point(x, y - scale);
 
-            Imgproc.line(in.getLeft(), xMax, xMin, ColorHelper.colorToScalar(params.crosshairColor));
-            Imgproc.line(in.getLeft(), yMax, yMin, ColorHelper.colorToScalar(params.crosshairColor));
+            Imgproc.line(image, xMax, xMin, ColorHelper.colorToScalar(params.m_crosshairColor));
+            Imgproc.line(image, yMax, yMin, ColorHelper.colorToScalar(params.m_crosshairColor));
         }
-        return in.getLeft();
+        return image;
     }
 
     public static class Draw2dCrosshairParams {
-        public RobotOffsetPointMode calibrationMode;
-        public Point calibrationPoint;
-        public boolean showCrosshair = true;
-        public Color crosshairColor = Color.GREEN;
+        private RobotOffsetPointMode m_calibrationMode;
+        private DoubleCouple m_calibrationPoint;
+        public boolean m_showCrosshair = true;
+        public Color m_crosshairColor = Color.GREEN;
+
+        public Draw2dCrosshairParams(
+                RobotOffsetPointMode calibrationMode, DoubleCouple calibrationPoint) {
+            m_calibrationMode = calibrationMode;
+            m_calibrationPoint = calibrationPoint;
+        }
     }
 }
