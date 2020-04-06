@@ -1,4 +1,4 @@
-package com.chameleonvision.common.vision.pipeline;
+package com.chameleonvision.common.vision.pipe;
 
 import java.util.function.Function;
 
@@ -10,9 +10,9 @@ import java.util.function.Function;
 * @param <O> Output type for the pipe
 * @param <P> Parameters type for the pipe
 */
-public abstract class CVPipe<I, O, P> implements Function<I, PipeResult<O>> {
+public abstract class CVPipe<I, O, P> implements Function<I, CVPipeResult<O>> {
 
-    protected PipeResult<O> result = new PipeResult<>();
+    protected CVPipeResult<O> result = new CVPipeResult<>();
     protected P params;
 
     public void setParams(P params) {
@@ -32,7 +32,7 @@ public abstract class CVPipe<I, O, P> implements Function<I, PipeResult<O>> {
     * @return Result of processing.
     */
     @Override
-    public PipeResult<O> apply(I in) {
+    public CVPipeResult<O> apply(I in) {
         long pipeStartNanos = System.nanoTime();
         result.result = process(in);
         result.nanosElapsed = System.nanoTime() - pipeStartNanos;

@@ -1,6 +1,6 @@
-package com.chameleonvision.common.vision.pipeline.pipe;
+package com.chameleonvision.common.vision.pipe.impl;
 
-import com.chameleonvision.common.vision.pipeline.CVPipe;
+import com.chameleonvision.common.vision.pipe.CVPipe;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.CvException;
 import org.opencv.core.Mat;

@@ -1,7 +1,7 @@
-package com.chameleonvision.common.vision.pipeline.pipe;
+package com.chameleonvision.common.vision.pipe.impl;
 
 import com.chameleonvision.common.vision.opencv.Contour;
-import com.chameleonvision.common.vision.pipeline.CVPipe;
+import com.chameleonvision.common.vision.pipe.CVPipe;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

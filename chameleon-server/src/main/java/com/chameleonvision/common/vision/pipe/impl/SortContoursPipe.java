@@ -1,7 +1,8 @@
-package com.chameleonvision.common.vision.pipeline.pipe;
+package com.chameleonvision.common.vision.pipe.impl;
 
-import com.chameleonvision.common.vision.camera.CaptureStaticProperties;
-import com.chameleonvision.common.vision.pipeline.CVPipe;
+import com.chameleonvision.common.vision.frame.FrameStaticProperties;
+import com.chameleonvision.common.vision.opencv.ContourSortMode;
+import com.chameleonvision.common.vision.pipe.CVPipe;
 import com.chameleonvision.common.vision.target.TrackedTarget;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -18,7 +19,7 @@ public class SortContoursPipe
         m_sortedContours.clear();
         if (in.size() > 0) {
             m_sortedContours.addAll(in);
-            if (params.getSortMode() != SortMode.Centermost) {
+            if (params.getSortMode() != ContourSortMode.Centermost) {
                 m_sortedContours.sort(params.getSortMode().getComparator());
             } else {
                 m_sortedContours.sort(Comparator.comparingDouble(this::calcSquareCenterDistance));
@@ -35,45 +36,23 @@ public class SortContoursPipe
                         + FastMath.pow(params.getCamProperties().centerY - rect.getMinAreaRect().center.y, 2));
     }
 
-    public enum SortMode {
-        Largest(
-                (rect1, rect2) ->
-                        Double.compare(rect2.getMinAreaRect().size.area(), rect1.getMinAreaRect().size.area())),
-        Smallest(Largest.getComparator().reversed()),
-        Highest(Comparator.comparingDouble(rect -> rect.getMinAreaRect().center.y)),
-        Lowest(Highest.getComparator().reversed()),
-        Leftmost(Comparator.comparingDouble(target -> target.getMinAreaRect().center.x)),
-        Rightmost(Leftmost.getComparator().reversed()),
-        Centermost(null);
-
-        private Comparator<TrackedTarget> m_comparator;
-
-        SortMode(Comparator<TrackedTarget> comparator) {
-            m_comparator = comparator;
-        }
-
-        public Comparator<TrackedTarget> getComparator() {
-            return m_comparator;
-        }
-    }
-
     public static class SortContoursParams {
-        private SortMode m_sortMode;
-        private CaptureStaticProperties m_camProperties;
+        private ContourSortMode m_sortMode;
+        private FrameStaticProperties m_camProperties;
         private int m_maxTargets;
 
         public SortContoursParams(
-                SortMode sortMode, CaptureStaticProperties camProperties, int maxTargets) {
+                ContourSortMode sortMode, FrameStaticProperties camProperties, int maxTargets) {
             m_sortMode = sortMode;
             m_camProperties = camProperties;
             m_maxTargets = maxTargets;
         }
 
-        public SortMode getSortMode() {
+        public ContourSortMode getSortMode() {
             return m_sortMode;
         }
 
-        public CaptureStaticProperties getCamProperties() {
+        public FrameStaticProperties getCamProperties() {
             return m_camProperties;
         }
 

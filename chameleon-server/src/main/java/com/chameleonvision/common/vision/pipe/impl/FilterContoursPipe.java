@@ -1,10 +1,10 @@
-package com.chameleonvision.common.vision.pipeline.pipe;
+package com.chameleonvision.common.vision.pipe.impl;
 
 import com.chameleonvision.common.util.math.MathUtils;
 import com.chameleonvision.common.util.numbers.DoubleCouple;
-import com.chameleonvision.common.vision.camera.CaptureStaticProperties;
+import com.chameleonvision.common.vision.frame.FrameStaticProperties;
 import com.chameleonvision.common.vision.opencv.Contour;
-import com.chameleonvision.common.vision.pipeline.CVPipe;
+import com.chameleonvision.common.vision.pipe.CVPipe;
 import java.util.ArrayList;
 import java.util.List;
 import org.opencv.core.Rect;
@@ -56,13 +56,13 @@ public class FilterContoursPipe
         private DoubleCouple m_area;
         private DoubleCouple m_ratio;
         private DoubleCouple m_extent;
-        private CaptureStaticProperties m_camProperties;
+        private FrameStaticProperties m_camProperties;
 
         public FilterContoursParams(
                 DoubleCouple area,
                 DoubleCouple ratio,
                 DoubleCouple extent,
-                CaptureStaticProperties camProperties) {
+                FrameStaticProperties camProperties) {
             this.m_area = area;
             this.m_ratio = ratio;
             this.m_extent = extent;
@@ -81,7 +81,7 @@ public class FilterContoursPipe
             return m_extent;
         }
 
-        public CaptureStaticProperties getCamProperties() {
+        public FrameStaticProperties getCamProperties() {
             return m_camProperties;
         }
     }

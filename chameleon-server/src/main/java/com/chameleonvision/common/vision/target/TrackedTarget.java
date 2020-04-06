@@ -49,8 +49,7 @@ public class TrackedTarget {
         return m_mainContour.getMinAreaRect();
     }
 
-    private void calculateTargetOffsetPoint(
-            boolean isLandscape, TargetOffsetPointRegion offsetRegion) {
+    private void calculateTargetOffsetPoint(boolean isLandscape, TargetOffsetPointEdge offsetRegion) {
         Point[] vertices = new Point[4];
 
         var minAreaRect = getMinAreaRect();
@@ -145,7 +144,7 @@ public class TrackedTarget {
 
     public void calculateValues(TargetCalculationParameters params) {
         // this MUST happen in this exact order!
-        calculateTargetOffsetPoint(params.isLandscape, params.targetOffsetPointRegion);
+        calculateTargetOffsetPoint(params.isLandscape, params.targetOffsetPointEdge);
         calculateRobotOffsetPoint(
                 m_targetOffsetPoint,
                 params.cameraCenterPoint,
@@ -161,7 +160,7 @@ public class TrackedTarget {
     public static class TargetCalculationParameters {
         // TargetOffset calculation values
         final boolean isLandscape;
-        final TargetOffsetPointRegion targetOffsetPointRegion;
+        final TargetOffsetPointEdge targetOffsetPointEdge;
 
         // RobotOffset calculation values
         final Point userOffsetPoint;
@@ -180,7 +179,7 @@ public class TrackedTarget {
 
         public TargetCalculationParameters(
                 boolean isLandscape,
-                TargetOffsetPointRegion targetOffsetPointRegion,
+                TargetOffsetPointEdge targetOffsetPointEdge,
                 Point userOffsetPoint,
                 Point cameraCenterPoint,
                 DoubleCouple offsetEquationValues,
@@ -189,7 +188,7 @@ public class TrackedTarget {
                 double verticalFocalLength,
                 double imageArea) {
             this.isLandscape = isLandscape;
-            this.targetOffsetPointRegion = targetOffsetPointRegion;
+            this.targetOffsetPointEdge = targetOffsetPointEdge;
             this.userOffsetPoint = userOffsetPoint;
             this.cameraCenterPoint = cameraCenterPoint;
             this.offsetEquationValues = offsetEquationValues;
@@ -198,25 +197,5 @@ public class TrackedTarget {
             this.verticalFocalLength = verticalFocalLength;
             this.imageArea = imageArea;
         }
-    }
-
-    // TODO: move these? also docs plox
-    public enum TargetOrientation {
-        Portrait,
-        Landscape
-    }
-
-    public enum TargetOffsetPointRegion {
-        Center,
-        Top,
-        Bottom,
-        Left,
-        Right
-    }
-
-    public enum RobotOffsetPointMode {
-        None,
-        Single,
-        Dual
     }
 }

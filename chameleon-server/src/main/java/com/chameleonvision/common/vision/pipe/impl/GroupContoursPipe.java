@@ -1,7 +1,9 @@
-package com.chameleonvision.common.vision.pipeline.pipe;
+package com.chameleonvision.common.vision.pipe.impl;
 
 import com.chameleonvision.common.vision.opencv.Contour;
-import com.chameleonvision.common.vision.pipeline.CVPipe;
+import com.chameleonvision.common.vision.opencv.ContourGroupingMode;
+import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
+import com.chameleonvision.common.vision.pipe.CVPipe;
 import com.chameleonvision.common.vision.target.PotentialTarget;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +18,7 @@ public class GroupContoursPipe
     protected List<PotentialTarget> process(List<Contour> input) {
         m_targets.clear();
 
-        if (params.getGroup() == Contour.ContourGrouping.Single) {
+        if (params.getGroup() == ContourGroupingMode.Single) {
             for (var contour : input) {
                 m_targets.add(new PotentialTarget(contour));
             }
@@ -56,20 +58,20 @@ public class GroupContoursPipe
     }
 
     public static class GroupContoursParams {
-        private Contour.ContourGrouping m_group;
-        private Contour.ContourIntersection m_intersection;
+        private ContourGroupingMode m_group;
+        private ContourIntersectionDirection m_intersection;
 
         public GroupContoursParams(
-                Contour.ContourGrouping group, Contour.ContourIntersection intersection) {
+                ContourGroupingMode group, ContourIntersectionDirection intersectionDirection) {
             m_group = group;
-            m_intersection = intersection;
+            m_intersection = intersectionDirection;
         }
 
-        public Contour.ContourGrouping getGroup() {
+        public ContourGroupingMode getGroup() {
             return m_group;
         }
 
-        public Contour.ContourIntersection getIntersection() {
+        public ContourIntersectionDirection getIntersection() {
             return m_intersection;
         }
     }

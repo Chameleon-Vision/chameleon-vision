@@ -1,10 +1,9 @@
-package com.chameleonvision.common.vision.pipeline.pipe;
+package com.chameleonvision.common.vision.pipe.impl;
 
 import com.chameleonvision.common.util.numbers.DoubleCouple;
-import com.chameleonvision.common.vision.camera.CaptureStaticProperties;
-import com.chameleonvision.common.vision.pipeline.CVPipe;
-import com.chameleonvision.common.vision.target.PotentialTarget;
-import com.chameleonvision.common.vision.target.TrackedTarget;
+import com.chameleonvision.common.vision.frame.FrameStaticProperties;
+import com.chameleonvision.common.vision.pipe.CVPipe;
+import com.chameleonvision.common.vision.target.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.opencv.core.Point;
@@ -26,15 +25,15 @@ public class Collect2dTargetsPipe
 
         var calculationParams =
                 new TrackedTarget.TargetCalculationParameters(
-                        params.getOrientation() == TrackedTarget.TargetOrientation.Landscape,
+                        params.getOrientation() == TargetOrientation.Landscape,
                         params.getOffsetPointRegion(),
                         params.getUserOffsetPoint(),
-                        params.getCaptureStaticProperties().centerPoint,
+                        params.getFrameStaticProperties().centerPoint,
                         new DoubleCouple(params.getCalibrationB(), params.getCalibrationM()),
                         params.getOffsetMode(),
-                        params.getCaptureStaticProperties().horizontalFocalLength,
-                        params.getCaptureStaticProperties().verticalFocalLength,
-                        params.getCaptureStaticProperties().imageArea);
+                        params.getFrameStaticProperties().horizontalFocalLength,
+                        params.getFrameStaticProperties().verticalFocalLength,
+                        params.getFrameStaticProperties().imageArea);
 
         for (PotentialTarget target : in) {
             targets.add(new TrackedTarget(target, calculationParams));
@@ -44,21 +43,21 @@ public class Collect2dTargetsPipe
     }
 
     public static class Collect2dTargetsParams {
-        private CaptureStaticProperties m_captureStaticProperties;
-        private TrackedTarget.RobotOffsetPointMode m_offsetMode;
+        private FrameStaticProperties m_captureStaticProperties;
+        private RobotOffsetPointMode m_offsetMode;
         private double m_calibrationM, m_calibrationB;
         private Point m_userOffsetPoint;
-        private TrackedTarget.TargetOffsetPointRegion m_region;
-        private TrackedTarget.TargetOrientation m_orientation;
+        private TargetOffsetPointEdge m_region;
+        private TargetOrientation m_orientation;
 
         public Collect2dTargetsParams(
-                CaptureStaticProperties captureStaticProperties,
-                TrackedTarget.RobotOffsetPointMode offsetMode,
+                FrameStaticProperties captureStaticProperties,
+                RobotOffsetPointMode offsetMode,
                 double calibrationM,
                 double calibrationB,
                 Point calibrationPoint,
-                TrackedTarget.TargetOffsetPointRegion region,
-                TrackedTarget.TargetOrientation orientation) {
+                TargetOffsetPointEdge region,
+                TargetOrientation orientation) {
             m_captureStaticProperties = captureStaticProperties;
             m_offsetMode = offsetMode;
             m_calibrationM = calibrationM;
@@ -68,11 +67,11 @@ public class Collect2dTargetsPipe
             m_orientation = orientation;
         }
 
-        public CaptureStaticProperties getCaptureStaticProperties() {
+        public FrameStaticProperties getFrameStaticProperties() {
             return m_captureStaticProperties;
         }
 
-        public TrackedTarget.RobotOffsetPointMode getOffsetMode() {
+        public RobotOffsetPointMode getOffsetMode() {
             return m_offsetMode;
         }
 
@@ -88,11 +87,11 @@ public class Collect2dTargetsPipe
             return m_userOffsetPoint;
         }
 
-        public TrackedTarget.TargetOffsetPointRegion getOffsetPointRegion() {
+        public TargetOffsetPointEdge getOffsetPointRegion() {
             return m_region;
         }
 
-        public TrackedTarget.TargetOrientation getOrientation() {
+        public TargetOrientation getOrientation() {
             return m_orientation;
         }
     }
