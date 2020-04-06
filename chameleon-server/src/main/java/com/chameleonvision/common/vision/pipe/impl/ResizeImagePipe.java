@@ -1,5 +1,6 @@
 package com.chameleonvision.common.vision.pipe.impl;
 
+import com.chameleonvision.common.vision.frame.FrameDivisor;
 import com.chameleonvision.common.vision.pipe.CVPipe;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
@@ -24,6 +25,14 @@ public class ResizeImagePipe extends CVPipe<Mat, Mat, ResizeImagePipe.ResizeImag
     */
     @Override
     protected Mat process(Mat in) {
+
+        // if a divisor is set, use that instead of a size.
+        if (params.getDivisor() != null) {
+            int width = in.cols() / params.getDivisor().value;
+            int height = in.rows() / params.getDivisor().value;
+            setParams(new ResizeImageParams(width, height));
+        }
+
         Imgproc.resize(in, in, params.getSize());
         return in;
     }
@@ -32,8 +41,9 @@ public class ResizeImagePipe extends CVPipe<Mat, Mat, ResizeImagePipe.ResizeImag
         public static ResizeImageParams DEFAULT = new ResizeImageParams(320, 240);
 
         private Size size;
-        public int width;
-        public int height;
+        private int width;
+        private int height;
+        private FrameDivisor divisor;
 
         public ResizeImageParams() {
             this(DEFAULT.width, DEFAULT.height);
@@ -45,8 +55,16 @@ public class ResizeImagePipe extends CVPipe<Mat, Mat, ResizeImagePipe.ResizeImag
             size = new Size(new double[] {width, height});
         }
 
+        public ResizeImageParams(FrameDivisor divisor) {
+            this.divisor = divisor;
+        }
+
         public Size getSize() {
             return size;
+        }
+
+        public FrameDivisor getDivisor() {
+            return divisor;
         }
     }
 }
