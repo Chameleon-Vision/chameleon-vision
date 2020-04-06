@@ -63,10 +63,11 @@ public class Contour {
         return mat.cols() != 0 && mat.rows() != 0;
     }
 
-    public boolean isIntersecting(Contour secondContour, ContourIntersection intersection) {
+    public boolean isIntersecting(
+            Contour secondContour, ContourIntersectionDirection intersectionDirection) {
         boolean isIntersecting = false;
 
-        if (intersection == ContourIntersection.None) {
+        if (intersectionDirection == ContourIntersectionDirection.None) {
             isIntersecting = true;
         } else {
             try {
@@ -86,7 +87,7 @@ public class Contour {
                 double intersectionY = (mA * (intersectionX - x0A)) + y0A;
                 double massX = (x0A + x0B) / 2;
                 double massY = (y0A + y0B) / 2;
-                switch (intersection) {
+                switch (intersectionDirection) {
                     case Up:
                         if (intersectionY < massY) isIntersecting = true;
                         break;
@@ -112,7 +113,7 @@ public class Contour {
 
     // TODO: refactor to do "infinite" contours
     public static Contour groupContoursByIntersection(
-            Contour firstContour, Contour secondContour, ContourIntersection intersection) {
+            Contour firstContour, Contour secondContour, ContourIntersectionDirection intersection) {
         if (firstContour.isIntersecting(secondContour, intersection)) {
             return combineContours(firstContour, secondContour);
         } else {
@@ -134,25 +135,5 @@ public class Contour {
         if (!finalContour.isEmpty()) {
             return finalContour;
         } else return null;
-    }
-
-    // TODO: move these? also docs plox
-    public enum ContourIntersection {
-        None,
-        Up,
-        Down,
-        Left,
-        Right
-    }
-
-    public enum ContourGrouping {
-        Single(1),
-        Dual(2);
-
-        public final int count;
-
-        ContourGrouping(int count) {
-            this.count = count;
-        }
     }
 }
