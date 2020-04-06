@@ -31,6 +31,7 @@ jobs:
       - run: rm -rf src/main/resources/web/*
       - run: mkdir -p src/main/resources/web/
       - run: cp -r /UI/dist/. src/main/resources/web/
+      - run: gradle test
       - run: gradle shadowJar
       - store_artifacts: 
           path: build/libs
@@ -50,7 +51,6 @@ jobs:
       - run: gradle spotlessApply
       - run: git --no-pager diff --exit-code HEAD
     
-
   deploy:
     docker:
       - image: cibuilds/github:0.10
