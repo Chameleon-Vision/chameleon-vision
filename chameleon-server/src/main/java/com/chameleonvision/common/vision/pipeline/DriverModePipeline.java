@@ -36,7 +36,6 @@ public class DriverModePipeline
     public DriverModePipelineResult run(Frame frame, DriverModePipelineSettings settings) {
 
         // update pipe parameters
-        
 
         // apply pipes
         var rotateImageResult = rotateImagePipe.apply(frame.image);

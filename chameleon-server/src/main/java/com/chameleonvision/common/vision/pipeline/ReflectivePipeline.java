@@ -11,9 +11,7 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Mat;
 
-/**
- * Represents a pipeline for tracking retro-reflective targets.
- */
+/** Represents a pipeline for tracking retro-reflective targets. */
 public class ReflectivePipeline
         implements CVPipeline<CVPipelineResult, ReflectivePipelineSettings> {
 
