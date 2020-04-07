@@ -10,9 +10,4 @@ public class USBFrameProvider implements FrameProvider {
     public Frame getFrame() {
         throw new NotImplementedException("");
     }
-
-    @Override
-    public FrameStaticProperties getFrameProperties() {
-        throw new NotImplementedException("");
-    }
 }

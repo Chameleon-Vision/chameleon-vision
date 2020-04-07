@@ -1,30 +1,26 @@
 package com.chameleonvision.common.vision.frame;
 
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Size;
 
 public class Frame {
     public final long timestampNanos;
     public final Mat image;
-    public final Size imageSize;
-    public final Point imageCenterPoint;
+    public final FrameStaticProperties frameStaticProperties;
 
-    public Frame(Mat image, long timestampNanos) {
+    public Frame(Mat image, long timestampNanos, FrameStaticProperties frameStaticProperties) {
         this.image = image;
         this.timestampNanos = timestampNanos;
-        imageSize = image.size();
-        imageCenterPoint = new Point(imageSize.width / 2, imageSize.height / 2);
+        this.frameStaticProperties = frameStaticProperties;
     }
 
-    public Frame(Mat image) {
-        this(image, System.nanoTime());
+    public Frame(Mat image, FrameStaticProperties frameStaticProperties) {
+        this(image, System.nanoTime(), frameStaticProperties);
     }
 
     public static Frame copyFrom(Frame frame) {
         Mat newMat = new Mat();
         frame.image.copyTo(newMat);
         frame.image.release();
-        return new Frame(newMat, frame.timestampNanos);
+        return new Frame(newMat, frame.timestampNanos, frame.frameStaticProperties);
     }
 }
