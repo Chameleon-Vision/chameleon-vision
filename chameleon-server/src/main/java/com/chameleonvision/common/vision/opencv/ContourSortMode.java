@@ -1,11 +1,11 @@
 package com.chameleonvision.common.vision.opencv;
 
-import com.chameleonvision.common.vision.target.TrackedTarget;
+import com.chameleonvision.common.vision.target.PotentialTarget;
 import java.util.Comparator;
 import org.apache.commons.math3.util.FastMath;
 
 public enum ContourSortMode {
-    Largest(Comparator.comparingDouble(TrackedTarget::getArea)),
+    Largest(Comparator.comparingDouble(PotentialTarget::getArea)),
     Smallest(Largest.getComparator().reversed()),
     Highest(Comparator.comparingDouble(rect -> rect.getMinAreaRect().center.y)),
     Lowest(Highest.getComparator().reversed()),
@@ -17,13 +17,13 @@ public enum ContourSortMode {
                             (FastMath.pow(rect.getMinAreaRect().center.y, 2)
                                     + FastMath.pow(rect.getMinAreaRect().center.x, 2))));
 
-    private Comparator<TrackedTarget> m_comparator;
+    private Comparator<PotentialTarget> m_comparator;
 
-    ContourSortMode(Comparator<TrackedTarget> comparator) {
+    ContourSortMode(Comparator<PotentialTarget> comparator) {
         m_comparator = comparator;
     }
 
-    public Comparator<TrackedTarget> getComparator() {
+    public Comparator<PotentialTarget> getComparator() {
         return m_comparator;
     }
 }

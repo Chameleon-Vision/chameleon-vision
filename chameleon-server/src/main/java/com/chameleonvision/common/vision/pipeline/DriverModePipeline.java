@@ -17,10 +17,7 @@ public class DriverModePipeline
 
     private final Draw2dCrosshairPipe draw2dCrosshairPipe = new Draw2dCrosshairPipe();
 
-    @Override
-    public DriverModePipelineResult run(Frame frame, DriverModePipelineSettings settings) {
-        // update pipe parameters
-
+    private void setPipeParams(DriverModePipelineSettings settings) {
         RotateImagePipe.RotateImageParams rotateImageParams =
                 new RotateImagePipe.RotateImageParams(settings.inputImageRotationMode);
         rotateImagePipe.setParams(rotateImageParams);
@@ -33,6 +30,13 @@ public class DriverModePipeline
                 new Draw2dCrosshairPipe.Draw2dCrosshairParams(
                         settings.offsetPointMode, settings.offsetPoint);
         draw2dCrosshairPipe.setParams(draw2dCrosshairParams);
+    }
+
+    @Override
+    public DriverModePipelineResult run(Frame frame, DriverModePipelineSettings settings) {
+
+        // update pipe parameters
+        
 
         // apply pipes
         var rotateImageResult = rotateImagePipe.apply(frame.image);
@@ -47,6 +51,7 @@ public class DriverModePipeline
                         + draw2dCrosshairResult.nanosElapsed;
 
         return new DriverModePipelineResult(
-                MathUtils.nanosToMillis(totalNanos), new Frame(draw2dCrosshairResult.result));
+                MathUtils.nanosToMillis(totalNanos),
+                new Frame(draw2dCrosshairResult.result, frame.frameStaticProperties));
     }
 }

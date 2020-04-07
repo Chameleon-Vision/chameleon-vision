@@ -3,6 +3,7 @@ package com.chameleonvision.common.vision.target;
 import com.chameleonvision.common.vision.opencv.Contour;
 import java.util.ArrayList;
 import java.util.List;
+import org.opencv.core.RotatedRect;
 
 public class PotentialTarget {
 
@@ -17,5 +18,13 @@ public class PotentialTarget {
     public PotentialTarget(Contour inputContour, List<Contour> subContours) {
         m_mainContour = inputContour;
         m_subContours = subContours;
+    }
+
+    public RotatedRect getMinAreaRect() {
+        return m_mainContour.getMinAreaRect();
+    }
+
+    public double getArea() {
+        return m_mainContour.getArea();
     }
 }

@@ -104,7 +104,6 @@ dependencies {
 sourceSets {
     main {
         java {
-            srcDir 'src'
             exclude '**/_2/**'
         }
     }
@@ -113,9 +112,6 @@ sourceSets {
 test {
     test {
         useJUnitPlatform()
-        testLogging {
-            events "passed", "skipped", "failed"
-        }
     }
 }
 
@@ -125,5 +121,6 @@ spotless {
     paddedCell()
     indentWithTabs(2)
     indentWithSpaces(4)
+    removeUnusedImports()
   }
 }

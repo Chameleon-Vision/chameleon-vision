@@ -9,7 +9,7 @@ import com.chameleonvision.common.vision.target.RobotOffsetPointMode;
 import com.chameleonvision.common.vision.target.TargetOffsetPointEdge;
 import com.chameleonvision.common.vision.target.TargetOrientation;
 
-public class StandardCVPipelineSettings extends CVPipelineSettings {
+public class ReflectivePipelineSettings extends CVPipelineSettings {
     public IntegerCouple hsvHue = new IntegerCouple(50, 180);
     public IntegerCouple hsvSaturation = new IntegerCouple(50, 255);
     public IntegerCouple hsvValue = new IntegerCouple(50, 255);
@@ -23,7 +23,7 @@ public class StandardCVPipelineSettings extends CVPipelineSettings {
     public DoubleCouple contourArea = new DoubleCouple(0.0, 100.0);
     public DoubleCouple contourRatio = new DoubleCouple(0.0, 20.0);
     public DoubleCouple contourExtent = new DoubleCouple(0.0, 100.0);
-    public Number contourSpecklePercentage = 5;
+    public int contourSpecklePercentage = 5;
 
     // the order in which to sort contours to find the most desirable
     public ContourSortMode contourSortMode = ContourSortMode.Largest;

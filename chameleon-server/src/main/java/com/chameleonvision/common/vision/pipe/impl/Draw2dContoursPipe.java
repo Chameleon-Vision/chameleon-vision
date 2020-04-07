@@ -85,5 +85,10 @@ public class Draw2dContoursPipe
         public Color centroidColor = Color.GREEN;
         public Color rotatedBoxColor = Color.BLUE;
         public Color maximumBoxColor = Color.RED;
+
+        // TODO: set other params from UI/settings file?
+        public Draw2dContoursParams(boolean showMultipleTargets) {
+            this.showMultiple = showMultipleTargets;
+        }
     }
 }
