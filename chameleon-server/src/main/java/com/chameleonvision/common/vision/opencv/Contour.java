@@ -60,7 +60,7 @@ public class Contour implements Releasable {
     }
 
     public boolean isEmpty() {
-        return mat.cols() != 0 && mat.rows() != 0;
+        return mat.empty();
     }
 
     public boolean isIntersecting(
@@ -114,11 +114,19 @@ public class Contour implements Releasable {
     // TODO: refactor to do "infinite" contours
     public static Contour groupContoursByIntersection(
             Contour firstContour, Contour secondContour, ContourIntersectionDirection intersection) {
-        if (firstContour.isIntersecting(secondContour, intersection)) {
+        if (areIntersecting(firstContour, secondContour, intersection)) {
             return combineContours(firstContour, secondContour);
         } else {
             return null;
         }
+    }
+
+    public static boolean areIntersecting(
+            Contour firstContour,
+            Contour secondContour,
+            ContourIntersectionDirection intersectionDirection) {
+        return firstContour.isIntersecting(secondContour, intersectionDirection)
+                || secondContour.isIntersecting(firstContour, intersectionDirection);
     }
 
     // TODO: does this leak?
@@ -132,8 +140,13 @@ public class Contour implements Releasable {
         var points = new MatOfPoint(fullContourPoints.toArray(new Point[0]));
         var finalContour = new Contour(points);
 
-        if (!finalContour.isEmpty()) {
-            return finalContour;
-        } else return null;
+        boolean contourEmpty = finalContour.isEmpty();
+        return contourEmpty ? null : finalContour;
+    }
+
+    
+    @Override
+    public void release() {
+        mat.release();
     }
 }

@@ -38,18 +38,33 @@ public class GroupContoursPipe
                     // make a list of the desired count of contours to group
                     List<Contour> groupingSet;
                     try {
-                        groupingSet = input.subList(i, i + groupingCount - 1);
+                        groupingSet = input.subList(i, i + groupingCount);
                     } catch (IndexOutOfBoundsException e) {
                         continue;
                     }
 
-                    // FYI: This method only takes 2 contours!
-                    Contour groupedContour =
-                            Contour.groupContoursByIntersection(
-                                    groupingSet.get(0), groupingSet.get(1), params.getIntersection());
+                    // temp;
+                    var cont0 = input.get(0);
+                    var cont1 = input.get(1);
+                    var cont2 = input.get(2);
+                    var cont3 = input.get(3);
 
-                    if (groupedContour != null) {
-                        m_targets.add(new PotentialTarget(groupedContour, groupingSet));
+                    boolean intersect_0_1 = Contour.areIntersecting(cont0, cont1, params.getIntersection());
+                    boolean intersect_2_3 = Contour.areIntersecting(cont2, cont3, params.getIntersection());
+
+                    try {
+
+                        // FYI: This method only takes 2 contours!
+                        Contour groupedContour =
+                                Contour.groupContoursByIntersection(
+                                        groupingSet.get(0), groupingSet.get(1), params.getIntersection());
+
+                        if (groupedContour != null) {
+                            m_targets.add(new PotentialTarget(groupedContour, groupingSet));
+                            i += (groupingCount - 1);
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
                 }
             }

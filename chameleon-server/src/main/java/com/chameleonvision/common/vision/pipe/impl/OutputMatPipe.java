@@ -1,26 +1,29 @@
 package com.chameleonvision.common.vision.pipe.impl;
 
+import com.chameleonvision.common.vision.opencv.DualMat;
 import com.chameleonvision.common.vision.pipe.CVPipe;
-import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.CvException;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
-public class OutputMatPipe extends CVPipe<Pair<Mat, Mat>, Mat, OutputMatPipe.OutputMatParams> {
+public class OutputMatPipe extends CVPipe<DualMat, Mat, OutputMatPipe.OutputMatParams> {
 
     private Mat m_outputMat = new Mat();
 
     @Override
-    protected Mat process(Pair<Mat, Mat> in) {
+    protected Mat process(DualMat in) {
+        Mat rawCam = in.first;
+        Mat hsv = in.second;
         if (params.showThreshold()) {
+            // convert input mat
             try {
-                in.getRight().copyTo(m_outputMat);
+                hsv.copyTo(m_outputMat);
                 Imgproc.cvtColor(m_outputMat, m_outputMat, Imgproc.COLOR_GRAY2BGR, 3);
             } catch (CvException e) {
                 System.err.println("(OutputMatPipe) Exception thrown by OpenCV: \n" + e.getMessage());
             }
         } else {
-            in.getLeft().copyTo(m_outputMat);
+            m_outputMat = rawCam;
         }
 
         return m_outputMat;

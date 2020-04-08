@@ -77,11 +77,11 @@ public class Draw2dContoursPipe
     }
 
     public static class Draw2dContoursParams {
-        public boolean showCentroid = false;
+        public boolean showCentroid = true;
         public boolean showMultiple = false;
-        public int boxOutlineSize = 0;
-        public boolean showRotatedBox = false;
-        public boolean showMaximumBox = false;
+        public int boxOutlineSize = 1;
+        public boolean showRotatedBox = true;
+        public boolean showMaximumBox = true;
         public Color centroidColor = Color.GREEN;
         public Color rotatedBoxColor = Color.BLUE;
         public Color maximumBoxColor = Color.RED;
