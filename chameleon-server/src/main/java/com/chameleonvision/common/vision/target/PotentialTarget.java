@@ -1,11 +1,12 @@
 package com.chameleonvision.common.vision.target;
 
 import com.chameleonvision.common.vision.opencv.Contour;
+import com.chameleonvision.common.vision.opencv.Releasable;
 import java.util.ArrayList;
 import java.util.List;
 import org.opencv.core.RotatedRect;
 
-public class PotentialTarget {
+public class PotentialTarget implements Releasable {
 
     final Contour m_mainContour;
     final List<Contour> m_subContours;
@@ -26,5 +27,13 @@ public class PotentialTarget {
 
     public double getArea() {
         return m_mainContour.getArea();
+    }
+
+    @Override
+    public void release() {
+        m_mainContour.release();
+        for (var sc : m_subContours) {
+            sc.release();
+        }
     }
 }

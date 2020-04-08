@@ -1,8 +1,9 @@
 package com.chameleonvision.common.vision.frame;
 
+import com.chameleonvision.common.vision.opencv.Releasable;
 import org.opencv.core.Mat;
 
-public class Frame {
+public class Frame implements Releasable {
     public final long timestampNanos;
     public final Mat image;
     public final FrameStaticProperties frameStaticProperties;
@@ -22,5 +23,10 @@ public class Frame {
         frame.image.copyTo(newMat);
         frame.image.release();
         return new Frame(newMat, frame.timestampNanos, frame.frameStaticProperties);
+    }
+
+    @Override
+    public void release() {
+        image.release();
     }
 }

@@ -2,13 +2,14 @@ package com.chameleonvision.common.vision.target;
 
 import com.chameleonvision.common.util.numbers.DoubleCouple;
 import com.chameleonvision.common.vision.opencv.Contour;
+import com.chameleonvision.common.vision.opencv.Releasable;
 import java.util.List;
 import org.apache.commons.math3.util.FastMath;
 import org.opencv.core.Point;
 import org.opencv.core.RotatedRect;
 
 // TODO: banks fix
-public class TrackedTarget {
+public class TrackedTarget implements Releasable {
     final Contour m_mainContour;
     List<Contour> m_subContours; // can be empty
 
@@ -155,6 +156,14 @@ public class TrackedTarget {
         calculatePitch(params.verticalFocalLength);
         calculateYaw(params.horizontalFocalLength);
         calculateArea(params.imageArea);
+    }
+
+    @Override
+    public void release() {
+        m_mainContour.release();
+        for (var sc : m_subContours) {
+            sc.release();
+        }
     }
 
     public static class TargetCalculationParameters {

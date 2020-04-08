@@ -8,7 +8,7 @@ import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
-public class Contour {
+public class Contour implements Releasable {
 
     public static final Comparator<Contour> SortByMomentsX =
             Comparator.comparingDouble(
