@@ -18,7 +18,7 @@ public class PotentialTarget implements Releasable {
 
     public PotentialTarget(Contour inputContour, List<Contour> subContours) {
         m_mainContour = inputContour;
-        m_subContours = subContours;
+        m_subContours = new ArrayList<>(subContours);
     }
 
     public RotatedRect getMinAreaRect() {
@@ -35,5 +35,6 @@ public class PotentialTarget implements Releasable {
         for (var sc : m_subContours) {
             sc.release();
         }
+        m_subContours.clear();
     }
 }

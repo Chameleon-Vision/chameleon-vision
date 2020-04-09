@@ -16,6 +16,10 @@ public class GroupContoursPipe
 
     @Override
     protected List<PotentialTarget> process(List<Contour> input) {
+        for(var target: m_targets) {
+            target.release();
+        }
+
         m_targets.clear();
 
         if (params.getGroup() == ContourGroupingMode.Single) {
