@@ -16,7 +16,7 @@ public class GroupContoursPipe
 
     @Override
     protected List<PotentialTarget> process(List<Contour> input) {
-        for(var target: m_targets) {
+        for (var target : m_targets) {
             target.release();
         }
 

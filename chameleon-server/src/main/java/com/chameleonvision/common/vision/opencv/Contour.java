@@ -1,9 +1,7 @@
 package com.chameleonvision.common.vision.opencv;
 
 import com.chameleonvision.common.util.math.MathUtils;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
@@ -145,7 +143,6 @@ public class Contour implements Releasable {
         return contourEmpty ? null : finalContour;
     }
 
-    
     @Override
     public void release() {
         mat.release();
