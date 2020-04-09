@@ -27,6 +27,7 @@ public class CVPipelineResult implements Releasable {
         for (TrackedTarget tt : targets) {
             tt.release();
         }
+        outputFrame.release();
     }
 
     public double getLatencyMillis() {

@@ -46,16 +46,6 @@ public class GroupContoursPipe
                     } catch (IndexOutOfBoundsException e) {
                         continue;
                     }
-
-                    // temp;
-                    var cont0 = input.get(0);
-                    var cont1 = input.get(1);
-                    var cont2 = input.get(2);
-                    var cont3 = input.get(3);
-
-                    boolean intersect_0_1 = Contour.areIntersecting(cont0, cont1, params.getIntersection());
-                    boolean intersect_2_3 = Contour.areIntersecting(cont2, cont3, params.getIntersection());
-
                     try {
 
                         // FYI: This method only takes 2 contours!
