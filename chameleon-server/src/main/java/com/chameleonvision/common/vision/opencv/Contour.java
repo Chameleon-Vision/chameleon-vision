@@ -34,7 +34,8 @@ public class Contour implements Releasable {
 
     public RotatedRect getMinAreaRect() {
         if (minAreaRect == null) {
-            MatOfPoint2f temp = new MatOfPoint2f(mat.toArray());
+            MatOfPoint2f temp = new MatOfPoint2f();
+            mat.convertTo(temp, CvType.CV_32F);
             minAreaRect = Imgproc.minAreaRect(temp);
             temp.release();
         }
@@ -73,8 +74,10 @@ public class Contour implements Releasable {
             try {
                 MatOfPoint2f intersectMatA = new MatOfPoint2f();
                 MatOfPoint2f intersectMatB = new MatOfPoint2f();
-                intersectMatA.fromArray(mat.toArray());
-                intersectMatB.fromArray(secondContour.mat.toArray());
+
+                mat.convertTo(intersectMatA, CvType.CV_32F);
+                secondContour.mat.convertTo(intersectMatB, CvType.CV_32F);
+
                 RotatedRect a = Imgproc.fitEllipse(intersectMatA);
                 RotatedRect b = Imgproc.fitEllipse(intersectMatB);
                 double mA = MathUtils.toSlope(a.angle);
@@ -129,15 +132,13 @@ public class Contour implements Releasable {
                 || secondContour.isIntersecting(firstContour, intersectionDirection);
     }
 
-    // TODO: does this leak?
     private static Contour combineContours(Contour... contours) {
-        List<Point> fullContourPoints = new ArrayList<>();
+        var points = new MatOfPoint();
 
         for (var contour : contours) {
-            fullContourPoints.addAll(contour.mat.toList());
+            points.push_back(contour.mat);
         }
 
-        var points = new MatOfPoint(fullContourPoints.toArray(new Point[0]));
         var finalContour = new Contour(points);
 
         boolean contourEmpty = finalContour.isEmpty();
