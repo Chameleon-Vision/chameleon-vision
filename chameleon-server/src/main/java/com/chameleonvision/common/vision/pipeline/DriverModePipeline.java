@@ -3,6 +3,7 @@ package com.chameleonvision.common.vision.pipeline;
 import com.chameleonvision.common.util.math.MathUtils;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.FrameStaticProperties;
+import com.chameleonvision.common.vision.opencv.CVMat;
 import com.chameleonvision.common.vision.pipe.impl.Draw2dCrosshairPipe;
 import com.chameleonvision.common.vision.pipe.impl.ResizeImagePipe;
 import com.chameleonvision.common.vision.pipe.impl.RotateImagePipe;
@@ -38,7 +39,7 @@ public class DriverModePipeline
     @Override
     public DriverModePipelineResult process(Frame frame, DriverModePipelineSettings settings) {
         // apply pipes
-        var rotateImageResult = rotateImagePipe.apply(frame.image);
+        var rotateImageResult = rotateImagePipe.apply(frame.image.getMat());
         var resizeImageResult = resizeImagePipe.apply(rotateImageResult.result);
         var draw2dCrosshairResult =
                 draw2dCrosshairPipe.apply(Pair.of(resizeImageResult.result, List.of()));
@@ -51,6 +52,6 @@ public class DriverModePipeline
 
         return new DriverModePipelineResult(
                 MathUtils.nanosToMillis(totalNanos),
-                new Frame(draw2dCrosshairResult.result, frame.frameStaticProperties));
+                new Frame(new CVMat(draw2dCrosshairResult.result), frame.frameStaticProperties));
     }
 }

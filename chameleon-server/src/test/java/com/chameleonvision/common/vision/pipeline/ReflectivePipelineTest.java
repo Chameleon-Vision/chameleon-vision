@@ -3,6 +3,7 @@ package com.chameleonvision.common.vision.pipeline;
 import com.chameleonvision.common.util.TestUtils;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
+import com.chameleonvision.common.vision.opencv.CVMat;
 import com.chameleonvision.common.vision.opencv.ContourGroupingMode;
 import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
 import org.junit.jupiter.api.Test;
@@ -28,14 +29,14 @@ public class ReflectivePipelineTest {
                         TestUtils.getWPIImagePath(TestUtils.WPI2019Image.kCargoStraightDark72in_HighRes),
                         TestUtils.WPI2019Image.FOV);
 
-        TestUtils.showImage(frameProvider.getFrame().image, "Pipeline input", 1);
+        TestUtils.showImage(frameProvider.getFrame().image.getMat(), "Pipeline input", 1);
 
         CVPipelineResult pipelineResult;
 
         pipelineResult = pipeline.run(frameProvider.getFrame(), settings);
         printTestResults(pipelineResult);
 
-        TestUtils.showImage(pipelineResult.outputFrame.image, "Pipeline output");
+        TestUtils.showImage(pipelineResult.outputFrame.image.getMat(), "Pipeline output");
     }
 
     @Test
@@ -57,7 +58,7 @@ public class ReflectivePipelineTest {
         CVPipelineResult pipelineResult = pipeline.run(frameProvider.getFrame(), settings);
         printTestResults(pipelineResult);
 
-        TestUtils.showImage(pipelineResult.outputFrame.image, "Pipeline output");
+        TestUtils.showImage(pipelineResult.outputFrame.image.getMat(), "Pipeline output");
     }
 
     private static void continuouslyRunPipeline(Frame frame, ReflectivePipelineSettings settings) {
@@ -66,7 +67,11 @@ public class ReflectivePipelineTest {
         while (true) {
             CVPipelineResult pipelineResult = pipeline.run(frame, settings);
             printTestResults(pipelineResult);
+            int preRelease = CVMat.getMatCount();
             pipelineResult.release();
+            int postRelease = CVMat.getMatCount();
+
+            System.out.printf("Pre: %d, Post: %d\n", preRelease, postRelease);
         }
     }
 

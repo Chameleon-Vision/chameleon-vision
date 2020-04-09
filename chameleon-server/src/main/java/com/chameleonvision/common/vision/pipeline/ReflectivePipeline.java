@@ -3,6 +3,7 @@ package com.chameleonvision.common.vision.pipeline;
 import com.chameleonvision.common.util.math.MathUtils;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.FrameStaticProperties;
+import com.chameleonvision.common.vision.opencv.CVMat;
 import com.chameleonvision.common.vision.opencv.Contour;
 import com.chameleonvision.common.vision.opencv.DualMat;
 import com.chameleonvision.common.vision.pipe.CVPipeResult;
@@ -107,12 +108,9 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
 
         long sumPipeNanosElapsed = 0L;
 
-        //        if (!settings.outputShowThresholded) {f
-        // save for later. used to switch between input frame and thresholded image
-        frame.image.copyTo(rawInputMat);
-        //        }
+        frame.image.getMat().copyTo(rawInputMat);
 
-        CVPipeResult<Mat> rotateImageResult = rotateImagePipe.apply(frame.image);
+        CVPipeResult<Mat> rotateImageResult = rotateImagePipe.apply(frame.image.getMat());
         sumPipeNanosElapsed += rotateImageResult.nanosElapsed;
 
         CVPipeResult<Mat> erodeDilateResult = erodeDilatePipe.apply(rotateImageResult.result);
@@ -165,6 +163,6 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
         return new CVPipelineResult(
                 MathUtils.nanosToMillis(sumPipeNanosElapsed),
                 collect2dTargetsResult.result,
-                new Frame(draw2dContoursResult.result, frame.frameStaticProperties));
+                new Frame(new CVMat(draw2dContoursResult.result), frame.frameStaticProperties));
     }
 }
