@@ -30,14 +30,14 @@ public class Contour implements Releasable {
 
     public MatOfPoint2f getMat2f() {
         if (mat2f == null) {
-            mat2f = new MatOfPoint2f();
+            mat2f = new MatOfPoint2f(mat.toArray());
             mat.convertTo(mat2f, CvType.CV_32F);
         }
         return mat2f;
     }
 
     public MatOfPoint2f getConvexHull() {
-        if(convexHull == null) {
+        if (convexHull == null) {
             Imgproc.convexHull(mat, convexHullStorage);
             convexHull = new MatOfPoint2f();
             convexHullStorage.convertTo(convexHull, CvType.CV_32F);

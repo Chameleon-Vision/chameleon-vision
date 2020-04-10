@@ -6,6 +6,7 @@ import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
 import com.chameleonvision.common.vision.opencv.CVMat;
 import com.chameleonvision.common.vision.opencv.ContourGroupingMode;
 import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class ReflectivePipelineTest {
@@ -36,6 +37,9 @@ public class ReflectivePipelineTest {
         pipelineResult = pipeline.run(frameProvider.getFrame(), settings);
         printTestResults(pipelineResult);
 
+        Assertions.assertTrue(pipelineResult.hasTargets());
+        Assertions.assertEquals(2, pipelineResult.targets.size());
+
         TestUtils.showImage(pipelineResult.outputFrame.image.getMat(), "Pipeline output");
     }
 
@@ -43,8 +47,8 @@ public class ReflectivePipelineTest {
     public void test2020() {
         TestUtils.loadLibraries();
         var pipeline = new ReflectivePipeline();
-        var settings = new ReflectivePipelineSettings();
 
+        var settings = new ReflectivePipelineSettings();
         settings.hsvHue.set(60, 100);
         settings.hsvSaturation.set(200, 255);
         settings.hsvValue.set(200, 255);
