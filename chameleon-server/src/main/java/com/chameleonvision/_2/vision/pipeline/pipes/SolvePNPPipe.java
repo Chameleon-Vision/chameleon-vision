@@ -326,11 +326,6 @@ public class SolvePNPPipe implements Pipe<Pair<List<StandardCVPipeline.TrackedTa
    * @return the corners. left top, left bottom, right bottom, right top
    */
   private MatOfPoint2f findBoundingBoxCorners(StandardCVPipeline.TrackedTarget target) {
-
-//        List<Pair<MatOfPoint2f, CVPipeline2d.Target2d>> list = new ArrayList<>();
-//        // find the corners based on the bounding box
-//        // order is left top, left bottom, right bottom, right top
-
     // extract the corners
     var points = new Point[4];
     target.minAreaRect.points(points);

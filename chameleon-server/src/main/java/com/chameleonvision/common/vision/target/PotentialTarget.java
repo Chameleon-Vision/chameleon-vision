@@ -8,8 +8,8 @@ import org.opencv.core.RotatedRect;
 
 public class PotentialTarget implements Releasable {
 
-    final Contour m_mainContour;
-    final List<Contour> m_subContours;
+    public final Contour m_mainContour;
+    public final List<Contour> m_subContours;
 
     public PotentialTarget(Contour inputContour) {
         m_mainContour = inputContour;

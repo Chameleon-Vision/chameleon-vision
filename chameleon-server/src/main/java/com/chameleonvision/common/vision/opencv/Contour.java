@@ -21,6 +21,9 @@ public class Contour implements Releasable {
     private Rect boundingRect = null;
     private Moments moments = null;
 
+    private MatOfPoint2f convexHull = null;
+    private static final MatOfInt convexHullStorage = new MatOfInt();
+
     public Contour(MatOfPoint mat) {
         this.mat = mat;
     }
@@ -31,6 +34,15 @@ public class Contour implements Releasable {
             mat.convertTo(mat2f, CvType.CV_32F);
         }
         return mat2f;
+    }
+
+    public MatOfPoint2f getConvexHull() {
+        if(convexHull == null) {
+            Imgproc.convexHull(mat, convexHullStorage);
+            convexHull = new MatOfPoint2f();
+            convexHullStorage.convertTo(convexHull, CvType.CV_32F);
+        }
+        return convexHull;
     }
 
     public double getArea() {
@@ -160,5 +172,7 @@ public class Contour implements Releasable {
     @Override
     public void release() {
         mat.release();
+        mat2f.release();
+        convexHull.release();
     }
 }

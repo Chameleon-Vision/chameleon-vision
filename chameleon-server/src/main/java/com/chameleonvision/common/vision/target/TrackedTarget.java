@@ -5,13 +5,17 @@ import com.chameleonvision.common.vision.opencv.Contour;
 import com.chameleonvision.common.vision.opencv.Releasable;
 import java.util.List;
 import org.apache.commons.math3.util.FastMath;
+import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.RotatedRect;
 
 // TODO: banks fix
 public class TrackedTarget implements Releasable {
-    final Contour m_mainContour;
+    public final Contour m_mainContour;
     List<Contour> m_subContours; // can be empty
+
+    private MatOfPoint2f m_approximateBoundingPolygon = null;
+    private List<Point> m_targetCorners;
 
     private Point m_targetOffsetPoint;
     private Point m_robotOffsetPoint;
@@ -24,6 +28,15 @@ public class TrackedTarget implements Releasable {
         this.m_mainContour = origTarget.m_mainContour;
         this.m_subContours = origTarget.m_subContours;
         calculateValues(params);
+    }
+
+    /**
+     * Set the approximate bouding polygon.
+     * @param boundingPolygon List of points to copy. Not modified.
+     */
+    public void setApproximateBoundingPolygon(MatOfPoint2f boundingPolygon) {
+        if(m_approximateBoundingPolygon == null) m_approximateBoundingPolygon = new MatOfPoint2f();
+        boundingPolygon.copyTo(m_approximateBoundingPolygon);
     }
 
     public Point getTargetOffsetPoint() {
@@ -164,6 +177,10 @@ public class TrackedTarget implements Releasable {
         for (var sc : m_subContours) {
             sc.release();
         }
+    }
+
+    public void setCorners(List<Point> targetCorners) {
+        this.m_targetCorners = targetCorners;
     }
 
     public static class TargetCalculationParameters {
