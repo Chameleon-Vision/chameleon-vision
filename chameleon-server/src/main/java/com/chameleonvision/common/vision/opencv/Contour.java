@@ -15,12 +15,22 @@ public class Contour implements Releasable {
     public final MatOfPoint mat;
 
     private Double area = Double.NaN;
+    private Double perimeter = Double.NaN;
+    private MatOfPoint2f mat2f = null;
     private RotatedRect minAreaRect = null;
     private Rect boundingRect = null;
     private Moments moments = null;
 
     public Contour(MatOfPoint mat) {
         this.mat = mat;
+    }
+
+    public MatOfPoint2f getMat2f() {
+        if (mat2f == null) {
+            mat2f = new MatOfPoint2f();
+            mat.convertTo(mat2f, CvType.CV_32F);
+        }
+        return mat2f;
     }
 
     public double getArea() {
@@ -30,12 +40,16 @@ public class Contour implements Releasable {
         return area;
     }
 
+    public double getPerimeter() {
+        if (Double.isNaN(perimeter)) {
+            perimeter = Imgproc.arcLength(getMat2f(), true);
+        }
+        return perimeter;
+    }
+
     public RotatedRect getMinAreaRect() {
         if (minAreaRect == null) {
-            MatOfPoint2f temp = new MatOfPoint2f();
-            mat.convertTo(temp, CvType.CV_32F);
-            minAreaRect = Imgproc.minAreaRect(temp);
-            temp.release();
+            minAreaRect = Imgproc.minAreaRect(getMat2f());
         }
         return minAreaRect;
     }
