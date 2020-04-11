@@ -117,21 +117,26 @@ public class CornerDetectionPipe
             targetContour = target.m_mainContour.getMat2f();
         }
 
-        // approximating a shape around the contours
-        // Can be tuned to allow/disallow hulls
-        // we want a number between 0 and 0.16 out of a percentage from 0 to 100
-        // so take accuracy and divide by 600
+        /*
+         approximating a shape around the contours
+         Can be tuned to allow/disallow hulls
+         we want a number between 0 and 0.16 out of a percentage from 0 to 100
+         so take accuracy and divide by 600
+
+        Furthermore, we know that the contour is open if we haven't done convex hulls
+        and it has subcontours.
+         */
+        var isOpen = !convexHull && target.hasSubContours();
         var peri = Imgproc.arcLength(targetContour, true);
         Imgproc.approxPolyDP(
-                target.m_mainContour.getMat2f(),
+                targetContour,
                 polyOutput,
                 params.accuracyPercentage / 600.0 * peri,
-                true);
-
+                !isOpen);
+        
         // we must have at least 4 corners for this strategy to work.
         // If we are looking for an exact side count that is handled here too.
         var pointList = new ArrayList<>(polyOutput.toList());
-        System.out.println("point list: \n" + pointList);
         if (pointList.size() < 4 || (params.exactSideCount && params.sideCount != pointList.size()))
             return null;
 

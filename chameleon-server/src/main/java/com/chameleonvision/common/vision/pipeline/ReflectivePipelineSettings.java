@@ -63,5 +63,5 @@ public class ReflectivePipelineSettings extends CVPipelineSettings {
     public boolean cornerDetectionUseConvexHulls = true;
     public boolean cornerDetectionExactSideCount = false;
     public int cornerDetectionSideCount = 4;
-    public double cornerDetectionAccuracyPercentage = 5;
+    public double cornerDetectionAccuracyPercentage = 10;
 }

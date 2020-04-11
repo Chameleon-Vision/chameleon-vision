@@ -193,6 +193,10 @@ public class TrackedTarget implements Releasable {
         return m_targetCorners;
     }
 
+    public boolean hasSubContours() {
+        return !m_subContours.isEmpty();
+    }
+
     public static class TargetCalculationParameters {
         // TargetOffset calculation values
         final boolean isLandscape;
