@@ -1,8 +1,7 @@
 package com.chameleonvision.common.vision.opencv;
 
-import java.util.Comparator;
-
 import com.chameleonvision.common.util.math.MathUtils;
+import java.util.Comparator;
 import org.opencv.core.CvType;
 import org.opencv.core.MatOfInt;
 import org.opencv.core.MatOfPoint;
@@ -147,8 +146,7 @@ public class Contour implements Releasable {
 
     // TODO: refactor to do "infinite" contours
     public static Contour groupContoursByIntersection(
-            Contour firstContour, Contour secondContour,
-            ContourIntersectionDirection intersection) {
+            Contour firstContour, Contour secondContour, ContourIntersectionDirection intersection) {
         if (areIntersecting(firstContour, secondContour, intersection)) {
             return combineContours(firstContour, secondContour);
         } else {

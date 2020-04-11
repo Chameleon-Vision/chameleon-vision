@@ -1,8 +1,7 @@
 package com.chameleonvision.common.vision.pipeline;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.stream.Collectors;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.chameleonvision.common.util.TestUtils;
 import com.chameleonvision.common.vision.camera.CameraCalibrationCoefficients;
@@ -15,11 +14,10 @@ import com.chameleonvision.common.vision.target.TargetModel;
 import com.chameleonvision.common.vision.target.TrackedTarget;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class SolvePNPTest {
 
@@ -27,21 +25,20 @@ public class SolvePNPTest {
     public void meme() throws IOException {
         TestUtils.loadLibraries();
 
-        var lowres = (Path.of(TestUtils.getCalibrationPath().toString(), "lifecamcal.json")
-                .toFile());
+        var lowres = (Path.of(TestUtils.getCalibrationPath().toString(), "lifecamcal.json").toFile());
         var cal1 = new ObjectMapper().readValue(lowres, CameraCalibrationCoefficients.class);
 
-        var highres = (Path.of(TestUtils.getCalibrationPath().toString(), "lifecamcal2.json")
-                .toFile());
+        var highres = (Path.of(TestUtils.getCalibrationPath().toString(), "lifecamcal2.json").toFile());
         var cal2 = new ObjectMapper().readValue(highres, CameraCalibrationCoefficients.class);
-
     }
 
     private CameraCalibrationCoefficients get640p() {
         try {
             var cameraCalibration =
-                    new ObjectMapper().readValue((Path.of(TestUtils.getCalibrationPath().toString(), "lifecam640p.json")
-                    .toFile()), CameraCalibrationCoefficients.class);
+                    new ObjectMapper()
+                            .readValue(
+                                    (Path.of(TestUtils.getCalibrationPath().toString(), "lifecam640p.json").toFile()),
+                                    CameraCalibrationCoefficients.class);
 
             assertEquals(3, cameraCalibration.cameraIntrinsics.rows);
             assertEquals(3, cameraCalibration.cameraIntrinsics.cols);
@@ -92,8 +89,7 @@ public class SolvePNPTest {
 
         pipelineResult = pipeline.run(frameProvider.getFrame(), settings);
 
-        TestUtils.showImage(pipelineResult.outputFrame.image.getMat(), "Pipeline output",
-                1000 * 90);
+        TestUtils.showImage(pipelineResult.outputFrame.image.getMat(), "Pipeline output", 1000 * 90);
     }
 
     @Test
@@ -139,7 +135,8 @@ public class SolvePNPTest {
                         TestUtils.getWPIImagePath(TestUtils.WPI2020Image.kBlueGoal_228in_ProtectedZone),
                         TestUtils.WPI2020Image.FOV);
 
-//        TestUtils.showImage(frameProvider.getFrame().image.getMat(), "Pipeline output", 999999);
+        //        TestUtils.showImage(frameProvider.getFrame().image.getMat(), "Pipeline output",
+        // 999999);
 
         CVPipelineResult pipelineResult = pipeline.run(frameProvider.getFrame(), settings);
         printTestResults(pipelineResult);
@@ -147,8 +144,7 @@ public class SolvePNPTest {
         TestUtils.showImage(pipelineResult.outputFrame.image.getMat(), "Pipeline output", 999999);
     }
 
-    private static void continuouslyRunPipeline(Frame frame, ReflectivePipelineSettings
-            settings) {
+    private static void continuouslyRunPipeline(Frame frame, ReflectivePipelineSettings settings) {
         var pipeline = new ReflectivePipeline();
 
         while (true) {
@@ -185,10 +181,12 @@ public class SolvePNPTest {
     private static void printTestResults(CVPipelineResult pipelineResult) {
         double fps = 1000 / pipelineResult.getLatencyMillis();
         System.out.println(
-                "Pipeline ran in " + pipelineResult.getLatencyMillis() + "ms (" + fps + " " +
-                        "fps)");
+                "Pipeline ran in " + pipelineResult.getLatencyMillis() + "ms (" + fps + " " + "fps)");
         System.out.println("Found " + pipelineResult.targets.size() + " valid targets");
-        System.out.println("Found targets at " + pipelineResult.targets.stream()
-                .map(TrackedTarget::getRobotRelativePose).collect(Collectors.toList()));
+        System.out.println(
+                "Found targets at "
+                        + pipelineResult.targets.stream()
+                                .map(TrackedTarget::getRobotRelativePose)
+                                .collect(Collectors.toList()));
     }
 }

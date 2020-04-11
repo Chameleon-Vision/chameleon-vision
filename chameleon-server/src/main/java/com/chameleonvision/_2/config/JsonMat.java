@@ -1,14 +1,12 @@
 package com.chameleonvision._2.config;
 
-import java.util.Arrays;
-
 import com.chameleonvision.common.vision.opencv.Releasable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Arrays;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;
-
 
 public class JsonMat implements Releasable {
     public final int rows;
@@ -16,8 +14,7 @@ public class JsonMat implements Releasable {
     public final int type;
     public final double[] data;
 
-    @JsonIgnore
-    private Mat wrappedMat;
+    @JsonIgnore private Mat wrappedMat;
     private MatOfDouble wrappedMatOfDouble;
 
     public JsonMat(int rows, int cols, double[] data) {

@@ -21,7 +21,8 @@ public class Draw2dContoursPipe
 
     @Override
     protected Mat process(Pair<Mat, List<TrackedTarget>> in) {
-        if (!in.getRight().isEmpty() && (params.showCentroid || params.showMaximumBox || params.showRotatedBox)) {
+        if (!in.getRight().isEmpty()
+                && (params.showCentroid || params.showMaximumBox || params.showRotatedBox)) {
             for (int i = 0; i < (params.showMultiple ? in.getRight().size() : 1); i++) {
                 Point[] vertices = new Point[4];
                 MatOfPoint contour = new MatOfPoint();

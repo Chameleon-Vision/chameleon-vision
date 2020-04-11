@@ -1,9 +1,8 @@
 package com.chameleonvision.common.vision.target;
 
+import com.chameleonvision.common.vision.opencv.Releasable;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.chameleonvision.common.vision.opencv.Releasable;
 import org.opencv.core.MatOfPoint3f;
 import org.opencv.core.Point3;
 
@@ -50,10 +49,12 @@ public class TargetModel implements Releasable {
     }
 
     public static TargetModel get2020Target() {
-        var corners = List.of(new Point3(-19.625, 0, 0),
-                new Point3(-9.819867, -17, 0),
-                new Point3(9.819867, -17, 0),
-                new Point3(19.625, 0, 0));
+        var corners =
+                List.of(
+                        new Point3(-19.625, 0, 0),
+                        new Point3(-9.819867, -17, 0),
+                        new Point3(9.819867, -17, 0),
+                        new Point3(19.625, 0, 0));
         return new TargetModel(corners, 12); // TODO switch to meters
     }
 

@@ -10,9 +10,14 @@ import org.opencv.core.MatOfDouble;
 import org.opencv.core.Size;
 
 public class CameraCalibrationCoefficients implements Releasable {
-    @JsonProperty("resolution") public final Size resolution;
-    @JsonProperty("cameraIntrinsics") public final JsonMat cameraIntrinsics;
-    @JsonProperty("cameraExtrinsics") public final JsonMat cameraExtrinsics;
+    @JsonProperty("resolution")
+    public final Size resolution;
+
+    @JsonProperty("cameraIntrinsics")
+    public final JsonMat cameraIntrinsics;
+
+    @JsonProperty("cameraExtrinsics")
+    public final JsonMat cameraExtrinsics;
 
     @JsonCreator
     public CameraCalibrationCoefficients(

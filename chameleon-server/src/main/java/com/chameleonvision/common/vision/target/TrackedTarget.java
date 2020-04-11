@@ -3,9 +3,8 @@ package com.chameleonvision.common.vision.target;
 import com.chameleonvision.common.util.numbers.DoubleCouple;
 import com.chameleonvision.common.vision.opencv.Contour;
 import com.chameleonvision.common.vision.opencv.Releasable;
-import java.util.List;
-
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import java.util.List;
 import org.apache.commons.math3.util.FastMath;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint2f;
@@ -191,8 +190,8 @@ public class TrackedTarget implements Releasable {
             sc.release();
         }
 
-        if(m_cameraRelativeTvec != null) m_cameraRelativeTvec.release();
-        if(m_cameraRelativeRvec != null) m_cameraRelativeRvec.release();
+        if (m_cameraRelativeTvec != null) m_cameraRelativeTvec.release();
+        if (m_cameraRelativeRvec != null) m_cameraRelativeRvec.release();
     }
 
     public void setCorners(List<Point> targetCorners) {
@@ -220,7 +219,7 @@ public class TrackedTarget implements Releasable {
     }
 
     public void setCameraRelativeTvec(Mat cameraRelativeTvec) {
-        if(this.m_cameraRelativeTvec == null) m_cameraRelativeTvec = new Mat();
+        if (this.m_cameraRelativeTvec == null) m_cameraRelativeTvec = new Mat();
         cameraRelativeTvec.copyTo(this.m_cameraRelativeTvec);
     }
 
@@ -229,7 +228,7 @@ public class TrackedTarget implements Releasable {
     }
 
     public void setCameraRelativeRvec(Mat cameraRelativeRvec) {
-        if(this.m_cameraRelativeRvec == null) m_cameraRelativeRvec = new Mat();
+        if (this.m_cameraRelativeRvec == null) m_cameraRelativeRvec = new Mat();
         cameraRelativeRvec.copyTo(this.m_cameraRelativeRvec);
     }
 

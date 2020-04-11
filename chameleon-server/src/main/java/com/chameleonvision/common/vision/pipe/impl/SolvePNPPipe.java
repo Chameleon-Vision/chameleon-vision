@@ -1,7 +1,5 @@
 package com.chameleonvision.common.vision.pipe.impl;
 
-import java.util.List;
-
 import com.chameleonvision.common.vision.camera.CameraCalibrationCoefficients;
 import com.chameleonvision.common.vision.pipe.CVPipe;
 import com.chameleonvision.common.vision.target.TargetModel;
@@ -9,6 +7,7 @@ import com.chameleonvision.common.vision.target.TrackedTarget;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
+import java.util.List;
 import org.apache.commons.math3.util.FastMath;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
@@ -17,10 +16,7 @@ import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Scalar;
 
 public class SolvePNPPipe
-        extends CVPipe<
-        List<TrackedTarget>,
-        List<TrackedTarget>,
-        SolvePNPPipe.SolvePNPPipeParams> {
+        extends CVPipe<List<TrackedTarget>, List<TrackedTarget>, SolvePNPPipe.SolvePNPPipeParams> {
 
     private MatOfPoint2f imagePoints = new MatOfPoint2f();
 
@@ -36,7 +32,10 @@ public class SolvePNPPipe
         Pose2d targetPose;
 
         var corners = target.getTargetCorners();
-        if (corners == null || corners.isEmpty() || params.cameraCoefficients.getCameraIntrinsicsMat() == null || params.cameraCoefficients.getCameraExtrinsicsMat() == null) {
+        if (corners == null
+                || corners.isEmpty()
+                || params.cameraCoefficients.getCameraIntrinsicsMat() == null
+                || params.cameraCoefficients.getCameraExtrinsicsMat() == null) {
             targetPose = new Pose2d();
             return;
         }
@@ -45,9 +44,13 @@ public class SolvePNPPipe
         var rVec = new Mat();
         var tVec = new Mat();
         try {
-            Calib3d.solvePnP(params.targetModel.getRealWorldTargetCoordinates(), imagePoints,
+            Calib3d.solvePnP(
+                    params.targetModel.getRealWorldTargetCoordinates(),
+                    imagePoints,
                     params.cameraCoefficients.getCameraIntrinsicsMat(),
-                    params.cameraCoefficients.getCameraExtrinsicsMat(), rVec, tVec);
+                    params.cameraCoefficients.getCameraExtrinsicsMat(),
+                    rVec,
+                    tVec);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -106,12 +109,12 @@ public class SolvePNPPipe
     }
 
     /**
-     * Element-wise scale a matrix by a given factor
-     *
-     * @param src    the source matrix
-     * @param factor by how much to scale each element
-     * @return the scaled matrix
-     */
+    * Element-wise scale a matrix by a given factor
+    *
+    * @param src the source matrix
+    * @param factor by how much to scale each element
+    * @return the scaled matrix
+    */
     private static Mat matScale(Mat src, double factor) {
         Mat dst = new Mat(src.rows(), src.cols(), src.type());
         Scalar s = new Scalar(factor);
@@ -124,12 +127,13 @@ public class SolvePNPPipe
         private final Rotation2d cameraPitchAngle;
         private final TargetModel targetModel;
 
-        public SolvePNPPipeParams(CameraCalibrationCoefficients cameraCoefficients,
-                                  Rotation2d cameraPitchAngle, TargetModel targetModel) {
+        public SolvePNPPipeParams(
+                CameraCalibrationCoefficients cameraCoefficients,
+                Rotation2d cameraPitchAngle,
+                TargetModel targetModel) {
             this.cameraCoefficients = cameraCoefficients;
             this.cameraPitchAngle = cameraPitchAngle;
             this.targetModel = targetModel;
         }
     }
 }
-

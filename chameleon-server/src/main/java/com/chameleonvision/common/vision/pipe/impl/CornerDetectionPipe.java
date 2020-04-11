@@ -1,13 +1,12 @@
 package com.chameleonvision.common.vision.pipe.impl;
 
+import com.chameleonvision.common.vision.pipe.CVPipe;
+import com.chameleonvision.common.vision.target.TrackedTarget;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-
-import com.chameleonvision.common.vision.pipe.CVPipe;
-import com.chameleonvision.common.vision.target.TrackedTarget;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
 import org.apache.commons.math3.util.FastMath;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
@@ -15,9 +14,9 @@ import org.opencv.imgproc.Imgproc;
 
 public class CornerDetectionPipe
         extends CVPipe<
-        List<TrackedTarget>,
-        List<TrackedTarget>,
-        CornerDetectionPipe.CornerDetectionPipeParameters> {
+                List<TrackedTarget>,
+                List<TrackedTarget>,
+                CornerDetectionPipe.CornerDetectionPipeParameters> {
 
     Comparator<Point> leftRightComparator = Comparator.comparingDouble(point -> point.x);
     Comparator<Point> verticalComparator = Comparator.comparingDouble(point -> point.y);
@@ -29,25 +28,26 @@ public class CornerDetectionPipe
             // detect corners. Might implement more algorithms later but
             // APPROX_POLY_DP_AND_EXTREME_CORNERS should be year agnostic
             switch (params.cornerDetectionStrategy) {
-                case APPROX_POLY_DP_AND_EXTREME_CORNERS: {
-                    var targetCorners =
-                            detectExtremeCornersByApproxPolyDp(target,
-                                    params.calculateConvexHulls);
-                    target.setCorners(targetCorners);
-                    break;
-                }
-                default: {
-                    break;
-                }
+                case APPROX_POLY_DP_AND_EXTREME_CORNERS:
+                    {
+                        var targetCorners =
+                                detectExtremeCornersByApproxPolyDp(target, params.calculateConvexHulls);
+                        target.setCorners(targetCorners);
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
             }
         }
         return targetList;
     }
 
     /**
-     * @param target the target to find the corners of.
-     * @return the corners. left top, left bottom, right bottom, right top
-     */
+    * @param target the target to find the corners of.
+    * @return the corners. left top, left bottom, right bottom, right top
+    */
     private List<Point> findBoundingBoxCorners(TrackedTarget target) {
         // extract the corners
         var points = new Point[4];
@@ -74,33 +74,32 @@ public class CornerDetectionPipe
     }
 
     /**
-     * @param a First point.
-     * @param b Second point.
-     * @return The straight line distance between them.
-     */
+    * @param a First point.
+    * @param b Second point.
+    * @return The straight line distance between them.
+    */
     private static double distanceBetween(Point a, Point b) {
         return FastMath.sqrt(FastMath.pow(a.x - b.x, 2) + FastMath.pow(a.y - b.y, 2));
     }
 
     /**
-     * @param a First point.
-     * @param b Second point.
-     * @return The straight line distance between them.
-     */
+    * @param a First point.
+    * @param b Second point.
+    * @return The straight line distance between them.
+    */
     private static double distanceBetween(Translation2d a, Translation2d b) {
         return FastMath.sqrt(
                 FastMath.pow(a.getX() - b.getX(), 2) + FastMath.pow(a.getY() - b.getY(), 2));
     }
 
     /**
-     * Find the 4 most extreme corners,
-     *
-     * @param target     the target to track.
-     * @param convexHull weather to use the convex hull of the target.
-     * @return the 4 extreme corners of the contour.
-     */
-    private List<Point> detectExtremeCornersByApproxPolyDp(TrackedTarget target,
-                                                           boolean convexHull) {
+    * Find the 4 most extreme corners,
+    *
+    * @param target the target to track.
+    * @param convexHull weather to use the convex hull of the target.
+    * @return the 4 extreme corners of the contour.
+    */
+    private List<Point> detectExtremeCornersByApproxPolyDp(TrackedTarget target, boolean convexHull) {
         var centroid = target.getMinAreaRect().center;
         Comparator<Point> distanceProvider =
                 Comparator.comparingDouble(
@@ -116,21 +115,18 @@ public class CornerDetectionPipe
         }
 
         /*
-         approximating a shape around the contours
-         Can be tuned to allow/disallow hulls
-         we want a number between 0 and 0.16 out of a percentage from 0 to 100
-         so take accuracy and divide by 600
+        approximating a shape around the contours
+        Can be tuned to allow/disallow hulls
+        we want a number between 0 and 0.16 out of a percentage from 0 to 100
+        so take accuracy and divide by 600
 
         Furthermore, we know that the contour is open if we haven't done convex hulls
         and it has subcontours.
-         */
+        */
         var isOpen = !convexHull && target.hasSubContours();
         var peri = Imgproc.arcLength(targetContour, true);
         Imgproc.approxPolyDP(
-                targetContour,
-                polyOutput,
-                params.accuracyPercentage / 600.0 * peri,
-                !isOpen);
+                targetContour, polyOutput, params.accuracyPercentage / 600.0 * peri, !isOpen);
 
         // we must have at least 4 corners for this strategy to work.
         // If we are looking for an exact side count that is handled here too.
@@ -144,12 +140,10 @@ public class CornerDetectionPipe
         var boundingBoxCorners = findBoundingBoxCorners(target);
 
         var distanceToTlComparator =
-                Comparator.comparingDouble((Point p) -> distanceBetween(p,
-                        boundingBoxCorners.get(0)));
+                Comparator.comparingDouble((Point p) -> distanceBetween(p, boundingBoxCorners.get(0)));
 
         var distanceToTrComparator =
-                Comparator.comparingDouble((Point p) -> distanceBetween(p,
-                        boundingBoxCorners.get(3)));
+                Comparator.comparingDouble((Point p) -> distanceBetween(p, boundingBoxCorners.get(3)));
 
         // top left and top right are the poly corners closest to the bouding box tl and tr
         pointList.sort(distanceToTlComparator);
@@ -171,14 +165,16 @@ public class CornerDetectionPipe
 
         // add points that are below the center of the min area rectangle of the target
         for (var p : pointList) {
-            if (p.y > target.m_mainContour.getBoundingRect().y + target.m_mainContour.getBoundingRect().height / 2.0)
+            if (p.y
+                    > target.m_mainContour.getBoundingRect().y
+                            + target.m_mainContour.getBoundingRect().height / 2.0)
                 if (p.x < averageXCoordinate) {
                     leftList.add(p);
                 } else {
                     rightList.add(p);
                 }
         }
-        if(leftList.isEmpty() || rightList.isEmpty()) return null;
+        if (leftList.isEmpty() || rightList.isEmpty()) return null;
         leftList.sort(distanceProvider);
         rightList.sort(distanceProvider);
         var bl = leftList.get(leftList.size() - 1);
@@ -194,9 +190,7 @@ public class CornerDetectionPipe
         private final boolean exactSideCount;
         private final int sideCount;
 
-        /**
-         * This number can be changed to change how "accurate" our approximate polygon must be.
-         */
+        /** This number can be changed to change how "accurate" our approximate polygon must be. */
         private final double accuracyPercentage;
 
         public CornerDetectionPipeParameters(
