@@ -46,10 +46,7 @@ public class Contour implements Releasable {
         if (this.convexHull == null) {
             var ints = new MatOfInt();
             Imgproc.convexHull(mat, ints);
-            var hull = Contour.convertIndexesToPoints(mat, ints);
-            convexHull = new MatOfPoint2f();
-            hull.convertTo(convexHull, CvType.CV_32F);
-            convexHull.fromList(hull.toList());
+            this.convexHull = Contour.convertIndexesToPoints(mat, ints);
             ints.release();
         }
         return convexHull;
