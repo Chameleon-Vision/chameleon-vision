@@ -15,6 +15,7 @@ public class TrackedTarget implements Releasable {
     List<Contour> m_subContours; // can be empty
 
     private MatOfPoint2f m_approximateBoundingPolygon = null;
+
     private List<Point> m_targetCorners;
 
     private Point m_targetOffsetPoint;
@@ -62,6 +63,10 @@ public class TrackedTarget implements Releasable {
 
     public RotatedRect getMinAreaRect() {
         return m_mainContour.getMinAreaRect();
+    }
+
+    public MatOfPoint2f getApproximateBoundingPolygon() {
+        return m_approximateBoundingPolygon;
     }
 
     private void calculateTargetOffsetPoint(boolean isLandscape, TargetOffsetPointEdge offsetRegion) {
@@ -182,6 +187,10 @@ public class TrackedTarget implements Releasable {
 
     public void setCorners(List<Point> targetCorners) {
         this.m_targetCorners = targetCorners;
+    }
+
+    public List<Point> getTargetCorners() {
+        return m_targetCorners;
     }
 
     public static class TargetCalculationParameters {

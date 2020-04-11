@@ -1,5 +1,7 @@
 package com.chameleonvision.common.vision.pipeline;
 
+import java.util.List;
+
 import com.chameleonvision.common.util.math.MathUtils;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.FrameStaticProperties;
@@ -10,11 +12,12 @@ import com.chameleonvision.common.vision.pipe.CVPipeResult;
 import com.chameleonvision.common.vision.pipe.impl.*;
 import com.chameleonvision.common.vision.target.PotentialTarget;
 import com.chameleonvision.common.vision.target.TrackedTarget;
-import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Mat;
 
-/** Represents a pipeline for tracking retro-reflective targets. */
+/**
+ * Represents a pipeline for tracking retro-reflective targets.
+ */
 public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectivePipelineSettings> {
 
     private final RotateImagePipe rotateImagePipe = new RotateImagePipe();
@@ -27,10 +30,11 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
     private final GroupContoursPipe groupContoursPipe = new GroupContoursPipe();
     private final SortContoursPipe sortContoursPipe = new SortContoursPipe();
     private final Collect2dTargetsPipe collect2dTargetsPipe = new Collect2dTargetsPipe();
+    private final CornerDetectionPipe cornerDetectionPipe = new CornerDetectionPipe();
     //    private final SolvePNPPipe solvePNPPipe = new SolvePNPPipe();
     private final Draw2dCrosshairPipe draw2dCrosshairPipe = new Draw2dCrosshairPipe();
     private final Draw2dContoursPipe draw2dContoursPipe = new Draw2dContoursPipe();
-    //    private final DrawSolvePNPPipe drawSolvePNPPipe = new DrawSolvePNPPipe();
+    private final Draw3dTargetsPipe draw3dTargetsPipe = new Draw3dTargetsPipe();
 
     private Mat rawInputMat = new Mat();
     private DualMat outputMats = new DualMat();
@@ -44,7 +48,8 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
 
         ErodeDilatePipe.ErodeDilateParams erodeDilateParams =
                 new ErodeDilatePipe.ErodeDilateParams(
-                        settings.erode, settings.dilate, 5); // TODO: add kernel size to pipeline settings
+                        settings.erode, settings.dilate, 5); // TODO: add kernel size to
+        // pipeline settings
         erodeDilatePipe.setParams(erodeDilateParams);
 
         HSVPipe.HSVParams hsvParams =
@@ -78,7 +83,8 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
         groupContoursPipe.setParams(groupContoursParams);
 
         SortContoursPipe.SortContoursParams sortContoursParams =
-                new SortContoursPipe.SortContoursParams(settings.contourSortMode, frameStaticProperties, 5);
+                new SortContoursPipe.SortContoursParams(settings.contourSortMode,
+                        frameStaticProperties, 5);
         sortContoursPipe.setParams(sortContoursParams);
 
         Collect2dTargetsPipe.Collect2dTargetsParams collect2dTargetsParams =
@@ -91,6 +97,17 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
                         settings.contourTargetOffsetPointEdge,
                         settings.contourTargetOrientation);
         collect2dTargetsPipe.setParams(collect2dTargetsParams);
+
+        var params = new CornerDetectionPipe.CornerDetectionPipeParameters(
+                settings.cornerDetectionStrategy,
+                settings.cornerDetectionUseConvexHulls,
+                settings.cornerDetectionExactSideCount,
+                settings.cornerDetectionSideCount,
+                settings.cornerDetectionAccuracyPercentage);
+        cornerDetectionPipe.setParams(params);
+
+        draw3dTargetsPipe.setParams(new Draw3dTargetsPipe.Draw2dContoursParams()); // TODO what
+        // parameters do we want exposed?
 
         Draw2dContoursPipe.Draw2dContoursParams draw2dContoursParams =
                 new Draw2dContoursPipe.Draw2dContoursParams(settings.outputShowMultipleTargets);
@@ -126,7 +143,8 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
         CVPipeResult<Mat> outputMatResult = outputMatPipe.apply(outputMats);
         sumPipeNanosElapsed += outputMatResult.nanosElapsed;
 
-        CVPipeResult<List<Contour>> findContoursResult = findContoursPipe.apply(hsvPipeResult.result);
+        CVPipeResult<List<Contour>> findContoursResult =
+                findContoursPipe.apply(hsvPipeResult.result);
         sumPipeNanosElapsed += findContoursResult.nanosElapsed;
 
         CVPipeResult<List<Contour>> speckleRejectResult =
@@ -145,14 +163,35 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
                 collect2dTargetsPipe.apply(sortContoursResult.result);
         sumPipeNanosElapsed += collect2dTargetsResult.nanosElapsed;
 
+        CVPipeResult<List<TrackedTarget>> targetList;
+
+        // 3d stuff
+        if (settings.solvePNPEnabled) {
+            var cornerDetectionResult = cornerDetectionPipe.apply(collect2dTargetsResult.result);
+            sumPipeNanosElapsed += cornerDetectionResult.nanosElapsed;
+            targetList = cornerDetectionResult;
+        } else {
+            targetList = collect2dTargetsResult;
+        }
+
+        CVPipeResult<Mat> result;
+
         CVPipeResult<Mat> draw2dCrosshairResult =
-                draw2dCrosshairPipe.apply(Pair.of(outputMatResult.result, collect2dTargetsResult.result));
+                draw2dCrosshairPipe.apply(Pair.of(outputMatResult.result, targetList.result));
         sumPipeNanosElapsed += draw2dCrosshairResult.nanosElapsed;
 
         CVPipeResult<Mat> draw2dContoursResult =
                 draw2dContoursPipe.apply(
                         Pair.of(draw2dCrosshairResult.result, collect2dTargetsResult.result));
         sumPipeNanosElapsed += draw2dContoursResult.nanosElapsed;
+
+        if (settings.solvePNPEnabled) {
+            result = draw3dTargetsPipe.apply(Pair.of(draw2dCrosshairResult.result,
+                    collect2dTargetsResult.result));
+            sumPipeNanosElapsed += result.nanosElapsed;
+        } else {
+            result = draw2dContoursResult;
+        }
 
         // TODO: better way?
         if (settings.outputShowThresholded) {
@@ -163,6 +202,6 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
         return new CVPipelineResult(
                 MathUtils.nanosToMillis(sumPipeNanosElapsed),
                 collect2dTargetsResult.result,
-                new Frame(new CVMat(draw2dContoursResult.result), frame.frameStaticProperties));
+                new Frame(new CVMat(result.result), frame.frameStaticProperties));
     }
 }

@@ -5,6 +5,7 @@ import com.chameleonvision.common.util.numbers.IntegerCouple;
 import com.chameleonvision.common.vision.opencv.ContourGroupingMode;
 import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
 import com.chameleonvision.common.vision.opencv.ContourSortMode;
+import com.chameleonvision.common.vision.pipe.impl.CornerDetectionPipe;
 import com.chameleonvision.common.vision.target.RobotOffsetPointMode;
 import com.chameleonvision.common.vision.target.TargetOffsetPointEdge;
 import com.chameleonvision.common.vision.target.TargetOrientation;
@@ -28,7 +29,8 @@ public class ReflectivePipelineSettings extends CVPipelineSettings {
     // the order in which to sort contours to find the most desirable
     public ContourSortMode contourSortMode = ContourSortMode.Largest;
 
-    // the edge (or not) of the target to consider the center point (Top, Bottom, Left, Right, Center)
+    // the edge (or not) of the target to consider the center point (Top, Bottom, Left, Right,
+    // Center)
     public TargetOffsetPointEdge contourTargetOffsetPointEdge = TargetOffsetPointEdge.Center;
 
     // orientation of the target in terms of aspect ratio
@@ -40,7 +42,8 @@ public class ReflectivePipelineSettings extends CVPipelineSettings {
     // the direction in which contours must intersect to be considered intersecting
     public ContourIntersectionDirection contourIntersection = ContourIntersectionDirection.Up;
 
-    // the mode in which to offset target center point based on the camera being offset on the robot
+    // the mode in which to offset target center point based on the camera being offset on the
+    // robot
     // (None, Single Point, Dual Point)
     public RobotOffsetPointMode offsetRobotOffsetMode = RobotOffsetPointMode.None;
 
@@ -50,4 +53,15 @@ public class ReflectivePipelineSettings extends CVPipelineSettings {
     // the two values that define the line of the Dual Point Offset calibration (think y=mx+b)
     public double offsetDualLineM = 1;
     public double offsetDualLineB = 0;
+
+    // 3d settings
+    public boolean solvePNPEnabled = false;
+
+    // Corner detection settings
+    public CornerDetectionPipe.DetectionStrategy cornerDetectionStrategy =
+            CornerDetectionPipe.DetectionStrategy.APPROX_POLY_DP_AND_EXTREME_CORNERS;
+    public boolean cornerDetectionUseConvexHulls = true;
+    public boolean cornerDetectionExactSideCount = false;
+    public int cornerDetectionSideCount = 4;
+    public double cornerDetectionAccuracyPercentage = 5;
 }

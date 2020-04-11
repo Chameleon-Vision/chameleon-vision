@@ -1,8 +1,15 @@
 package com.chameleonvision.common.vision.opencv;
 
-import com.chameleonvision.common.util.math.MathUtils;
 import java.util.Comparator;
-import org.opencv.core.*;
+
+import com.chameleonvision.common.util.math.MathUtils;
+import org.opencv.core.CvType;
+import org.opencv.core.MatOfInt;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.RotatedRect;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
@@ -22,7 +29,6 @@ public class Contour implements Releasable {
     private Moments moments = null;
 
     private MatOfPoint2f convexHull = null;
-    private static final MatOfInt convexHullStorage = new MatOfInt();
 
     public Contour(MatOfPoint mat) {
         this.mat = mat;
@@ -37,10 +43,14 @@ public class Contour implements Releasable {
     }
 
     public MatOfPoint2f getConvexHull() {
-        if (convexHull == null) {
-            Imgproc.convexHull(mat, convexHullStorage);
+        if (this.convexHull == null) {
+            var ints = new MatOfInt();
+            Imgproc.convexHull(mat, ints);
+            var hull = Contour.convertIndexesToPoints(mat, ints);
             convexHull = new MatOfPoint2f();
-            convexHullStorage.convertTo(convexHull, CvType.CV_32F);
+            hull.convertTo(convexHull, CvType.CV_32F);
+            convexHull.fromList(hull.toList());
+            ints.release();
         }
         return convexHull;
     }
@@ -140,7 +150,8 @@ public class Contour implements Releasable {
 
     // TODO: refactor to do "infinite" contours
     public static Contour groupContoursByIntersection(
-            Contour firstContour, Contour secondContour, ContourIntersectionDirection intersection) {
+            Contour firstContour, Contour secondContour,
+            ContourIntersectionDirection intersection) {
         if (areIntersecting(firstContour, secondContour, intersection)) {
             return combineContours(firstContour, secondContour);
         } else {
@@ -174,5 +185,19 @@ public class Contour implements Releasable {
         mat.release();
         mat2f.release();
         convexHull.release();
+    }
+
+    public static MatOfPoint2f convertIndexesToPoints(MatOfPoint contour, MatOfInt indexes) {
+        int[] arrIndex = indexes.toArray();
+        Point[] arrContour = contour.toArray();
+        Point[] arrPoints = new Point[arrIndex.length];
+
+        for (int i = 0; i < arrIndex.length; i++) {
+            arrPoints[i] = arrContour[arrIndex[i]];
+        }
+
+        var hull = new MatOfPoint2f();
+        hull.fromArray(arrPoints);
+        return hull;
     }
 }
