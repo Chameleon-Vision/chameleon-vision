@@ -2,13 +2,16 @@ package com.chameleonvision.common.vision.pipeline;
 
 import com.chameleonvision.common.util.numbers.DoubleCouple;
 import com.chameleonvision.common.util.numbers.IntegerCouple;
+import com.chameleonvision.common.vision.camera.CameraCalibrationCoefficients;
 import com.chameleonvision.common.vision.opencv.ContourGroupingMode;
 import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
 import com.chameleonvision.common.vision.opencv.ContourSortMode;
 import com.chameleonvision.common.vision.pipe.impl.CornerDetectionPipe;
 import com.chameleonvision.common.vision.target.RobotOffsetPointMode;
+import com.chameleonvision.common.vision.target.TargetModel;
 import com.chameleonvision.common.vision.target.TargetOffsetPointEdge;
 import com.chameleonvision.common.vision.target.TargetOrientation;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 
 public class ReflectivePipelineSettings extends CVPipelineSettings {
     public IntegerCouple hsvHue = new IntegerCouple(50, 180);
@@ -56,6 +59,9 @@ public class ReflectivePipelineSettings extends CVPipelineSettings {
 
     // 3d settings
     public boolean solvePNPEnabled = false;
+    public CameraCalibrationCoefficients cameraCalibration;
+    public TargetModel targetModel;
+    public Rotation2d cameraPitch;
 
     // Corner detection settings
     public CornerDetectionPipe.DetectionStrategy cornerDetectionStrategy =

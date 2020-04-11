@@ -9,7 +9,21 @@ import com.chameleonvision.common.vision.opencv.CVMat;
 import com.chameleonvision.common.vision.opencv.Contour;
 import com.chameleonvision.common.vision.opencv.DualMat;
 import com.chameleonvision.common.vision.pipe.CVPipeResult;
-import com.chameleonvision.common.vision.pipe.impl.*;
+import com.chameleonvision.common.vision.pipe.impl.Collect2dTargetsPipe;
+import com.chameleonvision.common.vision.pipe.impl.CornerDetectionPipe;
+import com.chameleonvision.common.vision.pipe.impl.Draw2dContoursPipe;
+import com.chameleonvision.common.vision.pipe.impl.Draw2dCrosshairPipe;
+import com.chameleonvision.common.vision.pipe.impl.Draw3dTargetsPipe;
+import com.chameleonvision.common.vision.pipe.impl.ErodeDilatePipe;
+import com.chameleonvision.common.vision.pipe.impl.FilterContoursPipe;
+import com.chameleonvision.common.vision.pipe.impl.FindContoursPipe;
+import com.chameleonvision.common.vision.pipe.impl.GroupContoursPipe;
+import com.chameleonvision.common.vision.pipe.impl.HSVPipe;
+import com.chameleonvision.common.vision.pipe.impl.OutputMatPipe;
+import com.chameleonvision.common.vision.pipe.impl.RotateImagePipe;
+import com.chameleonvision.common.vision.pipe.impl.SolvePNPPipe;
+import com.chameleonvision.common.vision.pipe.impl.SortContoursPipe;
+import com.chameleonvision.common.vision.pipe.impl.SpeckleRejectPipe;
 import com.chameleonvision.common.vision.target.PotentialTarget;
 import com.chameleonvision.common.vision.target.TrackedTarget;
 import org.apache.commons.lang3.tuple.Pair;
@@ -31,7 +45,7 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
     private final SortContoursPipe sortContoursPipe = new SortContoursPipe();
     private final Collect2dTargetsPipe collect2dTargetsPipe = new Collect2dTargetsPipe();
     private final CornerDetectionPipe cornerDetectionPipe = new CornerDetectionPipe();
-    //    private final SolvePNPPipe solvePNPPipe = new SolvePNPPipe();
+    private final SolvePNPPipe solvePNPPipe = new SolvePNPPipe();
     private final Draw2dCrosshairPipe draw2dCrosshairPipe = new Draw2dCrosshairPipe();
     private final Draw2dContoursPipe draw2dContoursPipe = new Draw2dContoursPipe();
     private final Draw3dTargetsPipe draw3dTargetsPipe = new Draw3dTargetsPipe();
@@ -106,9 +120,6 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
                 settings.cornerDetectionAccuracyPercentage);
         cornerDetectionPipe.setParams(params);
 
-        draw3dTargetsPipe.setParams(new Draw3dTargetsPipe.Draw2dContoursParams()); // TODO what
-        // parameters do we want exposed?
-
         Draw2dContoursPipe.Draw2dContoursParams draw2dContoursParams =
                 new Draw2dContoursPipe.Draw2dContoursParams(settings.outputShowMultipleTargets);
         draw2dContoursPipe.setParams(draw2dContoursParams);
@@ -117,6 +128,13 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
                 new Draw2dCrosshairPipe.Draw2dCrosshairParams(
                         settings.offsetRobotOffsetMode, settings.offsetCalibrationPoint);
         draw2dCrosshairPipe.setParams(draw2dCrosshairParams);
+
+        var draw3dContoursParams =
+                new Draw3dTargetsPipe.Draw3dContoursParams(settings.cameraCalibration);
+        draw3dTargetsPipe.setParams(draw3dContoursParams);
+
+        var solvePNPParams = new SolvePNPPipe.SolvePNPPipeParams(settings.cameraCalibration, settings.cameraPitch, settings.targetModel);
+        solvePNPPipe.setParams(solvePNPParams);
     }
 
     @Override
@@ -169,7 +187,11 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
         if (settings.solvePNPEnabled) {
             var cornerDetectionResult = cornerDetectionPipe.apply(collect2dTargetsResult.result);
             sumPipeNanosElapsed += cornerDetectionResult.nanosElapsed;
-            targetList = cornerDetectionResult;
+
+            var solvePNPResult = solvePNPPipe.apply(cornerDetectionResult.result);
+            sumPipeNanosElapsed += solvePNPResult.nanosElapsed;
+
+            targetList = solvePNPResult;
         } else {
             targetList = collect2dTargetsResult;
         }

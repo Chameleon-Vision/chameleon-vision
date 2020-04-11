@@ -26,7 +26,8 @@ public class CornerDetectionPipe
     @Override
     protected List<TrackedTarget> process(List<TrackedTarget> targetList) {
         for (var target : targetList) {
-            // detect contour
+            // detect corners. Might implement more algorithms later but
+            // APPROX_POLY_DP_AND_EXTREME_CORNERS should be year agnostic
             switch (params.cornerDetectionStrategy) {
                 case APPROX_POLY_DP_AND_EXTREME_CORNERS: {
                     var targetCorners =
@@ -35,15 +36,12 @@ public class CornerDetectionPipe
                     target.setCorners(targetCorners);
                     break;
                 }
-                case DUAL_TARGET_ROTATED_RECT_AND_EXTREME_CORNERS: {
-                    break;
-                }
                 default: {
                     break;
                 }
             }
         }
-        return List.of();
+        return targetList;
     }
 
     /**
@@ -133,7 +131,7 @@ public class CornerDetectionPipe
                 polyOutput,
                 params.accuracyPercentage / 600.0 * peri,
                 !isOpen);
-        
+
         // we must have at least 4 corners for this strategy to work.
         // If we are looking for an exact side count that is handled here too.
         var pointList = new ArrayList<>(polyOutput.toList());
@@ -173,13 +171,14 @@ public class CornerDetectionPipe
 
         // add points that are below the center of the min area rectangle of the target
         for (var p : pointList) {
-            if (p.y > target.m_mainContour.getMinAreaRect().center.y)
+            if (p.y > target.m_mainContour.getBoundingRect().y + target.m_mainContour.getBoundingRect().height / 2.0)
                 if (p.x < averageXCoordinate) {
                     leftList.add(p);
                 } else {
                     rightList.add(p);
                 }
         }
+        if(leftList.isEmpty() || rightList.isEmpty()) return null;
         leftList.sort(distanceProvider);
         rightList.sort(distanceProvider);
         var bl = leftList.get(leftList.size() - 1);
@@ -215,7 +214,6 @@ public class CornerDetectionPipe
     }
 
     public enum DetectionStrategy {
-        APPROX_POLY_DP_AND_EXTREME_CORNERS,
-        DUAL_TARGET_ROTATED_RECT_AND_EXTREME_CORNERS
+        APPROX_POLY_DP_AND_EXTREME_CORNERS
     }
 }

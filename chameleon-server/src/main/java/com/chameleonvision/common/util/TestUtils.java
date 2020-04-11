@@ -80,6 +80,11 @@ public class TestUtils {
         return Optional.ofNullable(folder).map(url -> new File(url.getFile()).toPath()).orElse(null);
     }
 
+    public static Path getCalibrationPath() {
+        var folder = TestUtils.class.getClassLoader().getResource("calibration");
+        return Optional.ofNullable(folder).map(url -> new File(url.getFile()).toPath()).orElse(null);
+    }
+
     public static Path getWPIImagePath(WPI2020Image image) {
         return Path.of(getTestImagesPath().toString(), image.path);
     }

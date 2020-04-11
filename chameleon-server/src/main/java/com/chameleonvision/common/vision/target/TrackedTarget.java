@@ -4,7 +4,10 @@ import com.chameleonvision.common.util.numbers.DoubleCouple;
 import com.chameleonvision.common.vision.opencv.Contour;
 import com.chameleonvision.common.vision.opencv.Releasable;
 import java.util.List;
+
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import org.apache.commons.math3.util.FastMath;
+import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.RotatedRect;
@@ -14,7 +17,7 @@ public class TrackedTarget implements Releasable {
     public final Contour m_mainContour;
     List<Contour> m_subContours; // can be empty
 
-    private MatOfPoint2f m_approximateBoundingPolygon = null;
+    private MatOfPoint2f m_approximateBoundingPolygon;
 
     private List<Point> m_targetCorners;
 
@@ -24,6 +27,10 @@ public class TrackedTarget implements Releasable {
     private double m_pitch;
     private double m_yaw;
     private double m_area;
+
+    private Pose2d m_robotRelativePose;
+
+    private Mat m_cameraRelativeTvec, m_cameraRelativeRvec;
 
     public TrackedTarget(PotentialTarget origTarget, TargetCalculationParameters params) {
         this.m_mainContour = origTarget.m_mainContour;
@@ -183,6 +190,9 @@ public class TrackedTarget implements Releasable {
         for (var sc : m_subContours) {
             sc.release();
         }
+
+        if(m_cameraRelativeTvec != null) m_cameraRelativeTvec.release();
+        if(m_cameraRelativeRvec != null) m_cameraRelativeRvec.release();
     }
 
     public void setCorners(List<Point> targetCorners) {
@@ -195,6 +205,32 @@ public class TrackedTarget implements Releasable {
 
     public boolean hasSubContours() {
         return !m_subContours.isEmpty();
+    }
+
+    public Pose2d getRobotRelativePose() {
+        return m_robotRelativePose;
+    }
+
+    public void setRobotRelativePose(Pose2d robotRelativePose) {
+        this.m_robotRelativePose = robotRelativePose;
+    }
+
+    public Mat getCameraRelativeTvec() {
+        return m_cameraRelativeTvec;
+    }
+
+    public void setCameraRelativeTvec(Mat cameraRelativeTvec) {
+        if(this.m_cameraRelativeTvec == null) m_cameraRelativeTvec = new Mat();
+        cameraRelativeTvec.copyTo(this.m_cameraRelativeTvec);
+    }
+
+    public Mat getCameraRelativeRvec() {
+        return m_cameraRelativeRvec;
+    }
+
+    public void setCameraRelativeRvec(Mat cameraRelativeRvec) {
+        if(this.m_cameraRelativeRvec == null) m_cameraRelativeRvec = new Mat();
+        cameraRelativeRvec.copyTo(this.m_cameraRelativeRvec);
     }
 
     public static class TargetCalculationParameters {

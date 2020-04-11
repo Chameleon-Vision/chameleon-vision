@@ -4,9 +4,12 @@ import java.awt.*;
 import java.util.List;
 
 import com.chameleonvision.common.util.ColorHelper;
+import com.chameleonvision.common.vision.camera.CameraCalibrationCoefficients;
 import com.chameleonvision.common.vision.pipe.CVPipe;
+import com.chameleonvision.common.vision.target.TargetModel;
 import com.chameleonvision.common.vision.target.TrackedTarget;
 import org.apache.commons.lang3.tuple.Pair;
+import org.opencv.calib3d.Calib3d;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -15,7 +18,7 @@ import org.opencv.imgproc.Imgproc;
 
 public class Draw3dTargetsPipe
         extends CVPipe<Pair<Mat, List<TrackedTarget>>, Mat,
-        Draw3dTargetsPipe.Draw2dContoursParams> {
+        Draw3dTargetsPipe.Draw3dContoursParams> {
 
     private static MatOfPoint tempMat = new MatOfPoint();
 
@@ -31,26 +34,72 @@ public class Draw3dTargetsPipe
 
             // draw approximate polygon
             var poly = target.getApproximateBoundingPolygon();
-            poly.convertTo(pointMat, CvType.CV_32S);
-            System.out.println("approx poly:\n" + poly.toList() + "\npoint mat:\n" + pointMat.toList() + "\n");
-            Imgproc.drawContours(in.getLeft(), List.of(pointMat), -1,
-                    ColorHelper.colorToScalar(Color.blue), 2);
+            if (poly != null) {
+                poly.convertTo(pointMat, CvType.CV_32S);
+                System.out.println("approx poly:\n" + poly.toList() + "\npoint mat:\n" + pointMat.toList() + "\n");
+                Imgproc.drawContours(in.getLeft(), List.of(pointMat), -1,
+                        ColorHelper.colorToScalar(Color.blue), 2);
+            }
 
+
+            // Draw floor and top
+            if(target.getCameraRelativeRvec() != null && target.getCameraRelativeTvec() != null) {
+                var tempMat = new MatOfPoint2f();
+                var jac = new Mat();
+                var bottomModel = params.targetModel.getVisualizationBoxBottom();
+                var topModel = params.targetModel.getVisualizationBoxTop();
+                Calib3d.projectPoints(bottomModel, target.getCameraRelativeRvec(),
+                        target.getCameraRelativeTvec(),
+                        params.cameraCalibrationCoefficients.getCameraIntrinsicsMat(),
+                        params.cameraCalibrationCoefficients.getCameraExtrinsicsMat(),
+                        tempMat, jac);
+                var bottomPoints = tempMat.toList();
+                Calib3d.projectPoints(topModel, target.getCameraRelativeRvec(),
+                        target.getCameraRelativeTvec(),
+                        params.cameraCalibrationCoefficients.getCameraIntrinsicsMat(),
+                        params.cameraCalibrationCoefficients.getCameraExtrinsicsMat(),
+                        tempMat, jac);
+                var topPoints = tempMat.toList();
+                // floor, then pillers, then top
+                for (int i = 0; i < bottomPoints.size() - 1; i++) {
+                    Imgproc.line(in.getLeft(), bottomPoints.get(i), bottomPoints.get(i + 1),
+                            ColorHelper.colorToScalar(Color.green), 3);
+                }
+                for (int i = 0; i < bottomPoints.size() - 1; i++) {
+                    Imgproc.line(in.getLeft(), bottomPoints.get(i), topPoints.get(i),
+                            ColorHelper.colorToScalar(Color.blue), 3);
+                }
+                for (int i = 0; i < topPoints.size() - 1; i++) {
+                    Imgproc.line(in.getLeft(), topPoints.get(i), topPoints.get(i + 1),
+                            ColorHelper.colorToScalar(Color.red), 3);
+                }
+
+                jac.release();
+            }
             pointMat.release();
+
 
             // draw corners
             var corners = target.getTargetCorners();
-            for (var corner : corners) {
-                Imgproc.circle(in.getLeft(), corner, params.radius,
-                        ColorHelper.colorToScalar(params.color), params.radius);
+            if (corners != null && !corners.isEmpty()) {
+                for (var corner : corners) {
+                    Imgproc.circle(in.getLeft(), corner, params.radius,
+                            ColorHelper.colorToScalar(params.color), params.radius);
+                }
             }
         }
 
         return in.getLeft();
     }
 
-    public static class Draw2dContoursParams {
+    public static class Draw3dContoursParams {
         private final int radius = 2;
         private final Color color = Color.RED;
+        private final TargetModel targetModel = TargetModel.get2020Target();
+        private final CameraCalibrationCoefficients cameraCalibrationCoefficients;
+
+        public Draw3dContoursParams(CameraCalibrationCoefficients cameraCalibrationCoefficients) {
+            this.cameraCalibrationCoefficients = cameraCalibrationCoefficients;
+        }
     }
 }

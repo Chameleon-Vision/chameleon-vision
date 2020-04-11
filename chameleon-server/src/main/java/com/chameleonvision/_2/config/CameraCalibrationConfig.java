@@ -54,11 +54,11 @@ public class CameraCalibrationConfig {
 
     @JsonIgnore
     public Mat getCameraMatrixAsMat() {
-        return cameraMatrix.toMat();
+        return cameraMatrix.getAsMat();
     }
 
     @JsonIgnore
     public MatOfDouble getDistortionCoeffsAsMat() {
-        return new MatOfDouble(distortionCoeffs.toMat());
+        return new MatOfDouble(distortionCoeffs.getAsMat());
     }
 }
