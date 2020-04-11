@@ -22,7 +22,7 @@ public class Draw2dContoursPipe
     @Override
     protected Mat process(Pair<Mat, List<TrackedTarget>> in) {
         if (params.showCentroid || params.showMaximumBox || params.showRotatedBox) {
-            for (int i = 0; i < in.getRight().size(); i++) {
+            for (int i = 0; i < (params.showMultiple ? in.getRight().size() : 1); i++) {
                 Point[] vertices = new Point[4];
                 MatOfPoint contour = new MatOfPoint();
 
@@ -78,7 +78,7 @@ public class Draw2dContoursPipe
 
     public static class Draw2dContoursParams {
         public boolean showCentroid = true;
-        public boolean showMultiple = false;
+        public boolean showMultiple = true;
         public int boxOutlineSize = 1;
         public boolean showRotatedBox = true;
         public boolean showMaximumBox = true;
