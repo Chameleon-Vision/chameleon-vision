@@ -2,9 +2,9 @@ package com.chameleonvision.common.vision.pipeline;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.stream.Collectors;
 
 import com.chameleonvision.common.util.TestUtils;
-import com.chameleonvision.common.util.numbers.DoubleCouple;
 import com.chameleonvision.common.vision.camera.CameraCalibrationCoefficients;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
@@ -12,9 +12,14 @@ import com.chameleonvision.common.vision.opencv.CVMat;
 import com.chameleonvision.common.vision.opencv.ContourGroupingMode;
 import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
 import com.chameleonvision.common.vision.target.TargetModel;
+import com.chameleonvision.common.vision.target.TrackedTarget;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import org.junit.jupiter.api.Test;
+
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class SolvePNPTest {
 
@@ -34,8 +39,28 @@ public class SolvePNPTest {
 
     private CameraCalibrationCoefficients get640p() {
         try {
-            return new ObjectMapper().readValue((Path.of(TestUtils.getCalibrationPath().toString(), "lifecam640p.json")
+            var cameraCalibration =
+                    new ObjectMapper().readValue((Path.of(TestUtils.getCalibrationPath().toString(), "lifecam640p.json")
                     .toFile()), CameraCalibrationCoefficients.class);
+
+            assertEquals(3, cameraCalibration.cameraIntrinsics.rows);
+            assertEquals(3, cameraCalibration.cameraIntrinsics.cols);
+            assertEquals(1, cameraCalibration.cameraExtrinsics.rows);
+            assertEquals(5, cameraCalibration.cameraExtrinsics.cols);
+            assertEquals(3, cameraCalibration.cameraIntrinsics.getAsMat().rows());
+            assertEquals(3, cameraCalibration.cameraIntrinsics.getAsMat().cols());
+            assertEquals(1, cameraCalibration.cameraExtrinsics.getAsMat().rows());
+            assertEquals(5, cameraCalibration.cameraExtrinsics.getAsMat().cols());
+            assertEquals(3, cameraCalibration.cameraIntrinsics.getAsMatOfDouble().rows());
+            assertEquals(3, cameraCalibration.cameraIntrinsics.getAsMatOfDouble().cols());
+            assertEquals(1, cameraCalibration.cameraExtrinsics.getAsMatOfDouble().rows());
+            assertEquals(5, cameraCalibration.cameraExtrinsics.getAsMatOfDouble().cols());
+            assertEquals(3, cameraCalibration.getCameraIntrinsicsMat().rows());
+            assertEquals(3, cameraCalibration.getCameraIntrinsicsMat().cols());
+            assertEquals(1, cameraCalibration.getCameraExtrinsicsMat().rows());
+            assertEquals(5, cameraCalibration.getCameraExtrinsicsMat().cols());
+
+            return cameraCalibration;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -82,16 +107,39 @@ public class SolvePNPTest {
         settings.hsvValue.set(60, 255);
         settings.outputShowThresholded = true;
         settings.solvePNPEnabled = true;
+        settings.cornerDetectionAccuracyPercentage = 4;
         settings.cornerDetectionUseConvexHulls = true;
         settings.cameraCalibration = get640p();
         settings.targetModel = TargetModel.get2020Target();
         settings.cameraPitch = Rotation2d.fromDegrees(0.0);
-        settings.contourRatio = new DoubleCouple(2.0, 3.0);
+
+        assertNotNull(settings.cameraCalibration);
+        assertEquals(3, settings.cameraCalibration.cameraIntrinsics.rows);
+        assertEquals(3, settings.cameraCalibration.cameraIntrinsics.cols);
+        assertEquals(1, settings.cameraCalibration.cameraExtrinsics.rows);
+        assertEquals(5, settings.cameraCalibration.cameraExtrinsics.cols);
+
+        assertEquals(3, settings.cameraCalibration.cameraIntrinsics.getAsMat().rows());
+        assertEquals(3, settings.cameraCalibration.cameraIntrinsics.getAsMat().cols());
+        assertEquals(1, settings.cameraCalibration.cameraExtrinsics.getAsMat().rows());
+        assertEquals(5, settings.cameraCalibration.cameraExtrinsics.getAsMat().cols());
+
+        assertEquals(3, settings.cameraCalibration.cameraIntrinsics.getAsMatOfDouble().rows());
+        assertEquals(3, settings.cameraCalibration.cameraIntrinsics.getAsMatOfDouble().cols());
+        assertEquals(1, settings.cameraCalibration.cameraExtrinsics.getAsMatOfDouble().rows());
+        assertEquals(5, settings.cameraCalibration.cameraExtrinsics.getAsMatOfDouble().cols());
+
+        assertEquals(3, settings.cameraCalibration.getCameraIntrinsicsMat().rows());
+        assertEquals(3, settings.cameraCalibration.getCameraIntrinsicsMat().cols());
+        assertEquals(1, settings.cameraCalibration.getCameraExtrinsicsMat().rows());
+        assertEquals(5, settings.cameraCalibration.getCameraExtrinsicsMat().cols());
 
         var frameProvider =
                 new FileFrameProvider(
-                        TestUtils.getWPIImagePath(TestUtils.WPI2020Image.kBlueGoal_Far_ProtectedZone),
+                        TestUtils.getWPIImagePath(TestUtils.WPI2020Image.kBlueGoal_228in_ProtectedZone),
                         TestUtils.WPI2020Image.FOV);
+
+//        TestUtils.showImage(frameProvider.getFrame().image.getMat(), "Pipeline output", 999999);
 
         CVPipelineResult pipelineResult = pipeline.run(frameProvider.getFrame(), settings);
         printTestResults(pipelineResult);
@@ -136,9 +184,11 @@ public class SolvePNPTest {
 
     private static void printTestResults(CVPipelineResult pipelineResult) {
         double fps = 1000 / pipelineResult.getLatencyMillis();
-        System.out.print(
+        System.out.println(
                 "Pipeline ran in " + pipelineResult.getLatencyMillis() + "ms (" + fps + " " +
-                        "fps), ");
+                        "fps)");
         System.out.println("Found " + pipelineResult.targets.size() + " valid targets");
+        System.out.println("Found targets at " + pipelineResult.targets.stream()
+                .map(TrackedTarget::getRobotRelativePose).collect(Collectors.toList()));
     }
 }

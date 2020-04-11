@@ -36,7 +36,6 @@ public class Draw3dTargetsPipe
             var poly = target.getApproximateBoundingPolygon();
             if (poly != null) {
                 poly.convertTo(pointMat, CvType.CV_32S);
-                System.out.println("approx poly:\n" + poly.toList() + "\npoint mat:\n" + pointMat.toList() + "\n");
                 Imgproc.drawContours(in.getLeft(), List.of(pointMat), -1,
                         ColorHelper.colorToScalar(Color.blue), 2);
             }
@@ -61,17 +60,17 @@ public class Draw3dTargetsPipe
                         tempMat, jac);
                 var topPoints = tempMat.toList();
                 // floor, then pillers, then top
-                for (int i = 0; i < bottomPoints.size() - 1; i++) {
-                    Imgproc.line(in.getLeft(), bottomPoints.get(i), bottomPoints.get(i + 1),
+                for (int i = 0; i < bottomPoints.size(); i++) {
+                    Imgproc.line(in.getLeft(), bottomPoints.get(i), bottomPoints.get((i + 1) % (bottomPoints.size())),
                             ColorHelper.colorToScalar(Color.green), 3);
                 }
-                for (int i = 0; i < bottomPoints.size() - 1; i++) {
+                for (int i = 0; i < bottomPoints.size(); i++) {
                     Imgproc.line(in.getLeft(), bottomPoints.get(i), topPoints.get(i),
                             ColorHelper.colorToScalar(Color.blue), 3);
                 }
-                for (int i = 0; i < topPoints.size() - 1; i++) {
-                    Imgproc.line(in.getLeft(), topPoints.get(i), topPoints.get(i + 1),
-                            ColorHelper.colorToScalar(Color.red), 3);
+                for (int i = 0; i < topPoints.size(); i++) {
+                    Imgproc.line(in.getLeft(), topPoints.get(i), topPoints.get((i + 1) % (bottomPoints.size())),
+                            ColorHelper.colorToScalar(Color.orange), 3);
                 }
 
                 jac.release();

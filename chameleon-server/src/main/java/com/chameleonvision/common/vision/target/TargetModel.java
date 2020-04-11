@@ -18,7 +18,7 @@ public class TargetModel implements Releasable {
         this.realWorldTargetCoordinates = realWorldTargetCoordinates;
 
         var bottomList = realWorldTargetCoordinates.toList();
-        var topList = new ArrayList<>(bottomList);
+        var topList = new ArrayList<Point3>();
         for (var c : bottomList) {
             topList.add(new Point3(c.x, c.y, c.z + boxHeight));
         }
@@ -54,7 +54,7 @@ public class TargetModel implements Releasable {
                 new Point3(-9.819867, -17, 0),
                 new Point3(9.819867, -17, 0),
                 new Point3(19.625, 0, 0));
-        return new TargetModel(corners, 6d / 1000d * 25.4);
+        return new TargetModel(corners, 12); // TODO switch to meters
     }
 
     @Override

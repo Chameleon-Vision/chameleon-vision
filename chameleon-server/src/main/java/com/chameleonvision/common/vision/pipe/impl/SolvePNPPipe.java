@@ -1,6 +1,5 @@
 package com.chameleonvision.common.vision.pipe.impl;
 
-import java.lang.annotation.Target;
 import java.util.List;
 
 import com.chameleonvision.common.vision.camera.CameraCalibrationCoefficients;
@@ -15,7 +14,6 @@ import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.MatOfPoint3f;
 import org.opencv.core.Scalar;
 
 public class SolvePNPPipe
@@ -38,7 +36,7 @@ public class SolvePNPPipe
         Pose2d targetPose;
 
         var corners = target.getTargetCorners();
-        if (corners == null || corners.isEmpty()) {
+        if (corners == null || corners.isEmpty() || params.cameraCoefficients.getCameraIntrinsicsMat() == null || params.cameraCoefficients.getCameraExtrinsicsMat() == null) {
             targetPose = new Pose2d();
             return;
         }
@@ -81,7 +79,8 @@ public class SolvePNPPipe
         // Z distance in the flat plane is given by
         // Z_field = z cos theta + y sin theta.
         // Z is the distance "out" of the camera (straight forward).
-        var zField = tVec.get(2, 0)[0] * FastMath.cos(tiltAngle) + tVec.get(1, 0)[0] * FastMath.sin(tiltAngle);
+        var zField =
+                tVec.get(2, 0)[0] * FastMath.cos(tiltAngle) + tVec.get(1, 0)[0] * FastMath.sin(tiltAngle);
 
         Calib3d.Rodrigues(rVec, rotationMatrix);
         Core.transpose(rotationMatrix, inverseRotationMatrix);

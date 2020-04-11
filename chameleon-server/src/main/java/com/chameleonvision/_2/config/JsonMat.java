@@ -82,8 +82,8 @@ public class JsonMat implements Releasable {
     @JsonIgnore
     public MatOfDouble getAsMatOfDouble() {
         if (this.wrappedMatOfDouble == null) {
-            this.wrappedMatOfDouble = new MatOfDouble(rows, cols, type);
-            wrappedMatOfDouble.put(0, 0, data);
+            this.wrappedMatOfDouble = new MatOfDouble();
+            getAsMat().convertTo(wrappedMatOfDouble, CvType.CV_64F);
         }
         return this.wrappedMatOfDouble;
     }
