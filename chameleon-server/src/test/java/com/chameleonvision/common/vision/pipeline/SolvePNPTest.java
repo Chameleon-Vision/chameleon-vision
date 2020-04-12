@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.chameleonvision.common.calibration.CameraCalibrationCoefficients;
+import com.chameleonvision.common.logging.Logger;
 import com.chameleonvision.common.util.TestUtils;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
@@ -22,22 +23,57 @@ import org.junit.jupiter.api.Test;
 public class SolvePNPTest {
 
     @Test
-    public void meme() throws IOException {
+    public void loadCameraIntrinsics() throws IOException {
         TestUtils.loadLibraries();
 
-        var lowres = (Path.of(TestUtils.getCalibrationPath().toString(), "lifecamcal.json").toFile());
+        var lowres = (Path.of(TestUtils.getCalibrationPath().toString(), "lifecam240p.json").toFile());
         var cal1 = new ObjectMapper().readValue(lowres, CameraCalibrationCoefficients.class);
 
-        var highres = (Path.of(TestUtils.getCalibrationPath().toString(), "lifecamcal2.json").toFile());
+        var highres = (Path.of(TestUtils.getCalibrationPath().toString(), "lifecam480p.json").toFile());
         var cal2 = new ObjectMapper().readValue(highres, CameraCalibrationCoefficients.class);
+
+        assertNotNull(cal1);
+        assertNotNull(cal2);
     }
 
-    private CameraCalibrationCoefficients get640p() {
+    private CameraCalibrationCoefficients get240p() {
         try {
             var cameraCalibration =
                     new ObjectMapper()
                             .readValue(
-                                    (Path.of(TestUtils.getCalibrationPath().toString(), "lifecam640p.json").toFile()),
+                                    (Path.of(TestUtils.getCalibrationPath().toString(), "lifecam240p.json").toFile()),
+                                    CameraCalibrationCoefficients.class);
+
+            assertEquals(3, cameraCalibration.cameraIntrinsics.rows);
+            assertEquals(3, cameraCalibration.cameraIntrinsics.cols);
+            assertEquals(1, cameraCalibration.cameraExtrinsics.rows);
+            assertEquals(5, cameraCalibration.cameraExtrinsics.cols);
+            assertEquals(3, cameraCalibration.cameraIntrinsics.getAsMat().rows());
+            assertEquals(3, cameraCalibration.cameraIntrinsics.getAsMat().cols());
+            assertEquals(1, cameraCalibration.cameraExtrinsics.getAsMat().rows());
+            assertEquals(5, cameraCalibration.cameraExtrinsics.getAsMat().cols());
+            assertEquals(3, cameraCalibration.cameraIntrinsics.getAsMatOfDouble().rows());
+            assertEquals(3, cameraCalibration.cameraIntrinsics.getAsMatOfDouble().cols());
+            assertEquals(1, cameraCalibration.cameraExtrinsics.getAsMatOfDouble().rows());
+            assertEquals(5, cameraCalibration.cameraExtrinsics.getAsMatOfDouble().cols());
+            assertEquals(3, cameraCalibration.getCameraIntrinsicsMat().rows());
+            assertEquals(3, cameraCalibration.getCameraIntrinsicsMat().cols());
+            assertEquals(1, cameraCalibration.getCameraExtrinsicsMat().rows());
+            assertEquals(5, cameraCalibration.getCameraExtrinsicsMat().cols());
+
+            return cameraCalibration;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private CameraCalibrationCoefficients get480p() {
+        try {
+            var cameraCalibration =
+                    new ObjectMapper()
+                            .readValue(
+                                    (Path.of(TestUtils.getCalibrationPath().toString(), "lifecam480p.json").toFile()),
                                     CameraCalibrationCoefficients.class);
 
             assertEquals(3, cameraCalibration.cameraIntrinsics.rows);
@@ -80,6 +116,8 @@ public class SolvePNPTest {
         settings.contourIntersection = ContourIntersectionDirection.Up;
         settings.cornerDetectionUseConvexHulls = true;
 
+        settings.cameraCalibration = get240p();
+
         var frameProvider =
                 new FileFrameProvider(
                         TestUtils.getWPIImagePath(TestUtils.WPI2019Image.kCargoStraightDark48in),
@@ -105,7 +143,7 @@ public class SolvePNPTest {
         settings.solvePNPEnabled = true;
         settings.cornerDetectionAccuracyPercentage = 4;
         settings.cornerDetectionUseConvexHulls = true;
-        settings.cameraCalibration = get640p();
+        settings.cameraCalibration = get480p();
         settings.targetModel = TargetModel.get2020Target(36);
         settings.cameraPitch = Rotation2d.fromDegrees(0.0);
 

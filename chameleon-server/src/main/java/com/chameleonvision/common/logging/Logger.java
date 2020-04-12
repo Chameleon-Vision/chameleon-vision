@@ -37,12 +37,13 @@ public class Logger {
         return simpleDateFormat.format(new Date());
     }
 
-    public static String format(String logMessage, Level level, LogGroup group, String clazz,
-                                boolean color) {
+    public static String format(
+            String logMessage, Level level, LogGroup group, String clazz, boolean color) {
         var date = getDate();
         var builder = new StringBuilder();
         if (color) builder.append(level.colorCode);
-        builder.append("[")
+        builder
+                .append("[")
                 .append(date)
                 .append("] [")
                 .append(group)
@@ -143,9 +144,9 @@ public class Logger {
 
         @Override
         void log(String message) {
-            try (AsynchronousFileChannel asyncFile = AsynchronousFileChannel.open(filePath,
-                    StandardOpenOption.WRITE,
-                    StandardOpenOption.CREATE)) {
+            try (AsynchronousFileChannel asyncFile =
+                    AsynchronousFileChannel.open(
+                            filePath, StandardOpenOption.WRITE, StandardOpenOption.CREATE)) {
 
                 asyncFile.write(ByteBuffer.wrap(message.getBytes()), 0);
             } catch (IOException e) {
@@ -153,5 +154,4 @@ public class Logger {
             }
         }
     }
-
 }

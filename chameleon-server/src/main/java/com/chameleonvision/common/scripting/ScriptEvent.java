@@ -4,8 +4,6 @@ import com.chameleonvision.common.logging.LogGroup;
 import com.chameleonvision.common.logging.Logger;
 import com.chameleonvision.common.util.ShellExec;
 import java.io.IOException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ScriptEvent {
     private static final ShellExec executor = new ShellExec(true, true);

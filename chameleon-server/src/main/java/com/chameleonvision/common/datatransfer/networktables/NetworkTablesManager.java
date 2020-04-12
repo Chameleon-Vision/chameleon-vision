@@ -8,8 +8,6 @@ import edu.wpi.first.networktables.LogMessage;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import java.util.function.Consumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class NetworkTablesManager {
 
