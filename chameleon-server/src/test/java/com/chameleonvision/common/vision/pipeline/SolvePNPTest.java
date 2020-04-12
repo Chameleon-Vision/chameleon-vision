@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.chameleonvision.common.calibration.CameraCalibrationCoefficients;
-import com.chameleonvision.common.logging.Logger;
 import com.chameleonvision.common.util.TestUtils;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
@@ -116,6 +115,7 @@ public class SolvePNPTest {
         settings.contourIntersection = ContourIntersectionDirection.Up;
         settings.cornerDetectionUseConvexHulls = true;
 
+        settings.targetModel = TargetModel.get2019Target();
         settings.cameraCalibration = get240p();
 
         var frameProvider =
