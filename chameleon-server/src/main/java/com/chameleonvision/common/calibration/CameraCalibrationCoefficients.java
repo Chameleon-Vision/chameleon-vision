@@ -1,6 +1,5 @@
 package com.chameleonvision.common.calibration;
 
-import com.chameleonvision.common.calibration.JsonMat;
 import com.chameleonvision.common.vision.opencv.Releasable;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;

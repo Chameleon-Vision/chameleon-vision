@@ -6,6 +6,7 @@ import com.chameleonvision.common.vision.pipe.ImageRotationMode;
 
 public class CVPipelineSettings {
     public int pipelineIndex = 0;
+    public PipelineType pipelineType = PipelineType.DriverMode;
     public ImageFlipMode inputImageFlipMode = ImageFlipMode.NONE;
     public ImageRotationMode inputImageRotationMode = ImageRotationMode.DEG_0;
     public String pipelineNickname = "New Pipeline";

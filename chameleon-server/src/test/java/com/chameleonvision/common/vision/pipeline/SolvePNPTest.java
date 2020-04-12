@@ -3,8 +3,8 @@ package com.chameleonvision.common.vision.pipeline;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.chameleonvision.common.util.TestUtils;
 import com.chameleonvision.common.calibration.CameraCalibrationCoefficients;
+import com.chameleonvision.common.util.TestUtils;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
 import com.chameleonvision.common.vision.opencv.CVMat;
@@ -142,9 +142,9 @@ public class SolvePNPTest {
         printTestResults(pipelineResult);
 
         var pose = pipelineResult.targets.get(0).getRobotRelativePose();
-//        assertEquals(180, pose.getTranslation().getX(), 20);
-//        assertEquals(0, pose.getTranslation().getY(), 20);
-//        assertEquals(0, pose.getRotation().getDegrees(), 5);
+        //        assertEquals(180, pose.getTranslation().getX(), 20);
+        //        assertEquals(0, pose.getTranslation().getY(), 20);
+        //        assertEquals(0, pose.getRotation().getDegrees(), 5);
 
         TestUtils.showImage(pipelineResult.outputFrame.image.getMat(), "Pipeline output", 999999);
     }
