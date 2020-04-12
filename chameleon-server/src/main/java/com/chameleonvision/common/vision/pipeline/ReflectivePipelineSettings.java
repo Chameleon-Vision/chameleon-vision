@@ -61,7 +61,7 @@ public class ReflectivePipelineSettings extends CVPipelineSettings {
     public boolean solvePNPEnabled = false;
     public CameraCalibrationCoefficients cameraCalibration;
     public TargetModel targetModel;
-    public Rotation2d cameraPitch;
+    public Rotation2d cameraPitch = Rotation2d.fromDegrees(0.0);
 
     // Corner detection settings
     public CornerDetectionPipe.DetectionStrategy cornerDetectionStrategy =

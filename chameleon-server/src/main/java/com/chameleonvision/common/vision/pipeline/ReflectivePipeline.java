@@ -127,7 +127,8 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
         draw2dCrosshairPipe.setParams(draw2dCrosshairParams);
 
         var draw3dContoursParams =
-                new Draw3dTargetsPipe.Draw3dContoursParams(settings.cameraCalibration);
+                new Draw3dTargetsPipe.Draw3dContoursParams(
+                        settings.cameraCalibration, settings.targetModel);
         draw3dTargetsPipe.setParams(draw3dContoursParams);
 
         var solvePNPParams =
