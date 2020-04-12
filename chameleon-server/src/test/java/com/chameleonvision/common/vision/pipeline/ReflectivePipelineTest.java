@@ -14,7 +14,8 @@ public class ReflectivePipelineTest {
 
     public static void setLoggingLevel(ch.qos.logback.classic.Level level) {
         ch.qos.logback.classic.Logger root =
-                (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+                (ch.qos.logback.classic.Logger)
+                        org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         root.setLevel(level);
     }
 
