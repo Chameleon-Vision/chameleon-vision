@@ -1,5 +1,7 @@
 package com.chameleonvision.common.scripting;
 
+import com.chameleonvision.common.logging.LogGroup;
+import com.chameleonvision.common.logging.Logger;
 import com.chameleonvision.common.util.ShellExec;
 import java.io.IOException;
 import org.slf4j.Logger;
@@ -9,7 +11,7 @@ public class ScriptEvent {
     private static final ShellExec executor = new ShellExec(true, true);
 
     public final ScriptConfig config;
-    private final Logger logger = LoggerFactory.getLogger(ScriptEvent.class);
+    private final Logger logger = new Logger(ScriptEvent.class, LogGroup.General);
 
     public ScriptEvent(ScriptConfig config) {
         this.config = config;

@@ -1,5 +1,7 @@
 package com.chameleonvision.common.util.file;
 
+import com.chameleonvision.common.logging.LogGroup;
+import com.chameleonvision.common.logging.Logger;
 import com.chameleonvision.common.util.Platform;
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +19,7 @@ public class FileUtils {
 
     private FileUtils() {}
 
-    private static Logger logger = LoggerFactory.getLogger(FileUtils.class);
+    private static Logger logger = new Logger(FileUtils.class, LogGroup.General);
     private static final Set<PosixFilePermission> allReadWriteExecutePerms =
             new HashSet<>(Arrays.asList(PosixFilePermission.values()));
 

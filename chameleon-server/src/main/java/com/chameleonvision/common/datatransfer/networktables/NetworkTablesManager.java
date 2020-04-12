@@ -1,5 +1,7 @@
 package com.chameleonvision.common.datatransfer.networktables;
 
+import com.chameleonvision.common.logging.LogGroup;
+import com.chameleonvision.common.logging.Logger;
 import com.chameleonvision.common.scripting.ScriptEventType;
 import com.chameleonvision.common.scripting.ScriptManager;
 import edu.wpi.first.networktables.LogMessage;
@@ -13,7 +15,7 @@ public class NetworkTablesManager {
 
     private NetworkTablesManager() {}
 
-    private static final Logger logger = LoggerFactory.getLogger(NetworkTablesManager.class);
+    private static final Logger logger = new Logger(NetworkTablesManager.class, LogGroup.General);
 
     private static final NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
 
