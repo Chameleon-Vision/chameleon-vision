@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.chameleonvision.common.util.TestUtils;
-import com.chameleonvision.common.vision.camera.CameraCalibrationCoefficients;
+import com.chameleonvision.common.calibration.CameraCalibrationCoefficients;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
 import com.chameleonvision.common.vision.opencv.CVMat;
@@ -132,7 +132,7 @@ public class SolvePNPTest {
 
         var frameProvider =
                 new FileFrameProvider(
-                        TestUtils.getWPIImagePath(TestUtils.WPI2020Image.kBlueGoal_228in_ProtectedZone),
+                        TestUtils.getWPIImagePath(TestUtils.WPI2020Image.kBlueGoal_180in_Center),
                         TestUtils.WPI2020Image.FOV);
 
         //        TestUtils.showImage(frameProvider.getFrame().image.getMat(), "Pipeline output",
@@ -140,6 +140,11 @@ public class SolvePNPTest {
 
         CVPipelineResult pipelineResult = pipeline.run(frameProvider.getFrame(), settings);
         printTestResults(pipelineResult);
+
+        var pose = pipelineResult.targets.get(0).getRobotRelativePose();
+        assertEquals(180, pose.getTranslation().getX(), 20);
+        assertEquals(0, pose.getTranslation().getY(), 20);
+        assertEquals(0, pose.getRotation().getDegrees(), 5);
 
         TestUtils.showImage(pipelineResult.outputFrame.image.getMat(), "Pipeline output", 999999);
     }

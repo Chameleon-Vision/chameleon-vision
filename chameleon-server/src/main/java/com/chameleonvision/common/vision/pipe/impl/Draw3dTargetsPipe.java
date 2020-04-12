@@ -1,7 +1,7 @@
 package com.chameleonvision.common.vision.pipe.impl;
 
 import com.chameleonvision.common.util.ColorHelper;
-import com.chameleonvision.common.vision.camera.CameraCalibrationCoefficients;
+import com.chameleonvision.common.calibration.CameraCalibrationCoefficients;
 import com.chameleonvision.common.vision.pipe.CVPipe;
 import com.chameleonvision.common.vision.target.TargetModel;
 import com.chameleonvision.common.vision.target.TrackedTarget;

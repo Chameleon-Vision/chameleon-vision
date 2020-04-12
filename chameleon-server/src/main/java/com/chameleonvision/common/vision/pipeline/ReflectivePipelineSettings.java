@@ -2,7 +2,7 @@ package com.chameleonvision.common.vision.pipeline;
 
 import com.chameleonvision.common.util.numbers.DoubleCouple;
 import com.chameleonvision.common.util.numbers.IntegerCouple;
-import com.chameleonvision.common.vision.camera.CameraCalibrationCoefficients;
+import com.chameleonvision.common.calibration.CameraCalibrationCoefficients;
 import com.chameleonvision.common.vision.opencv.ContourGroupingMode;
 import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
 import com.chameleonvision.common.vision.opencv.ContourSortMode;
