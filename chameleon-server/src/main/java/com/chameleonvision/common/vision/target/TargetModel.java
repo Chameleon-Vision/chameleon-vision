@@ -49,12 +49,20 @@ public class TargetModel implements Releasable {
     }
 
     public static TargetModel get2020Target() {
+        return get2020Target(0);
+    }
+
+    public static TargetModel get2020TargetInnerPort() {
+        return get2020Target(2d * 12d + 5.25); // Inches, TODO switch to meters
+    }
+
+    public static TargetModel get2020Target(double offset) {
         var corners =
                 List.of(
-                        new Point3(-19.625, 0, 0),
-                        new Point3(-9.819867, -17, 0),
-                        new Point3(9.819867, -17, 0),
-                        new Point3(19.625, 0, 0));
+                        new Point3(-19.625, 0, offset),
+                        new Point3(-9.819867, -17, offset),
+                        new Point3(9.819867, -17, offset),
+                        new Point3(19.625, 0, offset));
         return new TargetModel(corners, 12); // TODO switch to meters
     }
 

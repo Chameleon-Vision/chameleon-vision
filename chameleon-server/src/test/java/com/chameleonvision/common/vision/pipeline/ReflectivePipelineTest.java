@@ -8,8 +8,24 @@ import com.chameleonvision.common.vision.opencv.ContourGroupingMode;
 import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 
 public class ReflectivePipelineTest {
+
+    public static void setLoggingLevel(ch.qos.logback.classic.Level level) {
+        ch.qos.logback.classic.Logger root =
+                (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        root.setLevel(level);
+    }
+
+    @Test
+    public void testDebug() {
+        var logger = LoggerFactory.getLogger(ReflectivePipelineTest.class);
+        setLoggingLevel(ch.qos.logback.classic.Level.WARN);
+        logger.warn(String.valueOf(logger.isDebugEnabled()));
+        logger.info("hi");
+        logger.debug("debug");
+    }
 
     @Test
     public void test2019() {
