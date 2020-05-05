@@ -68,9 +68,9 @@
 </template>
 
 <script>
-    import CVselect from '../../components/cv-select'
-    import CVnumberinput from '../../components/cv-number-input'
-    import CVslider from '../../components/cv-slider'
+    import CVselect from '../../components/common/cv-select'
+    import CVnumberinput from '../../components/common/cv-number-input'
+    import CVslider from '../../components/common/cv-slider'
 
     export default {
         name: 'CameraSettings',

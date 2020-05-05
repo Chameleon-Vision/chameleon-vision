@@ -13,7 +13,7 @@
             </v-col>
             <v-col class="colsClass" v-show="selectedTab === 1">
                 <div class="videoClass">
-                    <img :src="streamAddress" alt="Camera Stream">
+                    <cvImage :address="streamAddress"/>
                 </div>
             </v-col>
         </v-row>
@@ -23,11 +23,13 @@
 <script>
     import General from './SettingsViewes/General'
     import Cameras from './SettingsViewes/Cameras'
+    import cvImage from '../components/common/cv-image'
 
 
     export default {
         name: 'SettingsTab',
         components: {
+            cvImage,
             General,
             Cameras,
         },

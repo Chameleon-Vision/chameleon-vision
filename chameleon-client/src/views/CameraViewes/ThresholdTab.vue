@@ -24,8 +24,8 @@
 </template>
 
 <script>
-    import CVrangeSlider from '../../components/cv-range-slider'
-    import CVswitch from '../../components/cv-switch'
+    import CVrangeSlider from '../../components/common/cv-range-slider'
+    import CVswitch from '../../components/common/cv-switch'
 
     export default {
         name: 'Threshold',

@@ -33,8 +33,8 @@
 <script>
     import Papa from 'papaparse';
     import miniMap from '../../components/3D/MiniMap';
-    import CVswitch from '../../components/cv-switch';
-    import CVslider from '../../components/cv-slider'
+    import CVswitch from '../../components/common/cv-switch';
+    import CVslider from '../../components/common/cv-slider'
     import FRCtargetsConfig from '../../assets/FRCtargets'
 
     export default {

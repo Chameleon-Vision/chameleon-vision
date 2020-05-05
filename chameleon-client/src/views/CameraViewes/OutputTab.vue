@@ -21,8 +21,8 @@
 </template>
 
 <script>
-    import CVselect from '../../components/cv-select'
-    import CVswitch from '../../components/cv-switch'
+    import CVselect from '../../components/common/cv-select'
+    import CVswitch from '../../components/common/cv-switch'
     import DualCalibration from "../../components/OutputTab/DualCalibration";
     import SingleCalibration from "../../components/OutputTab/SingleCalibration";
 

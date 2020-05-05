@@ -98,11 +98,7 @@
                     <!-- camera image stream -->
                     <div class="videoClass">
                         <v-row align="center">
-                            <img id="CameraStream" style="display: block;margin: auto; width: 70%;height: 70%;"
-                                 v-if="cameraList.length > 0"
-                                 :src="streamAddress" @click="onImageClick"
-                                 crossorigin="Anonymous"/>
-                            <span style="display: block;margin: auto; width: 70%;height: 70%;" v-else>No Cameras Are connected</span>
+                            <cvImage :address="streamAddress"/>
                         </v-row>
                         <v-row justify="end">
                             <span style="margin-right: 45px">FPS:{{parseFloat(fps).toFixed(2)}}</span>
@@ -181,18 +177,20 @@
 </template>
 
 <script>
+    import cvImage from '../components/common/cv-image'
     import InputTab from './CameraViewes/InputTab'
     import ThresholdTab from './CameraViewes/ThresholdTab'
     import ContoursTab from './CameraViewes/ContoursTab'
     import OutputTab from './CameraViewes/OutputTab'
     import pnpTab from './CameraViewes/3D'
-    import CVselect from '../components/cv-select'
-    import CVicon from '../components/cv-icon'
-    import CVinput from '../components/cv-input'
+    import CVselect from '../components/common/cv-select'
+    import CVicon from '../components/common/cv-icon'
+    import CVinput from '../components/common/cv-input'
 
     export default {
         name: 'CameraTab',
         components: {
+            cvImage,
             InputTab,
             ThresholdTab,
             ContoursTab,

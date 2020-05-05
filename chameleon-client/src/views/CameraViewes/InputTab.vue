@@ -14,8 +14,8 @@
 </template>
 
 <script>
-    import CVslider from '../../components/cv-slider'
-    import CVselect from '../../components/cv-select'
+    import CVslider from '../../components/common/cv-slider'
+    import CVselect from '../../components/common/cv-select'
 
     export default {
         name: 'Input',

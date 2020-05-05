@@ -17,9 +17,9 @@
 </template>
 
 <script>
-    import CVrangeSlider from '../../components/cv-range-slider'
-    import CVselect from '../../components/cv-select'
-    import CVslider from '../../components/cv-slider'
+    import CVrangeSlider from '../../components/common/cv-range-slider'
+    import CVselect from '../../components/common/cv-select'
+    import CVslider from '../../components/common/cv-slider'
 
     export default {
         name: 'Contours',

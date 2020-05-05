@@ -3,7 +3,6 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify';
-import VueNativeSock from 'vue-native-websocket';
 import msgPack from 'msgpack5';
 import axios from 'axios';
 import VueAxios from "vue-axios";
@@ -16,24 +15,21 @@ if (process.env.NODE_ENV === "production") {
     Vue.prototype.$address = location.hostname + ":5800";
 }
 
-const url = 'ws://' + Vue.prototype.$address + '/websocket';
-var ws = new WebSocket(url);
+const wsURL = 'ws://' + Vue.prototype.$address + '/websocket';
+
+const ws = new WebSocket(wsURL);
 ws.binaryType = "arraybuffer";
 
-Vue.use(VueNativeSock, url, {
+import VueNativeSock from 'vue-native-websocket';
+Vue.use(VueNativeSock, wsURL, {
     WebSocket: ws
 });
 Vue.use(VueAxios, axios);
 Vue.prototype.$msgPack = msgPack(true);
 
-Vue.mixin({
-    methods: {
-        handleInput(key, value) {
-            let msg = this.$msgPack.encode({[key]: value});
-            this.$socket.send(msg);
-        }
-    }
-});
+import {handleInputMixin} from './mixins/global/handleInput'
+
+Vue.mixin(handleInputMixin);
 new Vue({
     router,
     store,
