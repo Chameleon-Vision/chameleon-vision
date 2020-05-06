@@ -21,15 +21,16 @@ const ws = new WebSocket(wsURL);
 ws.binaryType = "arraybuffer";
 
 import VueNativeSock from 'vue-native-websocket';
+
 Vue.use(VueNativeSock, wsURL, {
     WebSocket: ws
 });
 Vue.use(VueAxios, axios);
 Vue.prototype.$msgPack = msgPack(true);
 
-import {handleInputMixin} from './mixins/global/handleInput'
+import {dataHandleMixin} from './mixins/global/dataHandleMixin'
 
-Vue.mixin(handleInputMixin);
+Vue.mixin(dataHandleMixin);
 new Vue({
     router,
     store,

@@ -10,20 +10,16 @@ function lazyLoad(view) {
 export default new Router({
     // mode: 'history',
     base: process.env.BASE_URL,
-    routes: [
-        {
-            path: '/',
-            redirect: '/vision'
-        },
-        {
-            path: '/vision',
-            name: 'Vision',
-            component: lazyLoad('Camera')
-        },
-        {
-            path: '/settings',
-            name: 'Settings',
-            component: lazyLoad('Settings')
-        },
-    ]
+    routes: [{
+        path: '/',
+        redirect: '/vision'
+    }, {
+        path: '/vision',
+        name: 'Vision',
+        component: lazyLoad('Camera')
+    }, {
+        path: '/settings',
+        name: 'Settings',
+        component: lazyLoad('Settings')
+    }]
 })

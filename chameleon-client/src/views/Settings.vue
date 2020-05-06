@@ -13,7 +13,7 @@
             </v-col>
             <v-col class="colsClass" v-show="selectedTab === 1">
                 <div class="videoClass">
-                    <cvImage :address="streamAddress"/>
+                    <cvImage :address="$store.getters.streamAddress"/>
                 </div>
             </v-col>
         </v-row>
@@ -43,11 +43,6 @@
             selectedComponent: {
                 get() {
                     return this.tabList[this.selectedTab];
-                }
-            },
-            streamAddress: {
-                get: function () {
-                    return "http://" + location.hostname + ":" + this.$store.state.port + "/stream.mjpg";
                 }
             },
         }

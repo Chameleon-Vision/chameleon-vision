@@ -96,11 +96,7 @@
                         this.currentFunction = this.colorPicker.shrink;
                         break;
                 }
-            },
-            handleData(val) {
-                this.handleInput(val, this.value[val]);
-                this.$emit('update')
-            },
+            }
         },
         mounted: function () {
             const self = this;

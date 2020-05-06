@@ -103,9 +103,6 @@
             }
         },
         methods: {
-            handleData(val) {
-                this.handleInput(val, this.pipeline[val]);
-            },
             downloadBoard() {
                 this.axios.get("http://" + this.$address + require('../../assets/chessboard.png'), {responseType: 'blob'}).then((response) => {
                     require('downloadjs')(response.data, "Calibration Board", "image/png")

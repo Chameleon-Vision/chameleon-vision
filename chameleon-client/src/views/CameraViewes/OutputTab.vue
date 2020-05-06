@@ -38,10 +38,6 @@
 
         },
         methods: {
-            handleData(val) {
-                this.handleInput(val, this.value[val]);
-                this.$emit('update')
-            },
             doUpdate() {
                 this.$emit('update')
             },

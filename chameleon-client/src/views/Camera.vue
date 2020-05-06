@@ -98,7 +98,7 @@
                     <!-- camera image stream -->
                     <div class="videoClass">
                         <v-row align="center">
-                            <cvImage :address="streamAddress"/>
+                            <cvImage :address="$store.getters.streamAddress" @click="onImageClick"/>
                         </v-row>
                         <v-row justify="end">
                             <span style="margin-right: 45px">FPS:{{parseFloat(fps).toFixed(2)}}</span>
@@ -383,12 +383,7 @@
                 get() {
                     return this.$store.state.pipeline;
                 }
-            },
-            streamAddress: {
-                get() {
-                    return "http://" + location.hostname + ":" + this.$store.state.port + "/stream.mjpg";
-                }
-            },
+            }
         }
     }
 </script>
