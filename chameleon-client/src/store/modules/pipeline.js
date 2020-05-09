@@ -24,7 +24,16 @@ export default {
         targetRegion: 0,
         targetOrientation: 1
     },
-    mutations: {},
+    mutations: {
+        isBinary: (state, value) => {
+            state.isBinary = value
+        }
+
+    },
     actions: {},
-    getters: {}
+    getters: {
+        pipeline: state => {
+            return state
+        }
+    }
 };

@@ -81,7 +81,7 @@
                 <div style="padding-left:30px">
                     <keep-alive>
                         <!-- vision component -->
-                        <component v-model="pipeline" :is="selectedComponent" ref="component" @update="$emit('save')"/>
+                        <component v-model="$store.getters.pipeline" :is="selectedComponent" ref="component" @update="$emit('save')"/>
                     </keep-alive>
                 </div>
             </v-col>
@@ -90,7 +90,7 @@
                     <!-- camera image tabs -->
                     <v-tabs background-color="#212121" dark height="48" slider-color="#4baf62" centered
                             style="padding-bottom:10px" v-model="isBinaryNumber"
-                            @change="handleInput('isBinary',pipeline.isBinary)" v-if="currentPipelineIndex !== 0">
+                            @change="handleInput('isBinary',$store.getters.pipeline.isBinary)" v-if="currentPipelineIndex !== 0">
                         <v-tab>Normal</v-tab>
                         <v-tab>Threshold</v-tab>
                     </v-tabs>
@@ -117,7 +117,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr v-for="(value, index) in targets" :key="index">
+                                    <tr v-for="(value, index) in $store.getters.targets" :key="index">
                                         <td>{{ index}}</td>
                                         <td>{{ parseFloat(value.pitch).toFixed(2)}}</td>
                                         <td>{{ parseFloat(value.yaw).toFixed(2)}}</td>
@@ -332,20 +332,16 @@
             },
             isBinaryNumber: {
                 get() {
-                    return this.pipeline.isBinary ? 1 : 0
+                    return this.$store.getters.pipeline.isBinary ? 1 : 0
                 },
                 set(value) {
-                    this.pipeline.isBinary = !!value;
+                    this.$store.commit('isBinary', !!value);
+                    // this.pipeline.isBinary = !!value;
                 }
             },
             selectedComponent: {
                 get() {
                     return this.currentPipelineIndex === 0 ? "InputTab" : ["InputTab", "ThresholdTab", "ContoursTab", "OutputTab", "pnpTab"][this.selectedTab];
-                }
-            },
-            targets: {
-                get: function () {
-                    return this.$store.state.point.targets;
                 }
             },
             fps: {
@@ -377,11 +373,6 @@
             pipelineList: {
                 get() {
                     return this.$store.state.pipelineList;
-                }
-            },
-            pipeline: {
-                get() {
-                    return this.$store.state.pipeline;
                 }
             }
         }

@@ -51,6 +51,9 @@ export default new Vuex.Store({
     getters: {
         streamAddress: state => {
             return "http://" + location.hostname + ":" + state.port + "/stream.mjpg";
+        },
+        targets: state => {
+            return state.point['targets']
         }
     }
 })
