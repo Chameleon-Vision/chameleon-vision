@@ -64,7 +64,7 @@
                 Save
             </v-btn>
         </v-row>
-<!--        pipeline duplicate dialog-->
+        <!--pipeline duplicate dialog-->
         <v-dialog dark v-model="duplicateDialog" width="500" height="357">
             <v-card dark>
                 <v-card-title class="headline" primary-title>Duplicate Pipeline</v-card-title>

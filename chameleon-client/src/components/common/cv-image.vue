@@ -1,13 +1,28 @@
 <template>
-    <!--        TODO FIX IMAGE SIZING NOT WORKING CORRECTLY -->
-    <img id="CameraStream" style="display: block;margin: auto; width:auto; height: auto"
-         :src="address" @click="e => $emit('click', e)"
+    <img id="CameraStream" v-bind:style="styleObject" :src="address" @click="e => $emit('click', e)"
          crossorigin="Anonymous" alt=""/>
+
 </template>
 
 <script>
     export default {
         name: "cv-image",
-        props: ['address']
+        data: () => {
+            return {}
+        },
+        props: ['address', 'scale'],
+        computed: {
+            styleObject: {
+                get() {
+                    return {
+                        width: `${this.scale}%`,
+                        height: `${this.scale}%`,
+                        display: 'block',
+                        margin: 'auto'
+                    }
+                }
+
+            }
+        }
     }
 </script>

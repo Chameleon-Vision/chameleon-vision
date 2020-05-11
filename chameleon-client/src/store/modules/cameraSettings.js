@@ -5,5 +5,10 @@ export default {
         resolution: 0,
         streamDivisor: 0,
         tilt: 0
+    },
+    getters: {
+        cameraSettings: state => {
+            return state
+        }
     }
 }

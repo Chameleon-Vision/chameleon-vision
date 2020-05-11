@@ -13,7 +13,7 @@
             </v-col>
             <v-col class="colsClass" v-show="selectedTab === 1">
                 <div class="videoClass">
-                    <cvImage :address="$store.getters.streamAddress"/>
+                    <cvImage :address="$store.getters.streamAddress" :scale="75"/>
                 </div>
             </v-col>
         </v-row>
@@ -57,7 +57,6 @@
     .videoClass img {
         padding-top: 10px;
         height: auto !important;
-        width: 75%;
         vertical-align: middle;
     }
 

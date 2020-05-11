@@ -51,14 +51,13 @@
             <div v-if="isCalibrating">
                 <v-checkbox v-model="isAdvanced" label="Advanced Menu" dark/>
                 <div v-if="isAdvanced" >
-<!--                    TODO FIX DATA HANDELING FOR THE ADVANCED MENU-->
                     <CVslider name="Exposure" v-model="$store.getters.pipeline.exposure" :min="0" :max="100"
-                              @input="handleData('exposure')"/>
+                              @input="e=> handleInput('exposure', e)"/>
                     <CVslider name="Brightness" v-model="$store.getters.pipeline.brightness" :min="0" :max="100"
-                              @input="handleData('brightness')"/>
+                              @input="e=> handleInput('brightness', e)"/>
                     <CVslider name="Gain" v-if="$store.getters.pipeline.gain !== -1"
                               v-model="$store.getters.pipeline.gain" :min="0" :max="100"
-                              @input="handleData('gain')"/>
+                              @input="e=> handleInput('gain', e)"/>
                     <CVselect name="FPS" v-model="$store.getters.pipeline.videoModeIndex" :list="stringFpsList"
                               @input="changeFps"/>
                 </div>
@@ -260,7 +259,7 @@
             },
             cameraSettings: {
                 get() {
-                    return this.$store.state.cameraSettings;
+                    return this.$store.getters.cameraSettings;
                 },
                 set(value) {
                     this.$store.commit('cameraSettings', value);

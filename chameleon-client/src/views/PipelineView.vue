@@ -35,7 +35,7 @@
                     <!-- camera image stream -->
                     <div class="videoClass">
                         <v-row align="center">
-                            <cvImage :address="$store.getters.streamAddress" @click="onImageClick"/>
+                            <cvImage :address="$store.getters.streamAddress" :scale="75" @click="onImageClick"/>
                         </v-row>
                         <v-row justify="end">
                             <span style="margin-right: 45px">FPS:{{parseFloat(fps).toFixed(2)}}</span>
@@ -136,7 +136,6 @@
 <style scoped>
     .colsClass {
         padding: 0 !important;
-
     }
 
     .videoClass {

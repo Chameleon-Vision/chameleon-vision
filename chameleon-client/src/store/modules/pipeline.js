@@ -2,6 +2,7 @@ export default {
     state: {
         exposure: 0,
         brightness: 0,
+        gain: 0,
         rotationMode: 0,
         hue: [0, 15],
         saturation: [0, 15],
@@ -26,11 +27,12 @@ export default {
     },
     mutations: {
         isBinary: (state, value) => {
+            console.log(value)
             state.isBinary = value
         },
         mutatePipeline: (state, {key, value}) => {
-            console.log(`key:${key}, value: ${value}`)
-            // this.set(state, key, value)
+            // console.log(`key:${key}, value: ${value}`)
+            this.set(state, key, value)
         }
 
     },

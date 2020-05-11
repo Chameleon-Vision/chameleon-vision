@@ -38,13 +38,6 @@ export default new Vuex.Store({
         cameraList: set('cameraList'),
         pipelineList: set('pipelineList'),
         point: set('point'),
-        setPipeValues(state, obj) {
-            for (let i in obj) {
-                if (obj.hasOwnProperty(i)) {
-                    Vue.set(state.pipeline, i, obj[i]);
-                }
-            }
-        },
         driverMode: set('driverMode'),
         saveBar: set("saveBar")
     },
