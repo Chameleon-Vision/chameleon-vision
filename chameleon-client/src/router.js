@@ -1,11 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
+import Camera from "./views/PipelineView";
+import Settings from "./views/SettingsView";
 Vue.use(Router);
 
-function lazyLoad(view) {
-    return () => import(`@/views/${view}.vue`)
-}
 
 export default new Router({
     // mode: 'history',
@@ -16,10 +14,10 @@ export default new Router({
     }, {
         path: '/vision',
         name: 'Vision',
-        component: lazyLoad('Camera')
+        component: Camera
     }, {
         path: '/settings',
         name: 'Settings',
-        component: lazyLoad('Settings')
+        component: Settings
     }]
 })

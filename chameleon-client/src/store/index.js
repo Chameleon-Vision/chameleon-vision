@@ -54,6 +54,18 @@ export default new Vuex.Store({
         },
         targets: state => {
             return state.point['targets']
+        },
+        cameraList: state => {
+            return state.cameraList
+        },
+        pipelineList: state => {
+            return state.pipelineList
+        },
+        currentCameraIndex: state => {
+            return state.currentCameraIndex
+        },
+        currentPipelineIndex: state => {
+            return state.currentPipelineIndex
         }
     }
 })

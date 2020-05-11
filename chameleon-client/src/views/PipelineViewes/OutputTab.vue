@@ -23,8 +23,8 @@
 <script>
     import CVselect from '../../components/common/cv-select'
     import CVswitch from '../../components/common/cv-switch'
-    import DualCalibration from "../../components/OutputTab/DualCalibration";
-    import SingleCalibration from "../../components/OutputTab/SingleCalibration";
+    import DualCalibration from "../../components/pipeline/OutputTab/DualCalibration";
+    import SingleCalibration from "../../components/pipeline/OutputTab/SingleCalibration";
 
 
     export default {

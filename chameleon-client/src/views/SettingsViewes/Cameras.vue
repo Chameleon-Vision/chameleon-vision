@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>
-            <CVselect name="Camera" :list="cameraList" v-model="currentCameraIndex"
+            <CVselect name="Camera" :list="$store.getters.cameraList" v-model="currentCameraIndex"
                       @input="handleInput('currentCamera',currentCameraIndex)"/>
             <CVnumberinput name="Diagonal FOV" v-model="cameraSettings.fov"/>
             <br>
@@ -50,14 +50,17 @@
             </v-row>
             <div v-if="isCalibrating">
                 <v-checkbox v-model="isAdvanced" label="Advanced Menu" dark/>
-                <div v-if="isAdvanced">
-                    <CVslider name="Exposure" v-model="pipeline.exposure" :min="0" :max="100"
+                <div v-if="isAdvanced" >
+<!--                    TODO FIX DATA HANDELING FOR THE ADVANCED MENU-->
+                    <CVslider name="Exposure" v-model="$store.getters.pipeline.exposure" :min="0" :max="100"
                               @input="handleData('exposure')"/>
-                    <CVslider name="Brightness" v-model="pipeline.brightness" :min="0" :max="100"
+                    <CVslider name="Brightness" v-model="$store.getters.pipeline.brightness" :min="0" :max="100"
                               @input="handleData('brightness')"/>
-                    <CVslider name="Gain" v-if="pipeline.gain !== -1" v-model="pipeline.gain" :min="0" :max="100"
+                    <CVslider name="Gain" v-if="$store.getters.pipeline.gain !== -1"
+                              v-model="$store.getters.pipeline.gain" :min="0" :max="100"
                               @input="handleData('gain')"/>
-                    <CVselect name="FPS" v-model="pipeline.videoModeIndex" :list="stringFpsList" @input="changeFps"/>
+                    <CVselect name="FPS" v-model="$store.getters.pipeline.videoModeIndex" :list="stringFpsList"
+                              @input="changeFps"/>
                 </div>
             </div>
         </div>
@@ -109,7 +112,7 @@
                 })
             },
             changeFps() {
-                this.handleInput('videoModeIndex', this.filteredFpsList[this.pipeline['videoModeIndex']]['actualIndex']);
+                this.handleInput('videoModeIndex', this.filteredFpsList[this.$store.getters.pipeline['videoModeIndex']]['actualIndex']);
             },
             sendCameraSettings() {
                 const self = this;
@@ -208,14 +211,6 @@
                     this.$store.commit('currentCameraIndex', value);
                 }
             },
-            cameraList: {
-                get() {
-                    return this.$store.state.cameraList;
-                },
-                set(value) {
-                    this.$store.commit('cameraList', value);
-                }
-            },
             filteredResolutionList: {
                 get() {
                     let tmp_list = [];
@@ -269,11 +264,6 @@
                 },
                 set(value) {
                     this.$store.commit('cameraSettings', value);
-                }
-            },
-            pipeline: {
-                get() {
-                    return this.$store.state.pipeline;
                 }
             }
         }
