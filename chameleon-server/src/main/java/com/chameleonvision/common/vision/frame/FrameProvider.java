@@ -1,5 +1,5 @@
 package com.chameleonvision.common.vision.frame;
 
-public interface FrameProvider {
-    Frame getFrame();
-}
+import java.util.function.Supplier;
+
+public interface FrameProvider extends Supplier<Frame> { }

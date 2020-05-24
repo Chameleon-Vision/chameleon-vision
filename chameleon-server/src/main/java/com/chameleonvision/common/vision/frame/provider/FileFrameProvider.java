@@ -78,7 +78,7 @@ public class FileFrameProvider implements FrameProvider {
     }
 
     @Override
-    public Frame getFrame() {
+    public Frame get() {
         if (m_reloadImage) {
             loadImage();
         }

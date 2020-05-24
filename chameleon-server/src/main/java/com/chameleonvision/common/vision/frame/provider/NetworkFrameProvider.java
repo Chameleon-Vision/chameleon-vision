@@ -6,7 +6,7 @@ import org.apache.commons.lang3.NotImplementedException;
 
 public class NetworkFrameProvider implements FrameProvider {
     @Override
-    public Frame getFrame() {
+    public Frame get() {
         throw new NotImplementedException("");
     }
 }
