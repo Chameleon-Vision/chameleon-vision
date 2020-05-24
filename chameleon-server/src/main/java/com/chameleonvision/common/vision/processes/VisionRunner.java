@@ -1,6 +1,7 @@
 package com.chameleonvision.common.vision.processes;
 
 import com.chameleonvision.common.vision.frame.Frame;
+import com.chameleonvision.common.vision.frame.FrameProvider;
 import com.chameleonvision.common.vision.pipeline.CVPipeline;
 import com.chameleonvision.common.vision.pipeline.CVPipelineResult;
 import java.util.function.Consumer;
@@ -24,7 +25,7 @@ public class VisionRunner {
     * @param pipelineResultConsumer The consumer of the latest result.
     */
     public VisionRunner(
-            Supplier<Frame> frameSupplier,
+            FrameProvider frameSupplier,
             Supplier<CVPipeline> pipelineSupplier,
             Consumer<CVPipelineResult> pipelineResultConsumer) {
         this.frameSupplier = frameSupplier;
@@ -32,6 +33,7 @@ public class VisionRunner {
         this.pipelineResultConsumer = pipelineResultConsumer;
 
         this.visionProcessThread = new Thread(this::update);
+        this.visionProcessThread.setName("VisionRunner - " + frameSupplier.getName());
     }
 
     public void startProcess() {
