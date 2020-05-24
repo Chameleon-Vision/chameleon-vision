@@ -16,6 +16,8 @@ public class VisionRunner {
     private final Supplier<CVPipeline> pipelineSupplier;
     private final Consumer<CVPipelineResult> pipelineResultConsumer;
 
+    private long loopCount;
+
     /**
     * VisionRunner contains a <see cref="Thread">Thread</see> to run a pipeline, given a frame, and
     * will give the result to the consumer.
@@ -40,14 +42,24 @@ public class VisionRunner {
         visionProcessThread.start();
     }
 
+    private boolean hasThrown;
+
     private void update() {
         while (!Thread.interrupted()) {
+            loopCount++;
             var pipeline = pipelineSupplier.get();
             var frame = frameSupplier.get();
 
-            var pipelineResult = pipeline.run(frame);
-
-            pipelineResultConsumer.accept(pipelineResult);
+            try {
+                var pipelineResult = pipeline.run(frame);
+                pipelineResultConsumer.accept(pipelineResult);
+            } catch(Exception ex) {
+                if (hasThrown) {
+                    System.err.println("Exception in thread \"" + visionProcessThread.getName() + "\", loop " + loopCount);
+                    ex.printStackTrace();
+                    hasThrown = true;
+                }
+            }
         }
     }
 }
