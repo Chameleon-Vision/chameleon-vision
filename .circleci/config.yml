@@ -18,6 +18,45 @@ jobs:
             - dist
 
   
+  run_tests:
+    docker:
+      - image: gradle:jdk12
+    steps: 
+      - checkout # check out source code to working directory
+      # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
+      - restore_cache:
+          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - restore_cache:
+          key: v1-gradle-cache-{{ checksum "build.gradle" }}
+      - run:
+          name: Run tests in parallel # See: https://circleci.com/docs/2.0/parallelism-faster-jobs/
+          command: |
+            cd chameleon-server/src/test/java
+            # Get list of classnames of tests that should run on this node
+            CLASSNAMES=$(circleci tests glob "**/*.java" \
+              | cut -c 1- | sed 's@/@.@g' \
+              | sed 's/.\{5\}$//' \
+              | circleci tests split --split-by=timings --timings-type=classname)
+            cd ../../..
+            # Format the arguments to "./gradlew test"
+            GRADLE_ARGS=$(echo $CLASSNAMES | awk '{for (i=1; i<=NF; i++) print "--tests",$i}')
+            echo "Prepared arguments for Gradle: $GRADLE_ARGS"
+            ./gradlew test $GRADLE_ARGS
+      - save_cache:
+          paths:
+            - ~/.gradle/wrapper
+          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+          key: v1-gradle-cache-{{ checksum "build.gradle" }}
+      - store_test_results:
+      # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+          path: build/test-results/test
+      - store_artifacts: # Upload test results for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
+          path: build/test-results/test
+          when: always
+  
   build_jar:
     working_directory: ~/project/chameleon-server
     docker:
@@ -31,7 +70,6 @@ jobs:
       - run: rm -rf src/main/resources/web/*
       - run: mkdir -p src/main/resources/web/
       - run: cp -r /UI/dist/. src/main/resources/web/
-      - run: gradle test
       - run: gradle shadowJar
       - store_artifacts: 
           path: build/libs
@@ -68,13 +106,15 @@ workflows:
   release:
     jobs:
       - format_diff_against_git
+      - run_tests
       - build_ui
       - build_jar:
           requires:
+            - format_diff_against_git
+            - run_tests
             - build_ui
       - deploy:
           requires:
-            - format_diff_against_git
             - build_jar
           filters:
             branches:

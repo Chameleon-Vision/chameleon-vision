@@ -45,10 +45,10 @@ public class FileFrameProviderTest {
 
         FileFrameProvider goodFrameProvider = new FileFrameProvider(goodFilePath, 68.5);
 
-        Frame goodFrame = goodFrameProvider.getFrame();
+        Frame goodFrame = goodFrameProvider.get();
 
-        int goodFrameCols = goodFrame.image.cols();
-        int goodFrameRows = goodFrame.image.rows();
+        int goodFrameCols = goodFrame.image.getMat().cols();
+        int goodFrameRows = goodFrame.image.getMat().rows();
 
         // 2019 Images are at 320x240
         assertEquals(320, goodFrameCols);
