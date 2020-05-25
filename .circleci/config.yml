@@ -19,18 +19,23 @@ jobs:
 
   
   run_tests:
+    working_directory: ~/project/chameleon-server
     docker:
       - image: gradle:jdk12
-    steps: 
-      - checkout # check out source code to working directory
-      - run: cd chameleon-server
-      - restore_cache:
-          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-      - restore_cache:
-          key: v1-gradle-cache-{{ checksum "build.gradle" }}
+    steps:
+      - checkout:
+          path: ~/project
+      #- restore_cache:
+      #    key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      #- restore_cache:
+      #    key: v1-gradle-cache-{{ checksum "build.gradle" }}
       - run:
-          name: Run tests in parallel
+          name: list
+          command: ls
+      - run:
+          name: Run tests
           command: |
+            ls
             cd src/test/java
             
             CLASSNAMES=$(circleci tests glob "**/*.java" \
@@ -42,21 +47,21 @@ jobs:
             
             GRADLE_ARGS=$(echo $CLASSNAMES | awk '{for (i=1; i<=NF; i++) print "--tests",$i}')
             
-            echo "Prepared arguments for Gradle: $GRADLE_ARGS"
-            ./gradlew test $GRADLE_ARGS
-      - save_cache:
-          paths:
-            - .gradle/wrapper
-          key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
-      - save_cache:
-          paths:
-            - .gradle/caches
-          key: v1-gradle-cache-{{ checksum "build.gradle" }}
-      - store_test_results:
-          path: chameleon-server/build/test-results/test
-      - store_artifacts: # Upload test results for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
-          path: chameleon-server/build/test-results/test
-          when: always
+            echo "Prepared arguments for Gradle:\n $GRADLE_ARGS"
+            gradle test #$GRADLE_ARGS
+      #- save_cache:
+      #    paths:
+      #      - .gradle/wrapper
+      #    key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+      #- save_cache:
+      #    paths:
+      #      - .gradle/caches
+      #    key: v1-gradle-cache-{{ checksum "build.gradle" }}
+      #- store_test_results:
+      #    path: chameleon-server/build/test-results/test
+      #- store_artifacts: # Upload test results for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
+      #    path: chameleon-server/build/test-results/test
+      #    when: always
   
   build_jar:
     working_directory: ~/project/chameleon-server
