@@ -41,6 +41,7 @@ public class ReflectivePipelineTest {
         settings.outputShowMultipleTargets = true;
         settings.contourGroupingMode = ContourGroupingMode.Dual;
         settings.contourIntersection = ContourIntersectionDirection.Up;
+        pipeline.settings = settings;
 
         var frameProvider =
                 new FileFrameProvider(
