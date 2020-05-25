@@ -34,21 +34,7 @@ jobs:
           command: ls
       - run:
           name: Run tests
-          command: |
-            ls
-            cd src/test/java
-            
-            CLASSNAMES=$(circleci tests glob "**/*.java" \
-              | cut -c 1- | sed 's@/@.@g' \
-              | sed 's/.\{5\}$//' \
-              | circleci tests split --split-by=timings --timings-type=classname)
-              
-            cd ../../..
-            
-            GRADLE_ARGS=$(echo $CLASSNAMES | awk '{for (i=1; i<=NF; i++) print "--tests",$i}')
-            
-            echo "Prepared arguments for Gradle:\n $GRADLE_ARGS"
-            gradle test #$GRADLE_ARGS
+          command: ./gradlew test
       #- save_cache:
       #    paths:
       #      - .gradle/wrapper
@@ -57,11 +43,11 @@ jobs:
       #    paths:
       #      - .gradle/caches
       #    key: v1-gradle-cache-{{ checksum "build.gradle" }}
-      #- store_test_results:
-      #    path: chameleon-server/build/test-results/test
-      #- store_artifacts: # Upload test results for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
-      #    path: chameleon-server/build/test-results/test
-      #    when: always
+      - store_test_results:
+          path: build/test-results/test
+      - store_artifacts: # Upload test results for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
+          path: build/test-results/test
+          when: always
   
   build_jar:
     working_directory: ~/project/chameleon-server

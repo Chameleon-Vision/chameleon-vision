@@ -2,28 +2,19 @@ package com.chameleonvision.common.vision.frame.provider;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.chameleonvision.common.vision.TestUtils;
+import com.chameleonvision.common.util.TestUtils;
 import com.chameleonvision.common.vision.frame.Frame;
 import edu.wpi.cscore.CameraServerCvJNI;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class FileFrameProviderTest {
 
-    static Path imagesPath;
-
     @BeforeAll
     public static void initPath() {
-        var folder =
-                Objects.requireNonNull(FileFrameProvider.class.getClassLoader().getResource("testimages"));
-        var path = folder.getFile();
-        imagesPath = new File(path).toPath();
 
         try {
             CameraServerCvJNI.forceLoad();
@@ -33,13 +24,13 @@ public class FileFrameProviderTest {
     }
 
     @Test
-    public void TestImagesExist() {
-        assertTrue(imagesPath.endsWith("testimages"));
+    public void TestFilesExist() {
+        assertTrue(Files.exists(TestUtils.getTestImagesPath()));
     }
 
     @Test
     public void Load2019ImageOnceTest() {
-        var goodFilePath = Paths.get(imagesPath + "\\2019\\WPI\\LoadingStraight36in.jpg");
+        var goodFilePath = TestUtils.getWPIImagePath(TestUtils.WPI2019Image.kCargoStraightDark72in);
 
         assertTrue(Files.exists(goodFilePath));
 
@@ -57,7 +48,7 @@ public class FileFrameProviderTest {
         // TODO: find a way to skip this if a flag isn't set
         TestUtils.showImage(goodFrame.image.getMat(), "2019");
 
-        var badFilePath = Paths.get(imagesPath + "bad.jpg"); // this file does not exist
+        var badFilePath = Paths.get("bad.jpg"); // this file does not exist
 
         FileFrameProvider badFrameProvider = null;
 
@@ -72,7 +63,7 @@ public class FileFrameProviderTest {
 
     @Test
     public void Load2020ImageOnceTest() {
-        var goodFilePath = Paths.get(imagesPath + "\\2020\\WPI\\BlueGoal-060in-Center.jpg");
+        var goodFilePath = TestUtils.getWPIImagePath(TestUtils.WPI2020Image.kBlueGoal_108in_Center);
 
         assertTrue(Files.exists(goodFilePath));
 
@@ -90,7 +81,7 @@ public class FileFrameProviderTest {
         // TODO: find a way to skip this if a flag isn't set
         TestUtils.showImage(goodFrame.image.getMat(), "2020");
 
-        var badFilePath = Paths.get(imagesPath + "bad.jpg"); // this file does not exist
+        var badFilePath = Paths.get("bad.jpg"); // this file does not exist
 
         FileFrameProvider badFrameProvider = null;
 
