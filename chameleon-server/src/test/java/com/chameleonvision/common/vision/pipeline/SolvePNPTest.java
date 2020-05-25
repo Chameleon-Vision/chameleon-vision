@@ -93,6 +93,11 @@ public class SolvePNPTest {
         pipeline.getSettings().targetModel = TargetModel.get2019Target();
         pipeline.getSettings().cameraCalibration = getCoeffs(LIFECAM_240P_CAL_FILE);
 
+        settings.targetModel = TargetModel.get2019Target();
+        settings.cameraCalibration = getCoeffs(LIFECAM_240P_CAL_FILE);
+
+        pipeline.settings = settings;
+
         var frameProvider =
                 new FileFrameProvider(
                         TestUtils.getWPIImagePath(TestUtils.WPI2019Image.kCargoStraightDark48in),
