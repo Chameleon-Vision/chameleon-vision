@@ -23,38 +23,39 @@ jobs:
       - image: gradle:jdk12
     steps: 
       - checkout # check out source code to working directory
-      # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
+      - run: cd chameleon-server
       - restore_cache:
           key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
       - restore_cache:
           key: v1-gradle-cache-{{ checksum "build.gradle" }}
       - run:
-          name: Run tests in parallel # See: https://circleci.com/docs/2.0/parallelism-faster-jobs/
+          name: Run tests in parallel
           command: |
-            cd chameleon-server/src/test/java
-            # Get list of classnames of tests that should run on this node
+            cd src/test/java
+            
             CLASSNAMES=$(circleci tests glob "**/*.java" \
               | cut -c 1- | sed 's@/@.@g' \
               | sed 's/.\{5\}$//' \
               | circleci tests split --split-by=timings --timings-type=classname)
+              
             cd ../../..
-            # Format the arguments to "./gradlew test"
+            
             GRADLE_ARGS=$(echo $CLASSNAMES | awk '{for (i=1; i<=NF; i++) print "--tests",$i}')
+            
             echo "Prepared arguments for Gradle: $GRADLE_ARGS"
             ./gradlew test $GRADLE_ARGS
       - save_cache:
           paths:
-            - ~/.gradle/wrapper
+            - .gradle/wrapper
           key: v1-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
       - save_cache:
           paths:
-            - ~/.gradle/caches
+            - .gradle/caches
           key: v1-gradle-cache-{{ checksum "build.gradle" }}
       - store_test_results:
-      # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
-          path: build/test-results/test
+          path: chameleon-server/build/test-results/test
       - store_artifacts: # Upload test results for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
-          path: build/test-results/test
+          path: chameleon-server/build/test-results/test
           when: always
   
   build_jar:
