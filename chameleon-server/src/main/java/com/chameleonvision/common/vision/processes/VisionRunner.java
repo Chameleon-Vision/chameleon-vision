@@ -53,9 +53,10 @@ public class VisionRunner {
             try {
                 var pipelineResult = pipeline.run(frame);
                 pipelineResultConsumer.accept(pipelineResult);
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 if (hasThrown) {
-                    System.err.println("Exception in thread \"" + visionProcessThread.getName() + "\", loop " + loopCount);
+                    System.err.println(
+                            "Exception in thread \"" + visionProcessThread.getName() + "\", loop " + loopCount);
                     ex.printStackTrace();
                     hasThrown = true;
                 }

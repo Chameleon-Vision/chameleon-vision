@@ -7,9 +7,9 @@ import com.chameleonvision.common.vision.pipeline.CVPipelineResult;
 import java.util.LinkedList;
 
 /**
- * This is the God Class
- *
-* VisionModule has a pipeline manager, vision runner, and data providers. The data providers
+* This is the God Class
+*
+* <p>VisionModule has a pipeline manager, vision runner, and data providers. The data providers
 * provide info on settings changes. VisionModuleManager holds a list of all current vision modules.
 */
 public class VisionModule {
