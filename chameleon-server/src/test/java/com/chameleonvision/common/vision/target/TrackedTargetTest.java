@@ -1,17 +1,15 @@
 package com.chameleonvision.common.vision.target;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.chameleonvision.common.util.TestUtils;
 import com.chameleonvision.common.util.numbers.DoubleCouple;
 import com.chameleonvision.common.vision.opencv.Contour;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 
 public class TrackedTargetTest {
     @BeforeEach
@@ -22,12 +20,12 @@ public class TrackedTargetTest {
     @Test
     void axisTest() {
         MatOfPoint mat = new MatOfPoint();
-        mat.fromList(List.of(
-                new Point(400, 298),
-                new Point(426.22, 298),
-                new Point(426.22, 302),
-                new Point(400, 302)
-        )); // gives contour with center of 426, 300
+        mat.fromList(
+                List.of(
+                        new Point(400, 298),
+                        new Point(426.22, 298),
+                        new Point(426.22, 302),
+                        new Point(400, 302))); // gives contour with center of 426, 300
         Contour contour = new Contour(mat);
         var pTarget = new PotentialTarget(contour);
         var setting =
