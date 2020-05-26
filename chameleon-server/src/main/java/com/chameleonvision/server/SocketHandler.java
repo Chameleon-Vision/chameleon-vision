@@ -65,7 +65,7 @@ public class SocketHandler {
                                         new IncomingWebSocketEvent<Boolean>(
                                                 DataChangeDestination.DCD_ACTIVEMODULE, "isDriver", data);
 
-                                dcService.sendEvents(dmExpEvent, dmBrightEvent, dmIsDriverEvent);
+                                dcService.publishEvents(dmExpEvent, dmBrightEvent, dmIsDriverEvent);
                                 break;
                             }
                         case SMT_CHANGECAMERANAME:
