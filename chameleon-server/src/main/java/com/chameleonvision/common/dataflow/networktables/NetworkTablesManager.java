@@ -1,4 +1,4 @@
-package com.chameleonvision.common.datatransfer.networktables;
+package com.chameleonvision.common.dataflow.networktables;
 
 import com.chameleonvision.common.logging.LogGroup;
 import com.chameleonvision.common.logging.Logger;

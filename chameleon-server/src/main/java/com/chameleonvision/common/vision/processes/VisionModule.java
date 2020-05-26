@@ -1,6 +1,6 @@
 package com.chameleonvision.common.vision.processes;
 
-import com.chameleonvision.common.datatransfer.DataConsumer;
+import com.chameleonvision.common.dataflow.DataConsumer;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.FrameConsumer;
 import com.chameleonvision.common.vision.pipeline.CVPipelineResult;
