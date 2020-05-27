@@ -4,7 +4,7 @@ import com.chameleonvision.common.logging.LogGroup;
 import com.chameleonvision.common.logging.Logger;
 import com.chameleonvision.common.util.LoopingRunnable;
 import com.chameleonvision.common.util.Platform;
-import com.chameleonvision.common.util.file.JacksonUtils;
+import com.chameleonvision.common.util.jackson.JacksonUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

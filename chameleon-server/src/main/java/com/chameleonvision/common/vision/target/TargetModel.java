@@ -19,6 +19,9 @@ public class TargetModel implements Releasable {
     public final List<Point3> realWorldCoordinatesArray;
     public final double boxHeight;
 
+    public final List<Point3> realWorldCoordinatesArray;
+    public final double boxHeight;
+
     public TargetModel(MatOfPoint3f realWorldTargetCoordinates, double boxHeight) {
         this.realWorldTargetCoordinates = realWorldTargetCoordinates;
         this.realWorldCoordinatesArray = realWorldTargetCoordinates.toList();
