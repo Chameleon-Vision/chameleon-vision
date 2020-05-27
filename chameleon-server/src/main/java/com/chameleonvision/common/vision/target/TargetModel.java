@@ -3,18 +3,29 @@ package com.chameleonvision.common.vision.target;
 import com.chameleonvision.common.vision.opencv.Releasable;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opencv.core.MatOfPoint3f;
 import org.opencv.core.Point3;
 
 public class TargetModel implements Releasable {
 
+    @JsonIgnore
     private final MatOfPoint3f realWorldTargetCoordinates;
-
+    @JsonIgnore
     private final MatOfPoint3f visualizationBoxBottom = new MatOfPoint3f();
+    @JsonIgnore
     private final MatOfPoint3f visualizationBoxTop = new MatOfPoint3f();
+
+    public final List<Point3> realWorldCoordinatesArray;
+    public final double boxHeight;
 
     public TargetModel(MatOfPoint3f realWorldTargetCoordinates, double boxHeight) {
         this.realWorldTargetCoordinates = realWorldTargetCoordinates;
+        this.realWorldCoordinatesArray = realWorldTargetCoordinates.toList();
+        this.boxHeight = boxHeight;
 
         var bottomList = realWorldTargetCoordinates.toList();
         var topList = new ArrayList<Point3>();
@@ -26,7 +37,10 @@ public class TargetModel implements Releasable {
         this.visualizationBoxTop.fromList(topList);
     }
 
-    public TargetModel(List<Point3> points, double boxHeight) {
+    @JsonCreator
+    public TargetModel(
+            @JsonProperty(required = true, value = "realWorldCoordinatesArray") List<Point3> points,
+            @JsonProperty(required = true, value = "boxHeight") double boxHeight) {
         this(listToMat(points), boxHeight);
     }
 
