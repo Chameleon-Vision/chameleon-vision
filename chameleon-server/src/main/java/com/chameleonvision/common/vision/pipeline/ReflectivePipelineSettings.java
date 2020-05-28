@@ -5,8 +5,10 @@ import com.chameleonvision.common.vision.opencv.ContourGroupingMode;
 import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
 import com.chameleonvision.common.vision.pipe.impl.CornerDetectionPipe;
 import com.chameleonvision.common.vision.target.TargetModel;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 
+@JsonTypeName("ReflectivePipelineSettings")
 public class ReflectivePipelineSettings extends AdvancedPipelineSettings {
     // how many contours to attempt to group (Single, Dual)
     public ContourGroupingMode contourGroupingMode = ContourGroupingMode.Single;
@@ -27,4 +29,9 @@ public class ReflectivePipelineSettings extends AdvancedPipelineSettings {
     public boolean cornerDetectionExactSideCount = false;
     public int cornerDetectionSideCount = 4;
     public double cornerDetectionAccuracyPercentage = 10;
+
+    public ReflectivePipelineSettings() {
+        super();
+        pipelineType = PipelineType.Reflective;
+    }
 }

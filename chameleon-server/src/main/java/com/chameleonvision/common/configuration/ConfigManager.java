@@ -1,5 +1,11 @@
 package com.chameleonvision.common.configuration;
 
+import com.chameleonvision.common.logging.LogGroup;
+import com.chameleonvision.common.logging.Logger;
+import com.chameleonvision.common.util.file.JacksonUtils;
+import com.chameleonvision.common.vision.pipeline.CVPipelineSettings;
+import com.chameleonvision.common.vision.pipeline.DriverModePipelineSettings;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,13 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import com.chameleonvision.common.logging.LogGroup;
-import com.chameleonvision.common.logging.Logger;
-import com.chameleonvision.common.util.jackson.JacksonUtils;
-import com.chameleonvision.common.vision.pipeline.CVPipelineSettings;
-import com.chameleonvision.common.vision.pipeline.DriverModePipelineSettings;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class ConfigManager {
     private static final Logger logger = new Logger(ConfigManager.class, LogGroup.General);
@@ -66,8 +65,7 @@ public class ConfigManager {
         NetworkConfig networkConfig;
 
         try {
-            hardwareConfig = JacksonUtils.deserialize(hardwareConfigFile.toPath(),
-                    HardwareConfig.class);
+            hardwareConfig = JacksonUtils.deserialize(hardwareConfigFile.toPath(), HardwareConfig.class);
             if (hardwareConfig == null) {
                 logger.error("Could not deserialize hardware config! Loading defaults");
                 hardwareConfig = new HardwareConfig();
@@ -78,8 +76,7 @@ public class ConfigManager {
         }
 
         try {
-            networkConfig = JacksonUtils.deserialize(networkConfigFile.toPath(),
-                    NetworkConfig.class);
+            networkConfig = JacksonUtils.deserialize(networkConfigFile.toPath(), NetworkConfig.class);
             if (networkConfig == null) {
                 logger.error("Could not deserialize network config! Loading defaults");
                 networkConfig = new NetworkConfig();
@@ -95,8 +92,7 @@ public class ConfigManager {
 
         HashMap<String, CameraConfiguration> cameraConfigurations = loadCameraConfigs();
 
-        this.config = new ChameleonConfiguration(hardwareConfig, networkConfig,
-                cameraConfigurations);
+        this.config = new ChameleonConfiguration(hardwareConfig, networkConfig, cameraConfigurations);
     }
 
     public void save() {
@@ -126,22 +122,20 @@ public class ConfigManager {
             }
 
             try {
-                JacksonUtils.serializer(Path.of(subdir.toString(), "config.json"),
-                        camConfig);
+                JacksonUtils.serializer(Path.of(subdir.toString(), "config.json"), camConfig);
             } catch (IOException e) {
                 logger.error("Could not save config.json for " + subdir);
             }
 
             try {
-                JacksonUtils.serializer(Path.of(subdir.toString(), "drivermode.json"),
-                        camConfig.driveModeSettings);
+                JacksonUtils.serializer(
+                        Path.of(subdir.toString(), "drivermode.json"), camConfig.driveModeSettings);
             } catch (IOException e) {
                 logger.error("Could not save drivermode.json for " + subdir);
             }
 
             for (var pipe : camConfig.pipelineSettings) {
-                var pipePath = Path.of(subdir.toString(), "pipelines", pipe.pipelineNickname +
-                        ".json");
+                var pipePath = Path.of(subdir.toString(), "pipelines", pipe.pipelineNickname + ".json");
 
                 if (!pipePath.getParent().toFile().exists()) {
                     pipePath.getParent().toFile().mkdirs();
@@ -167,11 +161,9 @@ public class ConfigManager {
             for (var subdir : subdirectories) {
                 var cameraConfigPath = Path.of(subdir.toString(), "config.json");
                 CameraConfiguration loadedConfig =
-                        JacksonUtils.deserialize(cameraConfigPath.toAbsolutePath(),
-                                CameraConfiguration.class);
+                        JacksonUtils.deserialize(cameraConfigPath.toAbsolutePath(), CameraConfiguration.class);
                 if (loadedConfig == null) {
-                    logger.warn("Could not load camera " + subdir + "'s config.json! Loading " +
-                            "default");
+                    logger.warn("Could not load camera " + subdir + "'s config.json! Loading " + "default");
                     loadedConfig = new CameraConfiguration();
                 }
 
@@ -182,39 +174,40 @@ public class ConfigManager {
                 DriverModePipelineSettings driverMode;
                 try {
                     driverMode =
-                            JacksonUtils.deserialize(driverModeFile.toAbsolutePath(),
-                                    DriverModePipelineSettings.class);
+                            JacksonUtils.deserialize(
+                                    driverModeFile.toAbsolutePath(), DriverModePipelineSettings.class);
                 } catch (JsonProcessingException e) {
                     logger.error("Could not deserialize drivermode.json! Loading defaults");
                     logger.de_pest(Arrays.toString(e.getStackTrace()));
                     driverMode = new DriverModePipelineSettings();
                 }
                 if (driverMode == null) {
-                    logger.warn("Could not load camera " + subdir + "'s drivermode.json! Loading" +
-                            " default");
+                    logger.warn(
+                            "Could not load camera " + subdir + "'s drivermode.json! Loading" + " default");
                     driverMode = new DriverModePipelineSettings();
                 }
 
                 // Load pipelines by mapping the files within the pipelines subdir
                 // to their deserialized equivalents
-                List<CVPipelineSettings> settings = Files.list(Path.of(subdir.toString(),
-                        "pipelines"))
-                        .filter(p -> p.toFile().isFile())
-                        .map(p -> {
-                            try {
-                                var ret = JacksonUtils.deserialize(p, CVPipelineSettings.class);
-                                return ret;
+                List<CVPipelineSettings> settings =
+                        Files.list(Path.of(subdir.toString(), "pipelines"))
+                                .filter(p -> p.toFile().isFile())
+                                .map(
+                                        p -> {
+                                            try {
+                                                var ret = JacksonUtils.deserialize(p, CVPipelineSettings.class);
+                                                return ret;
 
-                            } catch (JsonProcessingException e) {
-                                logger.error("exception while deserializing " + p);
-                                e.printStackTrace();
-                            } catch (IOException e) {
-                                logger.warn("Could not load pipeline at " + p + "! Skipping...");
-                            }
-                            return null;
-                        })
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
+                                            } catch (JsonProcessingException e) {
+                                                logger.error("exception while deserializing " + p);
+                                                e.printStackTrace();
+                                            } catch (IOException e) {
+                                                logger.warn("Could not load pipeline at " + p + "! Skipping...");
+                                            }
+                                            return null;
+                                        })
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toList());
 
                 loadedConfig.driveModeSettings = driverMode;
                 loadedConfig.pipelineSettings = settings;

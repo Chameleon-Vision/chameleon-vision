@@ -1,8 +1,6 @@
 package com.chameleonvision.common.configuration;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class ChameleonConfiguration {
     public HardwareConfig getHardwareConfig() {

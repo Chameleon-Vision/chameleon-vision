@@ -25,12 +25,13 @@ public class CameraConfiguration {
     public DriverModePipelineSettings driveModeSettings = new DriverModePipelineSettings();
 
     public void addPipelineSetting(CVPipelineSettings setting) {
-        if(pipelineSettings.stream().anyMatch(s -> s.pipelineNickname.equalsIgnoreCase(setting.pipelineNickname))) {
+        if (pipelineSettings.stream()
+                .anyMatch(s -> s.pipelineNickname.equalsIgnoreCase(setting.pipelineNickname))) {
             logger.error("Could not name two pipelines the same thing! Renaming");
             setting.pipelineNickname += "_1"; // TODO verify this logic
         }
 
-        if(pipelineSettings.stream().anyMatch(s -> s.pipelineIndex == setting.pipelineIndex)) {
+        if (pipelineSettings.stream().anyMatch(s -> s.pipelineIndex == setting.pipelineIndex)) {
             var newIndex = pipelineSettings.size();
             logger.error("Could not insert two pipelines at same index! Changing to " + newIndex);
             setting.pipelineIndex = newIndex; // TODO verify this logic

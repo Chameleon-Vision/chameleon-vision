@@ -6,13 +6,14 @@ import com.chameleonvision.common.vision.pipe.ImageRotationMode;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,
-        include = JsonTypeInfo.As.PROPERTY,
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.WRAPPER_ARRAY,
         property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ColoredShapePipelineSettings.class),
-        @JsonSubTypes.Type(value = ReflectivePipelineSettings.class),
-        @JsonSubTypes.Type(value = DriverModePipelineSettings.class)
+    @JsonSubTypes.Type(value = ColoredShapePipelineSettings.class),
+    @JsonSubTypes.Type(value = ReflectivePipelineSettings.class),
+    @JsonSubTypes.Type(value = DriverModePipelineSettings.class)
 })
 public class CVPipelineSettings {
     public int pipelineIndex = 0;
