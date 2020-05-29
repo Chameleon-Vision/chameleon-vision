@@ -3,6 +3,7 @@ package com.chameleonvision.common.configuration;
 import com.chameleonvision.common.calibration.CameraCalibrationCoefficients;
 import com.chameleonvision.common.logging.LogGroup;
 import com.chameleonvision.common.logging.Logger;
+import com.chameleonvision.common.vision.camera.CameraType;
 import com.chameleonvision.common.vision.pipeline.CVPipelineSettings;
 import com.chameleonvision.common.vision.pipeline.DriverModePipelineSettings;
 import com.chameleonvision.common.vision.processes.PipelineManager;
@@ -16,7 +17,11 @@ public class CameraConfiguration {
     public String name = "";
     public String nickname = "";
     public double FOV = 70;
+    public String path = "";
+    public int index = 0;
+    public CameraType cameraType = CameraType.UsbCamera;
     public CameraCalibrationCoefficients calibration;
+    public List<Integer> CameraLEDs = new ArrayList<>();
 
     @JsonIgnore // this ignores the pipes as we serialize them to their own subfolder
     public final List<CVPipelineSettings> pipelineSettings = new ArrayList<>();
