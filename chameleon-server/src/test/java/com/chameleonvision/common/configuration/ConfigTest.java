@@ -26,12 +26,6 @@ public class ConfigTest {
         var camConfig = new CameraConfiguration();
         camConfig.name = "meme";
 
-        var s = new ReflectivePipelineSettings();
-        s.targetModel = TargetModel.get2019Target();
-        JacksonUtils.serializer(Path.of("settings.json"), s);
-        var yes = JacksonUtils.deserialize(Path.of("settings.json"), CVPipelineSettings.class);
-        System.out.println(yes);
-
         camConfig.addPipelineSetting(new ReflectivePipelineSettings());
         ((ReflectivePipelineSettings) camConfig.pipelineSettings.get(0)).targetModel =
                 TargetModel.get2019Target();
