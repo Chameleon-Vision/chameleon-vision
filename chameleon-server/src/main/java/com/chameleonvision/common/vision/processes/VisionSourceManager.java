@@ -48,16 +48,18 @@ public class VisionSourceManager {
         for (CameraConfiguration config : cameraConfigurations) {
             UsbCameraInfo cameraInfo;
             if (!config.path.equals("")) {
-                cameraInfo = activeCameras.stream()
-                        .filter(usbCameraInfo -> usbCameraInfo.path.equals(config.path))
-                        .findFirst()
-                        .orElse(null);
+                cameraInfo =
+                        activeCameras.stream()
+                                .filter(usbCameraInfo -> usbCameraInfo.path.equals(config.path))
+                                .findFirst()
+                                .orElse(null);
             } else {
                 // match by index
-                cameraInfo = activeCameras.stream()
-                        .filter(usbCameraInfo -> usbCameraInfo.dev == config.index)
-                        .findFirst()
-                        .orElse(null);
+                cameraInfo =
+                        activeCameras.stream()
+                                .filter(usbCameraInfo -> usbCameraInfo.dev == config.index)
+                                .findFirst()
+                                .orElse(null);
             }
             if (cameraInfo != null) {
                 activeCameras.remove(cameraInfo);
