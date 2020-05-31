@@ -6,7 +6,6 @@ import com.chameleonvision.common.vision.opencv.ContourShape;
 import com.chameleonvision.common.vision.pipe.CVPipe;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.imgproc.Imgproc;
-import com.chameleonvision.common.vision.opencv.ContourShape;
 
 public class FindPolygonPipe extends CVPipe<Contour, CVShape, FindPolygonPipe.FindPolygonPipeParams> {
 

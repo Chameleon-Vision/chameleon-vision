@@ -1,6 +1,5 @@
 package com.chameleonvision.common.vision.pipe.impl;
 
-import com.chameleonvision._2.vision.pipeline.pipes.SortContoursPipe;
 import com.chameleonvision.common.vision.frame.FrameStaticProperties;
 import com.chameleonvision.common.vision.opencv.ContourSortMode;
 import com.chameleonvision.common.vision.pipe.CVPipe;
@@ -10,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 import org.apache.commons.math3.util.FastMath;
 
-public class eSortContoursPipe
+public class SortContoursPipe
         extends CVPipe<
                 List<PotentialTarget>, List<PotentialTarget>, SortContoursPipe.SortContoursParams> {
 
