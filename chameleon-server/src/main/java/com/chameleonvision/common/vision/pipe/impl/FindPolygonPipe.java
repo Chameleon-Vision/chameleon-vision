@@ -23,16 +23,17 @@ public class FindPolygonPipe extends CVPipe<Contour, CVShape, FindPolygonPipe.Fi
 
         int corners = (int)approx.size().width;
 
-        switch(corners){
-            case 0:
-                return new CVShape(in, ContourShape.Circle);
-            case 3:
-                return new CVShape(in, ContourShape.Triangle);
-            case 4:
-                return new CVShape(in, ContourShape.Quadrilateral);
+        switch(ContourShape.fromSides(corners)) {
+            case Custom:
+                break;
+            case Circle:
+                break;
+            case Triangle:
+                break;
+            case Quadrilateral:
+                break;
         }
-
-
+        
         return new CVShape(in, ContourShape.Custom);
     }
 
