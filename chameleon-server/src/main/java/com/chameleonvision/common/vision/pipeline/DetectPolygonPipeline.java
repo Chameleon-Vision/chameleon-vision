@@ -1,4 +1,3 @@
 package com.chameleonvision.common.vision.pipeline;
 
-public class DetectPolygonPipeline {
-}
+public class DetectPolygonPipeline {}
