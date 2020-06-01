@@ -2,7 +2,6 @@ package com.chameleonvision.common.vision.processes;
 
 import com.chameleonvision.common.configuration.CameraConfiguration;
 import com.chameleonvision.common.vision.camera.CameraType;
-import com.chameleonvision.common.vision.camera.USBCameraSource;
 import com.chameleonvision.common.vision.frame.provider.NetworkFrameProvider;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.UsbCameraInfo;
@@ -13,8 +12,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.opencv.videoio.VideoCapture;
 
 public class VisionSourceManager {
-    public List<VisionSource> LoadAllSources(
-            List<CameraConfiguration> camerasConfiguration) {
+    public List<VisionSource> LoadAllSources(List<CameraConfiguration> camerasConfiguration) {
         List<UsbCameraInfo> allActiveUsbCameras = loadUsbCameras();
 
         var UsbCamerasConfiguration =
@@ -41,9 +39,9 @@ public class VisionSourceManager {
         throw new NotImplementedException("");
     }
 
-    private List<USBCameraSource> matchUsbCameras(
+    private HashMap<UsbCameraInfo, CameraConfiguration> matchUsbCameras(
             List<UsbCameraInfo> activeCameras, List<CameraConfiguration> cameraConfigurations) {
-        //TODO change to a list of camera config with correct path
+        // TODO change to a list of camera config with correct path
         HashMap<UsbCameraInfo, CameraConfiguration> matchedCameras = new HashMap<>();
         // start by matching cameras by path
         for (CameraConfiguration config : cameraConfigurations) {
@@ -70,7 +68,7 @@ public class VisionSourceManager {
             // if any new cameras exist add them with a new configuration
             if (!activeCameras.isEmpty()) {
                 for (UsbCameraInfo info : activeCameras) {
-                //TODO ADD SUFFIX if more then oen camera exists
+                    // TODO ADD SUFFIX if more then oen camera exists
                     matchedCameras.put(info, new CameraConfiguration());
                 }
             }

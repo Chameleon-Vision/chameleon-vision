@@ -166,9 +166,9 @@ public class ConfigManager {
                 var cameraConfigPath = Path.of(subdir.toString(), "config.json");
                 CameraConfiguration loadedConfig =
                         JacksonUtils.deserialize(cameraConfigPath.toAbsolutePath(), CameraConfiguration.class);
-                if (loadedConfig == null) {
+                if (loadedConfig == null) { // If the file could not be deserialized
                     logger.warn("Could not load camera " + subdir + "'s config.json! Loading " + "default");
-                    loadedConfig = new CameraConfiguration();
+                    continue; // TODO how do we later try to load this camera if it gets reconnected?
                 }
 
                 // At this point we have only loaded the base stuff

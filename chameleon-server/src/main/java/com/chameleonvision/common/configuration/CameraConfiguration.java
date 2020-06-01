@@ -23,9 +23,8 @@ public class CameraConfiguration {
     public CameraCalibrationCoefficients calibration;
     public List<Integer> CameraLEDs = new ArrayList<>();
 
-    public CameraConfiguration(String baseName, String uniqueName, String nickname){
+    public CameraConfiguration(String baseName, String uniqueName, String nickname) {}
 
-    }
     @JsonIgnore // this ignores the pipes as we serialize them to their own subfolder
     public final List<CVPipelineSettings> pipelineSettings = new ArrayList<>();
 

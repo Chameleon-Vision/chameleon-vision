@@ -2,16 +2,13 @@ package com.chameleonvision.common.vision.camera;
 
 import com.chameleonvision.common.configuration.CameraConfiguration;
 import com.chameleonvision.common.vision.frame.FrameProvider;
-import com.chameleonvision.common.vision.frame.FrameStaticProperties;
 import com.chameleonvision.common.vision.frame.provider.USBFrameProvider;
 import com.chameleonvision.common.vision.processes.VisionSource;
 import com.chameleonvision.common.vision.processes.VisionSourceSettables;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.UsbCamera;
-
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.cameraserver.CameraServer;
-
 import java.util.*;
 
 public class USBCameraSource implements VisionSource {
@@ -25,10 +22,12 @@ public class USBCameraSource implements VisionSource {
 
     public USBCameraSource(String path, CameraConfiguration config) {
         this.camera = new UsbCamera(config.nickname, path);
-        this.isPS3Eye = camera.getInfo().productId == PS3EYE_PID && camera.getInfo().vendorId == PS3EYE_VID;
+        this.isPS3Eye =
+                camera.getInfo().productId == PS3EYE_PID && camera.getInfo().vendorId == PS3EYE_VID;
         this.cvSink = CameraServer.getInstance().getVideo(this.camera);
         this.usbCameraSettables = new USBCameraSettables(config);
-        this.usbFrameProvider = new USBFrameProvider(cvSink, usbCameraSettables.getFrameStaticProperties());
+        this.usbFrameProvider =
+                new USBFrameProvider(cvSink, usbCameraSettables.getFrameStaticProperties());
     }
 
     @Override
@@ -42,7 +41,7 @@ public class USBCameraSource implements VisionSource {
     }
 
     public class USBCameraSettables extends VisionSourceSettables {
-        protected USBCameraSettables(CameraConfiguration configuration){
+        protected USBCameraSettables(CameraConfiguration configuration) {
             super(configuration);
         }
 
@@ -100,6 +99,5 @@ public class USBCameraSource implements VisionSource {
             }
             return videoModes;
         }
-
     }
 }

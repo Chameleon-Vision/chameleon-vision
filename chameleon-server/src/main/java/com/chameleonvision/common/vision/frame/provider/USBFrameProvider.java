@@ -5,8 +5,6 @@ import com.chameleonvision.common.vision.frame.FrameProvider;
 import com.chameleonvision.common.vision.frame.FrameStaticProperties;
 import com.chameleonvision.common.vision.opencv.CVMat;
 import edu.wpi.cscore.CvSink;
-import org.apache.commons.lang3.NotImplementedException;
-import org.opencv.core.Mat;
 
 public class USBFrameProvider implements FrameProvider {
     private static int count = 0;

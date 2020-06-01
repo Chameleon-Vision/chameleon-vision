@@ -3,7 +3,6 @@ package com.chameleonvision.common.vision.processes;
 import com.chameleonvision.common.configuration.CameraConfiguration;
 import com.chameleonvision.common.vision.frame.FrameStaticProperties;
 import edu.wpi.cscore.VideoMode;
-
 import java.util.HashMap;
 
 public abstract class VisionSourceSettables {
@@ -45,5 +44,4 @@ public abstract class VisionSourceSettables {
     public FrameStaticProperties getFrameStaticProperties() {
         return frameStaticProperties;
     }
-
 }
