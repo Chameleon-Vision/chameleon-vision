@@ -38,7 +38,7 @@ public class ConfigManager {
     }
 
     protected static Path getRootFolder() {
-        return Path.of("chameleon-vision"); // TODO change root folder?
+        return Path.of("chameleon-vision");
     }
 
     private ConfigManager(Path rootFolder) {
