@@ -1,24 +1,49 @@
 package com.chameleonvision.common.vision.processes;
 
+import com.chameleonvision.common.configuration.CameraConfiguration;
+import com.chameleonvision.common.vision.frame.FrameStaticProperties;
 import edu.wpi.cscore.VideoMode;
-import java.util.Dictionary;
 
-public interface VisionSourceSettables {
-    int getExposure();
+import java.util.HashMap;
 
-    void setExposure(int exposure);
+public abstract class VisionSourceSettables {
+    private CameraConfiguration configuration;
 
-    int getBrightness();
+    protected VisionSourceSettables(CameraConfiguration configuration) {
+        this.configuration = configuration;
+    }
 
-    void setBrightness(int brightness);
+    FrameStaticProperties frameStaticProperties;
+    protected HashMap<Integer, VideoMode> videoModes;
 
-    int getGain();
+    public abstract int getExposure();
 
-    void setGain(int gain);
+    public abstract void setExposure(int exposure);
 
-    VideoMode getCurrentVideoMode();
+    public abstract int getBrightness();
 
-    void setCurrentVideoMode(VideoMode videoMode);
+    public abstract void setBrightness(int brightness);
 
-    Dictionary<Integer, VideoMode> getAllVideoModes();
+    public abstract int getGain();
+
+    public abstract void setGain(int gain);
+
+    public abstract VideoMode getCurrentVideoMode();
+
+    public abstract void setCurrentVideoMode(VideoMode videoMode);
+
+    public abstract HashMap<Integer, VideoMode> getAllVideoModes();
+
+    public double getFOV() {
+        return configuration.FOV;
+    }
+
+    public void setFOV(double fov) {
+        configuration.FOV = fov;
+    }
+
+    public FrameStaticProperties getFrameStaticProperties() {
+        return frameStaticProperties;
+    }
+
 }

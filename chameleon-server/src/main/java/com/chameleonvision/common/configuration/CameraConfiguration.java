@@ -14,15 +14,18 @@ import java.util.List;
 public class CameraConfiguration {
     private static final Logger logger = new Logger(CameraConfiguration.class, LogGroup.Camera);
 
-    public String name = "";
+    public String baseName = "";
+    public String uniqueName = "";
     public String nickname = "";
     public double FOV = 70;
     public String path = "";
-    public int index = 0;
     public CameraType cameraType = CameraType.UsbCamera;
     public CameraCalibrationCoefficients calibration;
     public List<Integer> CameraLEDs = new ArrayList<>();
 
+    public CameraConfiguration(String baseName, String uniqueName, String nickname){
+
+    }
     @JsonIgnore // this ignores the pipes as we serialize them to their own subfolder
     public final List<CVPipelineSettings> pipelineSettings = new ArrayList<>();
 

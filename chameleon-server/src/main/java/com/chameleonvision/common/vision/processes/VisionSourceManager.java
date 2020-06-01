@@ -2,7 +2,7 @@ package com.chameleonvision.common.vision.processes;
 
 import com.chameleonvision.common.configuration.CameraConfiguration;
 import com.chameleonvision.common.vision.camera.CameraType;
-import com.chameleonvision.common.vision.frame.FrameProvider;
+import com.chameleonvision.common.vision.camera.USBCameraSource;
 import com.chameleonvision.common.vision.frame.provider.NetworkFrameProvider;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.UsbCameraInfo;
@@ -13,7 +13,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.opencv.videoio.VideoCapture;
 
 public class VisionSourceManager {
-    public HashMap<String, FrameProvider> LoadAllSources(
+    public List<VisionSource> LoadAllSources(
             List<CameraConfiguration> camerasConfiguration) {
         List<UsbCameraInfo> allActiveUsbCameras = loadUsbCameras();
 
@@ -22,7 +22,7 @@ public class VisionSourceManager {
                         .filter(configuration -> configuration.cameraType == CameraType.UsbCamera);
         // var HttpCamerasConfiguration = camerasConfiguration.stream().filter(configuration ->
         // configuration.cameraType == CameraType.HttpCamera);
-        return new HashMap<>();
+        return new ArrayList<>();
     }
 
     private List<UsbCameraInfo> loadUsbCameras() {
@@ -41,8 +41,9 @@ public class VisionSourceManager {
         throw new NotImplementedException("");
     }
 
-    private HashMap<UsbCameraInfo, CameraConfiguration> matchUsbCameras(
+    private List<USBCameraSource> matchUsbCameras(
             List<UsbCameraInfo> activeCameras, List<CameraConfiguration> cameraConfigurations) {
+        //TODO change to a list of camera config with correct path
         HashMap<UsbCameraInfo, CameraConfiguration> matchedCameras = new HashMap<>();
         // start by matching cameras by path
         for (CameraConfiguration config : cameraConfigurations) {
@@ -69,6 +70,7 @@ public class VisionSourceManager {
             // if any new cameras exist add them with a new configuration
             if (!activeCameras.isEmpty()) {
                 for (UsbCameraInfo info : activeCameras) {
+                //TODO ADD SUFFIX if more then oen camera exists
                     matchedCameras.put(info, new CameraConfiguration());
                 }
             }
