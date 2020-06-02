@@ -7,11 +7,8 @@ import com.chameleonvision.common.vision.frame.FrameProvider;
 import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
 import com.chameleonvision.common.vision.pipeline.CVPipelineResult;
 import edu.wpi.cscore.VideoMode;
-
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashMap;
-
 import org.junit.jupiter.api.*;
 
 public class VisionModuleManagerTest {
@@ -53,8 +50,7 @@ public class VisionModuleManagerTest {
         }
 
         @Override
-        public void setExposure(int exposure) {
-        }
+        public void setExposure(int exposure) {}
 
         @Override
         public int getBrightness() {
@@ -62,8 +58,7 @@ public class VisionModuleManagerTest {
         }
 
         @Override
-        public void setBrightness(int brightness) {
-        }
+        public void setBrightness(int brightness) {}
 
         @Override
         public int getGain() {
@@ -71,8 +66,7 @@ public class VisionModuleManagerTest {
         }
 
         @Override
-        public void setGain(int gain) {
-        }
+        public void setGain(int gain) {}
 
         @Override
         public VideoMode getCurrentVideoMode() {
@@ -80,8 +74,7 @@ public class VisionModuleManagerTest {
         }
 
         @Override
-        public void setCurrentVideoMode(VideoMode videoMode) {
-        }
+        public void setCurrentVideoMode(VideoMode videoMode) {}
 
         @Override
         public HashMap<Integer, VideoMode> getAllVideoModes() {
