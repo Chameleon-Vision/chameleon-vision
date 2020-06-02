@@ -15,11 +15,13 @@ import com.chameleonvision.common.vision.pipe.impl.*;
 import com.chameleonvision.common.vision.target.PotentialTarget;
 import com.chameleonvision.common.vision.target.TrackedTarget;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Mat;
 
-public class ColoredShapePipeline
-        extends CVPipeline<CVPipelineResult, ColoredShapePipelineSettings> {
+public class ColouredShapePipeline
+        extends CVPipeline<CVPipelineResult, ColouredShapePipelineSettings> {
 
     private final FindPolygonPipe findPolygonPipe = new FindPolygonPipe();
     private final FilterShapesPipe filterShapesPipe = new FilterShapesPipe();
@@ -38,13 +40,13 @@ public class ColoredShapePipeline
     private Mat rawInputMat = new Mat();
     private DualMat outputMats = new DualMat();
 
-    private ColoredShapePipeline() {
-        settings = new ColoredShapePipelineSettings();
+    ColouredShapePipeline() {
+        settings = new ColouredShapePipelineSettings();
     }
 
     @Override
     protected void setPipeParams(
-            FrameStaticProperties frameStaticProperties, ColoredShapePipelineSettings settings) {
+            FrameStaticProperties frameStaticProperties, ColouredShapePipelineSettings settings) {
 
         FindPolygonPipeParams findPolygonPipeParams =
                 new FindPolygonPipeParams(settings.accuracyPercentage);
@@ -115,7 +117,7 @@ public class ColoredShapePipeline
     }
 
     @Override
-    protected CVPipelineResult process(Frame frame, ColoredShapePipelineSettings settings) {
+    protected CVPipelineResult process(Frame frame, ColouredShapePipelineSettings settings) {
         setPipeParams(frame.frameStaticProperties, settings);
 
         long sumPipeNanosElapsed = 0L;
@@ -131,6 +133,10 @@ public class ColoredShapePipeline
         CVPipeResult<Mat> hsvPipeResult = hsvPipe.apply(erodeDilateResult.result);
         sumPipeNanosElapsed += hsvPipeResult.nanosElapsed;
 
+        outputMats.first = rawInputMat;
+        outputMats.second = hsvPipeResult.result;
+
+
         CVPipeResult<Mat> outputMatResult = outputMatPipe.apply(outputMats);
         sumPipeNanosElapsed += outputMatResult.nanosElapsed;
 
@@ -145,12 +151,15 @@ public class ColoredShapePipeline
                 findPolygonPipe.apply(speckleRejectResult.result);
         sumPipeNanosElapsed += findPolygonsResult.nanosElapsed;
 
+
         CVPipeResult<List<CVShape>> filterShapeResult =
                 filterShapesPipe.apply(findPolygonsResult.result);
         sumPipeNanosElapsed += filterShapeResult.nanosElapsed;
 
+
+
         CVPipeResult<List<PotentialTarget>> groupContoursResult =
-                groupContoursPipe.apply(speckleRejectResult.result);
+                groupContoursPipe.apply(filterShapeResult.result.stream().map(CVShape::getContour).collect(Collectors.toList()));
         sumPipeNanosElapsed += groupContoursResult.nanosElapsed;
 
         CVPipeResult<List<PotentialTarget>> sortContoursResult =
@@ -173,6 +182,6 @@ public class ColoredShapePipeline
         return new CVPipelineResult(
                 MathUtils.nanosToMillis(sumPipeNanosElapsed),
                 collect2dTargetsResult.result,
-                new Frame(new CVMat(draw2dContoursResult.result), frame.frameStaticProperties));
+                new Frame(new CVMat(draw2dCrosshairResult.result), frame.frameStaticProperties));
     }
 }
