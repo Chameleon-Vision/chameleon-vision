@@ -20,8 +20,8 @@ public class USBCameraSource implements VisionSource {
     private final USBCameraSettables usbCameraSettables;
     USBFrameProvider usbFrameProvider;
 
-    public USBCameraSource(String path, CameraConfiguration config) {
-        this.camera = new UsbCamera(config.nickname, path);
+    public USBCameraSource(CameraConfiguration config) {
+        this.camera = new UsbCamera(config.nickname, config.path);
         this.isPS3Eye =
                 camera.getInfo().productId == PS3EYE_PID && camera.getInfo().vendorId == PS3EYE_VID;
         this.cvSink = CameraServer.getInstance().getVideo(this.camera);

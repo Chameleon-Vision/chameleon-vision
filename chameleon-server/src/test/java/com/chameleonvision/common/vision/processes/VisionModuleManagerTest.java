@@ -1,13 +1,17 @@
 package com.chameleonvision.common.vision.processes;
 
+import com.chameleonvision.common.configuration.CameraConfiguration;
 import com.chameleonvision.common.datatransfer.DataConsumer;
 import com.chameleonvision.common.util.TestUtils;
 import com.chameleonvision.common.vision.frame.FrameProvider;
 import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
 import com.chameleonvision.common.vision.pipeline.CVPipelineResult;
 import edu.wpi.cscore.VideoMode;
+
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashMap;
+
 import org.junit.jupiter.api.*;
 
 public class VisionModuleManagerTest {
@@ -33,11 +37,15 @@ public class VisionModuleManagerTest {
 
         @Override
         public VisionSourceSettables getSettables() {
-            return new TestSettables();
+            return new TestSettables(new CameraConfiguration("", "", "", ""));
         }
     }
 
-    private static class TestSettables implements VisionSourceSettables {
+    private static class TestSettables extends VisionSourceSettables {
+
+        protected TestSettables(CameraConfiguration configuration) {
+            super(configuration);
+        }
 
         @Override
         public int getExposure() {
@@ -45,7 +53,8 @@ public class VisionModuleManagerTest {
         }
 
         @Override
-        public void setExposure(int exposure) {}
+        public void setExposure(int exposure) {
+        }
 
         @Override
         public int getBrightness() {
@@ -53,7 +62,8 @@ public class VisionModuleManagerTest {
         }
 
         @Override
-        public void setBrightness(int brightness) {}
+        public void setBrightness(int brightness) {
+        }
 
         @Override
         public int getGain() {
@@ -61,7 +71,8 @@ public class VisionModuleManagerTest {
         }
 
         @Override
-        public void setGain(int gain) {}
+        public void setGain(int gain) {
+        }
 
         @Override
         public VideoMode getCurrentVideoMode() {
@@ -69,10 +80,11 @@ public class VisionModuleManagerTest {
         }
 
         @Override
-        public void setCurrentVideoMode(VideoMode videoMode) {}
+        public void setCurrentVideoMode(VideoMode videoMode) {
+        }
 
         @Override
-        public Dictionary<Integer, VideoMode> getAllVideoModes() {
+        public HashMap<Integer, VideoMode> getAllVideoModes() {
             return null;
         }
     }

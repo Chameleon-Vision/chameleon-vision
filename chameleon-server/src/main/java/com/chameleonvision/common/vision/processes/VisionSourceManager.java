@@ -2,13 +2,15 @@ package com.chameleonvision.common.vision.processes;
 
 import com.chameleonvision.common.configuration.CameraConfiguration;
 import com.chameleonvision.common.vision.camera.CameraType;
+import com.chameleonvision.common.vision.camera.USBCameraSource;
 import com.chameleonvision.common.vision.frame.provider.NetworkFrameProvider;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.UsbCameraInfo;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.opencv.videoio.VideoCapture;
 
 public class VisionSourceManager {
@@ -17,10 +19,11 @@ public class VisionSourceManager {
 
         var UsbCamerasConfiguration =
                 camerasConfiguration.stream()
-                        .filter(configuration -> configuration.cameraType == CameraType.UsbCamera);
+                        .filter(configuration -> configuration.cameraType == CameraType.UsbCamera)
+                        .collect(Collectors.toList());
         // var HttpCamerasConfiguration = camerasConfiguration.stream().filter(configuration ->
         // configuration.cameraType == CameraType.HttpCamera);
-        return new ArrayList<>();
+        return loadUSBCameraSources(matchUSBCameras(allActiveUsbCameras, UsbCamerasConfiguration));
     }
 
     private List<UsbCameraInfo> loadUsbCameras() {
@@ -39,41 +42,56 @@ public class VisionSourceManager {
         throw new NotImplementedException("");
     }
 
-    private HashMap<UsbCameraInfo, CameraConfiguration> matchUsbCameras(
-            List<UsbCameraInfo> activeCameras, List<CameraConfiguration> cameraConfigurations) {
-        // TODO change to a list of camera config with correct path
-        HashMap<UsbCameraInfo, CameraConfiguration> matchedCameras = new HashMap<>();
-        // start by matching cameras by path
-        for (CameraConfiguration config : cameraConfigurations) {
+    private List<CameraConfiguration> matchUSBCameras(
+            List<UsbCameraInfo> infos, List<CameraConfiguration> cameraConfigurationList) {
+        List<CameraConfiguration> cameraConfigurations = new ArrayList<>();
+        for (CameraConfiguration config : cameraConfigurationList) {
             UsbCameraInfo cameraInfo;
-            if (!config.path.equals("")) {
+            if (!StringUtils.isNumeric(config.path)) {
+                // matching by path
                 cameraInfo =
-                        activeCameras.stream()
+                        infos.stream()
                                 .filter(usbCameraInfo -> usbCameraInfo.path.equals(config.path))
                                 .findFirst()
                                 .orElse(null);
             } else {
                 // match by index
                 cameraInfo =
-                        activeCameras.stream()
-                                .filter(usbCameraInfo -> usbCameraInfo.dev == config.index)
+                        infos.stream()
+                                .filter(usbCameraInfo -> usbCameraInfo.dev == Integer.parseInt(config.path))
                                 .findFirst()
                                 .orElse(null);
             }
             if (cameraInfo != null) {
-                activeCameras.remove(cameraInfo);
-                cameraConfigurations.remove(config);
-                matchedCameras.put(cameraInfo, config);
+                infos.remove(cameraInfo);
+                cameraConfigurationList.remove(config);
+                cameraConfigurations.add(config);
             }
-            // if any new cameras exist add them with a new configuration
-            if (!activeCameras.isEmpty()) {
-                for (UsbCameraInfo info : activeCameras) {
-                    // TODO ADD SUFFIX if more then oen camera exists
-                    matchedCameras.put(info, new CameraConfiguration());
+            for (UsbCameraInfo info : infos) {
+                // create new camera config for all new cameras
+                String name = info.name.replaceAll("[^\\x00-\\x7F]", "");
+                String uniqueName = name;
+                int suffix = 0;
+                while (containsName(cameraConfigurations, uniqueName)) {
+                    suffix++;
+                    uniqueName = String.format("%s (%d)", uniqueName, suffix);
                 }
+                CameraConfiguration configuration =
+                        new CameraConfiguration(name, uniqueName, uniqueName, ((Integer) info.dev).toString());
+                cameraConfigurations.add(configuration);
             }
         }
+        return cameraConfigurations;
+    }
 
-        return matchedCameras;
+    private List<VisionSource> loadUSBCameraSources(List<CameraConfiguration> configurations) {
+        List<VisionSource> usbCameraSources = new ArrayList<>();
+        configurations.forEach(
+                configuration -> usbCameraSources.add(new USBCameraSource(configuration)));
+        return usbCameraSources;
+    }
+
+    private boolean containsName(final List<CameraConfiguration> list, final String name) {
+        return list.stream().anyMatch(configuration -> configuration.uniqueName.equals(name));
     }
 }
