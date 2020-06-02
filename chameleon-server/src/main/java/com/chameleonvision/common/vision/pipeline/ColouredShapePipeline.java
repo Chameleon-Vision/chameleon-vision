@@ -16,7 +16,6 @@ import com.chameleonvision.common.vision.target.PotentialTarget;
 import com.chameleonvision.common.vision.target.TrackedTarget;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Mat;
 
@@ -136,7 +135,6 @@ public class ColouredShapePipeline
         outputMats.first = rawInputMat;
         outputMats.second = hsvPipeResult.result;
 
-
         CVPipeResult<Mat> outputMatResult = outputMatPipe.apply(outputMats);
         sumPipeNanosElapsed += outputMatResult.nanosElapsed;
 
@@ -151,15 +149,15 @@ public class ColouredShapePipeline
                 findPolygonPipe.apply(speckleRejectResult.result);
         sumPipeNanosElapsed += findPolygonsResult.nanosElapsed;
 
-
         CVPipeResult<List<CVShape>> filterShapeResult =
                 filterShapesPipe.apply(findPolygonsResult.result);
         sumPipeNanosElapsed += filterShapeResult.nanosElapsed;
 
-
-
         CVPipeResult<List<PotentialTarget>> groupContoursResult =
-                groupContoursPipe.apply(filterShapeResult.result.stream().map(CVShape::getContour).collect(Collectors.toList()));
+                groupContoursPipe.apply(
+                        filterShapeResult.result.stream()
+                                .map(CVShape::getContour)
+                                .collect(Collectors.toList()));
         sumPipeNanosElapsed += groupContoursResult.nanosElapsed;
 
         CVPipeResult<List<PotentialTarget>> sortContoursResult =
