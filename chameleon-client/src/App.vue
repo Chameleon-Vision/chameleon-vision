@@ -29,9 +29,12 @@
 </template>
 
 <script>
+    import logView from '@femessage/log-viewer'
     export default {
         name: 'App',
-        components: {},
+        components: {
+            logView
+        },
         methods: {
             handleMessage(key, value) {
                 if (this.$store.state.hasOwnProperty(key)) {
@@ -62,6 +65,13 @@
             timer: undefined
         }),
         created() {
+            document.addEventListener("keydown", e => {
+                if (e.key === "`") {
+                    console.log("swigly line");
+                } else if (e.key === "z" && e.ctrlKey){
+                    console.log("undo")
+                }
+            });
             this.$options.sockets.onmessage = (data) => {
                 try {
                     let message = this.$msgPack.decode(data.data);
