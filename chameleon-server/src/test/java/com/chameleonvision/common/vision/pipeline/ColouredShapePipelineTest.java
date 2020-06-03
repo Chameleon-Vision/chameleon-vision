@@ -62,7 +62,7 @@ public class ColouredShapePipelineTest {
         pipeline.setPipeParams(frameStaticProperties, settings);
         CVPipelineResult colouredShapePipelineResult = pipeline.process(frame, settings);
         TestUtils.showImage(
-                colouredShapePipelineResult.outputFrame.image.getMat(), "Pipeline output: Custom.");
+                colouredShapePipelineResult.outputFrame.image.getMat(), "Pipeline output: Circle.");
         printTestResults(colouredShapePipelineResult);
     }
 
@@ -70,7 +70,12 @@ public class ColouredShapePipelineTest {
         TestUtils.loadLibraries();
         var frameProvider =
                 new FileFrameProvider(
-                        "D:\\chameleon-vision\\chameleon-server\\src\\test\\resources\\polygons\\polygons2.png",
+                        "D:\\chameleon-vision\\chameleon-server\\src\\test\\resources\\polygons\\polygons.jpg",
+                        TestUtils.WPI2019Image.FOV);
+
+        var circleFrameProvider =
+                new FileFrameProvider(
+                        "D:\\chameleon-vision\\chameleon-server\\src\\test\\resources\\polygons\\circles.png",
                         TestUtils.WPI2019Image.FOV);
         var settings = new ColouredShapePipelineSettings();
         settings.hsvHue.set(0, 100);
@@ -81,7 +86,7 @@ public class ColouredShapePipelineTest {
         settings.contourGroupingMode = ContourGroupingMode.Single;
         settings.contourIntersection = ContourIntersectionDirection.Up;
         settings.desiredShape = ContourShape.Triangle;
-        settings.accuracyPercentage = 20.0;
+        settings.accuracyPercentage = 80.0;
 
         ColouredShapePipeline pipeline = new ColouredShapePipeline();
         testTriangleDetection(
@@ -91,7 +96,10 @@ public class ColouredShapePipelineTest {
         testCustomShapeDetection(
                 pipeline, settings, frameProvider.get().frameStaticProperties, frameProvider.get());
         testCircleShapeDetection(
-                pipeline, settings, frameProvider.get().frameStaticProperties, frameProvider.get());
+                pipeline,
+                settings,
+                circleFrameProvider.get().frameStaticProperties,
+                circleFrameProvider.get());
     }
 
     private static void printTestResults(CVPipelineResult pipelineResult) {
