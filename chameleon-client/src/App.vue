@@ -16,11 +16,17 @@
                 <v-layout>
                     <v-flex>
                         <router-view @save="startTimer"/>
+                        <button @click="logMessage({message:Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5), level:Math.floor(Math.random() *4)  })">click</button>
                         <v-snackbar :timeout="1000" v-model="saveSnackbar" top color="#4baf62">
                             <div style="text-align: center;width: 100%;">
                                 <h4>Saved All changes</h4>
                             </div>
                         </v-snackbar>
+                        <div v-if="isLogger">
+                            <keep-alive>
+                                <log-view class="loggerClass" :log="log"></log-view>
+                            </keep-alive>
+                        </div>
                     </v-flex>
                 </v-layout>
             </v-container>
@@ -30,6 +36,7 @@
 
 <script>
     import logView from '@femessage/log-viewer'
+
     export default {
         name: 'App',
         components: {
@@ -59,16 +66,24 @@
                     clearInterval(this.timer);
                 }
                 this.timer = setInterval(this.saveSettings, 4000);
+            },
+            logMessage({message, level}) {
+                const colors = ["\u001b[31m", "\u001b[32m", "\u001b[33m", "\u001b[34m"]
+                const reset = "\u001b[0m"
+                this.log += `${colors[level]}${message}${reset}\n`
             }
         },
         data: () => ({
-            timer: undefined
+            timer: undefined,
+            isLogger: true,
+            log: ""
         }),
         created() {
             document.addEventListener("keydown", e => {
                 if (e.key === "`") {
-                    console.log("swigly line");
-                } else if (e.key === "z" && e.ctrlKey){
+                    this.isLogger = !this.isLogger;
+                    console.log(this.isLogger)
+                } else if (e.key === "z" && e.ctrlKey) {
                     console.log("undo")
                 }
             });
@@ -110,6 +125,15 @@
         padding-right: 5px;
     }
 
+    .loggerClass {
+        position: absolute;
+        bottom: 0;
+        height: 25% !important;
+        left: 0;
+        right: 0;
+        background-color: #2b2b2b;
+    }
+    /*TODO SCROLLBAR CLASS and npm update*/
     .container {
         background-color: #212121;
         padding: 0 !important;
