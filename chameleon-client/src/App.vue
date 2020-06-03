@@ -16,7 +16,6 @@
                 <v-layout>
                     <v-flex>
                         <router-view @save="startTimer"/>
-                        <button @click="logMessage({message:Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5), level:Math.floor(Math.random() *4)  })">click</button>
                         <v-snackbar :timeout="1000" v-model="saveSnackbar" top color="#4baf62">
                             <div style="text-align: center;width: 100%;">
                                 <h4>Saved All changes</h4>
@@ -131,7 +130,22 @@
         height: 25% !important;
         left: 0;
         right: 0;
+        box-shadow: #282828 0 0 5px 1px;
         background-color: #2b2b2b;
+    }
+    ::-webkit-scrollbar {
+        width: 0.5em;
+        border-radius: 5px;
+    }
+    ::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px     rgba(0,0,0,0.3);
+        border-radius: 10px;
+    }
+
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #4baf62;
+        border-radius: 10px;
     }
     /*TODO SCROLLBAR CLASS and npm update*/
     .container {

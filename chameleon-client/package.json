@@ -18,7 +18,7 @@
     "vue-axios": "^2.1.5",
     "vue-native-websocket": "^2.0.14",
     "vue-router": "^3.1.6",
-    "vuetify": "^2.2.26",
+    "vuetify": "^2.2.32",
     "vuex": "^3.3.0"
   },
   "devDependencies": {
