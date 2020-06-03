@@ -33,7 +33,6 @@ public class FindPolygonPipe
     private CVShape getShape(Contour in) {
 
         corners = getCorners(in);
-
         if (ContourShape.fromSides(corners) == null) {
             return new CVShape(in, ContourShape.Custom);
         }
