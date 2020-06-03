@@ -37,11 +37,11 @@ public class ConfigManager {
         return config;
     }
 
-    private static Path getRootFolder() {
-        return Path.of("chameleonVision"); // TODO change root folder?
+    protected static Path getRootFolder() {
+        return Path.of("chameleon-vision"); // TODO change root folder?
     }
 
-    protected ConfigManager(Path rootFolder) {
+    private ConfigManager(Path rootFolder) {
         this.rootFolder = new File(rootFolder.toUri());
         this.hardwareConfigFile =
                 new File(Path.of(rootFolder.toString(), "hardwareConfig.json").toUri());
@@ -55,9 +55,9 @@ public class ConfigManager {
         logger.info("Loading settings...");
         if (!rootFolder.exists()) {
             if (rootFolder.mkdirs()) {
-                logger.debug("Root config folder created!");
+                logger.debug("Root config folder did not exist. Created!");
             } else {
-                logger.error("Could not create root config folder!");
+                logger.error("Failed to create root config folder!");
             }
         }
 
@@ -87,7 +87,11 @@ public class ConfigManager {
         }
 
         if (!camerasFolder.exists()) {
-            camerasFolder.mkdirs();
+            if (camerasFolder.mkdirs()) {
+                logger.debug("Cameras config folder did not exist. Created!");
+            } else {
+                logger.error("Failed to create cameras config folder!");
+            }
         }
 
         HashMap<String, CameraConfiguration> cameraConfigurations = loadCameraConfigs();
@@ -194,15 +198,18 @@ public class ConfigManager {
                                 .filter(p -> p.toFile().isFile())
                                 .map(
                                         p -> {
+                                            var relativizedFilePath =
+                                                    getRootFolder().toAbsolutePath().relativize(p).toString();
                                             try {
                                                 var ret = JacksonUtils.deserialize(p, CVPipelineSettings.class);
                                                 return ret;
 
                                             } catch (JsonProcessingException e) {
-                                                logger.error("exception while deserializing " + p);
+                                                logger.error("Exception while deserializing " + relativizedFilePath);
                                                 e.printStackTrace();
                                             } catch (IOException e) {
-                                                logger.warn("Could not load pipeline at " + p + "! Skipping...");
+                                                logger.warn(
+                                                        "Could not load pipeline at " + relativizedFilePath + "! Skipping...");
                                             }
                                             return null;
                                         })
@@ -210,7 +217,7 @@ public class ConfigManager {
                                 .collect(Collectors.toList());
 
                 loadedConfig.driveModeSettings = driverMode;
-                loadedConfig.pipelineSettings = settings;
+                loadedConfig.addPipelineSettings(settings);
 
                 loadedConfigurations.put(subdir.toFile().getName(), loadedConfig);
             }

@@ -5,6 +5,7 @@ import com.chameleonvision.common.logging.LogGroup;
 import com.chameleonvision.common.logging.Logger;
 import com.chameleonvision.common.vision.pipeline.CVPipelineSettings;
 import com.chameleonvision.common.vision.pipeline.DriverModePipelineSettings;
+import com.chameleonvision.common.vision.processes.PipelineManager;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +20,16 @@ public class CameraConfiguration {
     public CameraCalibrationCoefficients calibration;
 
     @JsonIgnore // this ignores the pipes as we serialize them to their own subfolder
-    public List<CVPipelineSettings> pipelineSettings = new ArrayList<>();
+    public final List<CVPipelineSettings> pipelineSettings = new ArrayList<>();
 
     @JsonIgnore
     public DriverModePipelineSettings driveModeSettings = new DriverModePipelineSettings();
+
+    public void addPipelineSettings(List<CVPipelineSettings> settings) {
+        for (var setting : settings) {
+            addPipelineSetting(setting);
+        }
+    }
 
     public void addPipelineSetting(CVPipelineSettings setting) {
         if (pipelineSettings.stream()
@@ -38,5 +45,6 @@ public class CameraConfiguration {
         }
 
         pipelineSettings.add(setting);
+        pipelineSettings.sort(PipelineManager.PipelineSettingsIndexComparator);
     }
 }
