@@ -7,11 +7,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.RotatedRect;
+import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
 public class Draw2dContoursPipe
@@ -22,7 +18,16 @@ public class Draw2dContoursPipe
     @Override
     protected Mat process(Pair<Mat, List<TrackedTarget>> in) {
         if (!in.getRight().isEmpty()
-                && (params.showCentroid || params.showMaximumBox || params.showRotatedBox)) {
+                && (params.showCentroid
+                        || params.showMaximumBox
+                        || params.showRotatedBox
+                        || params.showShape)) {
+
+            var centroidColour = ColorHelper.colorToScalar(params.centroidColor);
+            var maximumBoxColour = ColorHelper.colorToScalar(params.maximumBoxColor);
+            var rotatedBoxColour = ColorHelper.colorToScalar(params.rotatedBoxColor);
+            var shapeColour = ColorHelper.colorToScalar(params.shapeOutlineColour);
+
             for (int i = 0; i < (params.showMultiple ? in.getRight().size() : 1); i++) {
                 Point[] vertices = new Point[4];
                 MatOfPoint contour = new MatOfPoint();
@@ -46,11 +51,7 @@ public class Draw2dContoursPipe
 
                 if (params.showRotatedBox) {
                     Imgproc.drawContours(
-                            in.getLeft(),
-                            m_drawnContours,
-                            0,
-                            ColorHelper.colorToScalar(params.rotatedBoxColor),
-                            params.boxOutlineSize);
+                            in.getLeft(), m_drawnContours, 0, rotatedBoxColour, params.boxOutlineSize);
                 }
 
                 if (params.showMaximumBox) {
@@ -59,7 +60,7 @@ public class Draw2dContoursPipe
                             in.getLeft(),
                             new Point(box.x, box.y),
                             new Point(box.x + box.width, box.y + box.height),
-                            ColorHelper.colorToScalar(params.maximumBoxColor),
+                            maximumBoxColour,
                             params.boxOutlineSize);
                 }
 
@@ -68,17 +69,12 @@ public class Draw2dContoursPipe
                             in.getLeft(),
                             List.of(target.m_mainContour.mat),
                             -1,
-                            ColorHelper.colorToScalar(params.shapeOutlineColour),
+                            shapeColour,
                             params.boxOutlineSize);
                 }
 
                 if (params.showCentroid) {
-                    Imgproc.circle(
-                            in.getLeft(),
-                            target.getTargetOffsetPoint(),
-                            3,
-                            ColorHelper.colorToScalar(params.centroidColor),
-                            2);
+                    Imgproc.circle(in.getLeft(), target.getTargetOffsetPoint(), 3, centroidColour, 2);
                 }
             }
         }
