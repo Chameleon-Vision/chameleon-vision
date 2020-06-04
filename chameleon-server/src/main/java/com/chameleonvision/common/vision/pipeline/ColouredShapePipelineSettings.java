@@ -7,13 +7,14 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.util.Objects;
 
 @JsonTypeName("ColoredShapePipelineSettings")
-public class ColoredShapePipelineSettings extends AdvancedPipelineSettings {
-    public ContourShape desiredShape;
-    public double minArea = 0;
-    public double maxArea = 1000;
-    public double minPeri = 0;
-    public double maxPeri = 1000;
-    public double accuracyPercentage = 50.0;
+public class ColouredShapePipelineSettings extends AdvancedPipelineSettings {
+    public ContourShape desiredShape = ContourShape.Triangle;
+    public double minArea = Integer.MIN_VALUE;
+    public double maxArea = Integer.MAX_VALUE;
+    public double minPeri = Integer.MIN_VALUE;
+    public double maxPeri = Integer.MAX_VALUE;
+    public double accuracyPercentage = 10.0;
+    public int allowableThreshold = 5;
     // how many contours to attempt to group (Single, Dual)
     public ContourGroupingMode contourGroupingMode = ContourGroupingMode.Single;
 

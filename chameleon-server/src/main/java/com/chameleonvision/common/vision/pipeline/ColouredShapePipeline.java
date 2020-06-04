@@ -6,10 +6,7 @@ import static com.chameleonvision.common.vision.pipe.impl.FindPolygonPipe.*;
 import com.chameleonvision.common.util.math.MathUtils;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.FrameStaticProperties;
-import com.chameleonvision.common.vision.opencv.CVMat;
-import com.chameleonvision.common.vision.opencv.CVShape;
-import com.chameleonvision.common.vision.opencv.Contour;
-import com.chameleonvision.common.vision.opencv.DualMat;
+import com.chameleonvision.common.vision.opencv.*;
 import com.chameleonvision.common.vision.pipe.CVPipeResult;
 import com.chameleonvision.common.vision.pipe.impl.*;
 import com.chameleonvision.common.vision.target.PotentialTarget;
@@ -24,6 +21,7 @@ public class ColouredShapePipeline
 
     private final FindPolygonPipe findPolygonPipe = new FindPolygonPipe();
     private final FilterShapesPipe filterShapesPipe = new FilterShapesPipe();
+    private final FindCirclesPipe findCirclesPipe = new FindCirclesPipe();
     private final RotateImagePipe rotateImagePipe = new RotateImagePipe();
     private final ErodeDilatePipe erodeDilatePipe = new ErodeDilatePipe();
     private final HSVPipe hsvPipe = new HSVPipe();
@@ -94,6 +92,10 @@ public class ColouredShapePipeline
                 new SortContoursPipe.SortContoursParams(settings.contourSortMode, frameStaticProperties, 5);
         sortContoursPipe.setParams(sortContoursParams);
 
+        FindCirclesPipe.FindCirclePipeParams findCirclePipeParams =
+                new FindCirclesPipe.FindCirclePipeParams(settings.allowableThreshold);
+        findCirclesPipe.setParams(findCirclePipeParams);
+
         Collect2dTargetsPipe.Collect2dTargetsParams collect2dTargetsParams =
                 new Collect2dTargetsPipe.Collect2dTargetsParams(
                         frameStaticProperties,
@@ -107,6 +109,10 @@ public class ColouredShapePipeline
 
         Draw2dContoursPipe.Draw2dContoursParams draw2dContoursParams =
                 new Draw2dContoursPipe.Draw2dContoursParams(settings.outputShowMultipleTargets);
+        draw2dContoursParams.showShape = true;
+        draw2dContoursParams.showMaximumBox = false;
+        draw2dContoursParams.showRotatedBox = false;
+        draw2dContoursParams.boxOutlineSize = 10;
         draw2dContoursPipe.setParams(draw2dContoursParams);
 
         Draw2dCrosshairPipe.Draw2dCrosshairParams draw2dCrosshairParams =
@@ -145,12 +151,21 @@ public class ColouredShapePipeline
                 speckleRejectPipe.apply(findContoursResult.result);
         sumPipeNanosElapsed += speckleRejectResult.nanosElapsed;
 
-        CVPipeResult<List<CVShape>> findPolygonsResult =
-                findPolygonPipe.apply(speckleRejectResult.result);
-        sumPipeNanosElapsed += findPolygonsResult.nanosElapsed;
+        List<CVShape> shapes;
 
-        CVPipeResult<List<CVShape>> filterShapeResult =
-                filterShapesPipe.apply(findPolygonsResult.result);
+        if (settings.desiredShape == ContourShape.Circle) {
+            CVPipeResult<List<CVShape>> findCirclesResult =
+                    findCirclesPipe.apply(Pair.of(hsvPipeResult.result, speckleRejectResult.result));
+            sumPipeNanosElapsed += findCirclesResult.nanosElapsed;
+            shapes = findCirclesResult.result;
+        } else {
+            CVPipeResult<List<CVShape>> findPolygonsResult =
+                    findPolygonPipe.apply(speckleRejectResult.result);
+            sumPipeNanosElapsed += findPolygonsResult.nanosElapsed;
+            shapes = findPolygonsResult.result;
+        }
+
+        CVPipeResult<List<CVShape>> filterShapeResult = filterShapesPipe.apply(shapes);
         sumPipeNanosElapsed += filterShapeResult.nanosElapsed;
 
         CVPipeResult<List<PotentialTarget>> groupContoursResult =

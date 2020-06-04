@@ -63,6 +63,10 @@ public class Draw2dContoursPipe
                             params.boxOutlineSize);
                 }
 
+                if(params.showShape){
+                    Imgproc.drawContours(in.getLeft(), List.of(target.m_mainContour.mat), -1, ColorHelper.colorToScalar(params.shapeOutlineColour), params.boxOutlineSize);
+                }
+
                 if (params.showCentroid) {
                     Imgproc.circle(
                             in.getLeft(),
@@ -82,10 +86,12 @@ public class Draw2dContoursPipe
         public boolean showMultiple = true;
         public int boxOutlineSize = 1;
         public boolean showRotatedBox = true;
+        public boolean showShape = false;
         public boolean showMaximumBox = true;
         public Color centroidColor = Color.GREEN;
         public Color rotatedBoxColor = Color.BLUE;
         public Color maximumBoxColor = Color.RED;
+        public Color shapeOutlineColour = Color.MAGENTA;
 
         // TODO: set other params from UI/settings file?
         public Draw2dContoursParams(boolean showMultipleTargets) {
