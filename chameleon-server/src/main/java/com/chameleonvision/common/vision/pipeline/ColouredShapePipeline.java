@@ -93,7 +93,7 @@ public class ColouredShapePipeline
         sortContoursPipe.setParams(sortContoursParams);
 
         FindCirclesPipe.FindCirclePipeParams findCirclePipeParams =
-                new FindCirclesPipe.FindCirclePipeParams(settings.allowableThreshold);
+                new FindCirclesPipe.FindCirclePipeParams(settings.allowableThreshold, settings.minRadius, settings.minDist, settings.maxRadius, settings.maxCannyThresh, settings.accuracy);
         findCirclesPipe.setParams(findCirclePipeParams);
 
         Collect2dTargetsPipe.Collect2dTargetsParams collect2dTargetsParams =

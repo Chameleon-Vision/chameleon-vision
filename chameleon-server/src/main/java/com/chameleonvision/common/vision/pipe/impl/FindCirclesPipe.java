@@ -35,11 +35,11 @@ public class FindCirclesPipe
                 circles,
                 Imgproc.HOUGH_GRADIENT,
                 1.0,
-                (double) in.getLeft().rows() / 10,
-                90,
-                20,
-                0,
-                0);
+                params.minDist,
+                params.maxCannyThresh,
+                params.accuracy,
+                params.minRadius,
+                params.maxRadius);
         for (int x = 0; x < circles.cols(); x++) {
             c = circles.get(0, x);
             x_center = c[0];
@@ -58,8 +58,18 @@ public class FindCirclesPipe
 
     public static class FindCirclePipeParams {
         public int allowableThreshold;
-        public FindCirclePipeParams(int allowableThreshold) {
+        public int minRadius;
+        public int maxRadius;
+        public int minDist;
+        public int maxCannyThresh;
+        public int accuracy;
+        public FindCirclePipeParams(int allowableThreshold, int minRadius, int minDist, int maxRadius, int maxCannyThresh, int accuracy) {
             this.allowableThreshold = allowableThreshold;
+            this.minRadius = minRadius;
+            this.maxRadius = maxRadius;
+            this.minDist = minDist;
+            this.maxCannyThresh = maxCannyThresh;
+            this.accuracy = accuracy;
         }
     }
 }
