@@ -20,11 +20,11 @@ public class FindCirclesPipe
     double x_center;
     double y_center;
     /**
-     * Runs the process for the pipe.
-     *
-     * @param in Input for pipe processing.
-     * @return Result of processing.
-     */
+    * Runs the process for the pipe.
+    *
+    * @param in Input for pipe processing.
+    * @return Result of processing.
+    */
     @Override
     protected List<CVShape> process(Pair<Mat, List<Contour>> in) {
         circles.release();
@@ -63,7 +63,14 @@ public class FindCirclesPipe
         public int minDist;
         public int maxCannyThresh;
         public int accuracy;
-        public FindCirclePipeParams(int allowableThreshold, int minRadius, int minDist, int maxRadius, int maxCannyThresh, int accuracy) {
+
+        public FindCirclePipeParams(
+                int allowableThreshold,
+                int minRadius,
+                int minDist,
+                int maxRadius,
+                int maxCannyThresh,
+                int accuracy) {
             this.allowableThreshold = allowableThreshold;
             this.minRadius = minRadius;
             this.maxRadius = maxRadius;

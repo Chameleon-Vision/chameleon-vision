@@ -7,9 +7,8 @@ import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
 import com.chameleonvision.common.vision.opencv.ContourGroupingMode;
 import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
 import com.chameleonvision.common.vision.opencv.ContourShape;
-import org.junit.jupiter.api.Test;
-
 import java.util.Objects;
+import org.junit.jupiter.api.Test;
 
 public class ColouredShapePipelineTest {
 
@@ -72,7 +71,12 @@ public class ColouredShapePipelineTest {
         TestUtils.loadLibraries();
         var frameProvider =
                 new FileFrameProvider(
-                        Objects.requireNonNull(ColouredShapePipelineTest.class.getClassLoader().getResource("polygons/polygons.png")).getPath().substring(1),
+                        Objects.requireNonNull(
+                                        ColouredShapePipelineTest.class
+                                                .getClassLoader()
+                                                .getResource("polygons/polygons.png"))
+                                .getPath()
+                                .substring(1),
                         TestUtils.WPI2019Image.FOV);
         var settings = new ColouredShapePipelineSettings();
         settings.hsvHue.set(0, 100);

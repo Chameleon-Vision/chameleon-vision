@@ -63,8 +63,13 @@ public class Draw2dContoursPipe
                             params.boxOutlineSize);
                 }
 
-                if(params.showShape){
-                    Imgproc.drawContours(in.getLeft(), List.of(target.m_mainContour.mat), -1, ColorHelper.colorToScalar(params.shapeOutlineColour), params.boxOutlineSize);
+                if (params.showShape) {
+                    Imgproc.drawContours(
+                            in.getLeft(),
+                            List.of(target.m_mainContour.mat),
+                            -1,
+                            ColorHelper.colorToScalar(params.shapeOutlineColour),
+                            params.boxOutlineSize);
                 }
 
                 if (params.showCentroid) {

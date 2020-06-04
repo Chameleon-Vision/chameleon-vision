@@ -14,7 +14,7 @@ public class ColouredShapePipelineSettings extends AdvancedPipelineSettings {
     public double minPeri = Integer.MIN_VALUE;
     public double maxPeri = Integer.MAX_VALUE;
     public double accuracyPercentage = 10.0;
-    //Circle detection
+    // Circle detection
     public int allowableThreshold = 5;
     public int minRadius = 0;
     public int maxRadius = 0;
