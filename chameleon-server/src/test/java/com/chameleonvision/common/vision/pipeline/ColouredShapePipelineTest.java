@@ -7,8 +7,14 @@ import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
 import com.chameleonvision.common.vision.opencv.ContourGroupingMode;
 import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
 import com.chameleonvision.common.vision.opencv.ContourShape;
+
+import java.io.File;
 import java.util.Objects;
 import org.junit.jupiter.api.Test;
+import org.opencv.core.Mat;
+import org.opencv.highgui.HighGui;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 public class ColouredShapePipelineTest {
 
@@ -67,6 +73,27 @@ public class ColouredShapePipelineTest {
         printTestResults(colouredShapePipelineResult);
     }
 
+    @Test
+    public static void testPowercellDetection(ColouredShapePipelineSettings settings, ColouredShapePipeline pipeline) {
+        File[] powerCells = new File(Objects.requireNonNull(
+                ColouredShapePipelineTest.class
+                        .getClassLoader()
+                        .getResource("polygons/powercells"))
+                .getPath()
+                .substring(1)).listFiles();
+        for(File powerCellImage: powerCells){
+            var frameProvider =
+                    new FileFrameProvider(
+                            powerCellImage.getAbsolutePath(),
+                            TestUtils.WPI2019Image.FOV);
+            settings.maxCannyThresh = 200;
+            settings.accuracy = 5;
+            testCircleShapeDetection(
+                    pipeline, settings, frameProvider.get().frameStaticProperties, frameProvider.get());
+        }
+
+    }
+
     public static void main(String[] args) {
         TestUtils.loadLibraries();
         var frameProvider =
@@ -99,6 +126,7 @@ public class ColouredShapePipelineTest {
                 pipeline, settings, frameProvider.get().frameStaticProperties, frameProvider.get());
         testCircleShapeDetection(
                 pipeline, settings, frameProvider.get().frameStaticProperties, frameProvider.get());
+        testPowercellDetection(settings, pipeline);
     }
 
     private static void printTestResults(CVPipelineResult pipelineResult) {
