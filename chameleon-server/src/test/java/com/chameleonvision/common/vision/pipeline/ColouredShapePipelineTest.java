@@ -7,14 +7,9 @@ import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
 import com.chameleonvision.common.vision.opencv.ContourGroupingMode;
 import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
 import com.chameleonvision.common.vision.opencv.ContourShape;
-
 import java.io.File;
 import java.util.Objects;
 import org.junit.jupiter.api.Test;
-import org.opencv.core.Mat;
-import org.opencv.highgui.HighGui;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 
 public class ColouredShapePipelineTest {
 
@@ -74,24 +69,29 @@ public class ColouredShapePipelineTest {
     }
 
     @Test
-    public static void testPowercellDetection(ColouredShapePipelineSettings settings, ColouredShapePipeline pipeline) {
-        File[] powerCells = new File(Objects.requireNonNull(
-                ColouredShapePipelineTest.class
-                        .getClassLoader()
-                        .getResource("polygons/powercells"))
-                .getPath()
-                .substring(1)).listFiles();
-        for(File powerCellImage: powerCells){
+    public static void testPowercellDetection(
+            ColouredShapePipelineSettings settings, ColouredShapePipeline pipeline) {
+        File[] powerCells =
+                new File(
+                                Objects.requireNonNull(
+                                                ColouredShapePipelineTest.class
+                                                        .getClassLoader()
+                                                        .getResource("polygons/powercells"))
+                                        .getPath()
+                                        .substring(1))
+                        .listFiles();
+        settings.hsvHue.set(10, 40);
+        settings.hsvSaturation.set(100, 255);
+        settings.hsvValue.set(100, 255);
+        settings.maxCannyThresh = 50;
+        settings.accuracy = 15;
+        settings.allowableThreshold = 5;
+        for (File powerCellImage : powerCells) {
             var frameProvider =
-                    new FileFrameProvider(
-                            powerCellImage.getAbsolutePath(),
-                            TestUtils.WPI2019Image.FOV);
-            settings.maxCannyThresh = 200;
-            settings.accuracy = 5;
+                    new FileFrameProvider(powerCellImage.getAbsolutePath(), TestUtils.WPI2019Image.FOV);
             testCircleShapeDetection(
                     pipeline, settings, frameProvider.get().frameStaticProperties, frameProvider.get());
         }
-
     }
 
     public static void main(String[] args) {
@@ -107,7 +107,7 @@ public class ColouredShapePipelineTest {
                         TestUtils.WPI2019Image.FOV);
         var settings = new ColouredShapePipelineSettings();
         settings.hsvHue.set(0, 100);
-        settings.hsvSaturation.set(80, 255);
+        settings.hsvSaturation.set(100, 255);
         settings.hsvValue.set(100, 255);
         settings.outputShowThresholded = true;
         settings.outputShowMultipleTargets = true;
