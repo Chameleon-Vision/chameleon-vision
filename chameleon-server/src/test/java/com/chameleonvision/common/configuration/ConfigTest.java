@@ -19,9 +19,9 @@ public class ConfigTest {
 
     private static final ConfigManager configMgr;
     private static final CameraConfiguration cameraConfig = new CameraConfiguration();
-    private static final ReflectivePipelineSettings reflectivePipelineSettings =
+    private static final ReflectivePipelineSettings REFLECTIVE_PIPELINE_SETTINGS =
             new ReflectivePipelineSettings();
-    private static final ColoredShapePipelineSettings coloredShapePipelineSettings =
+    private static final ColoredShapePipelineSettings COLORED_SHAPE_PIPELINE_SETTINGS =
             new ColoredShapePipelineSettings();
 
     static {
@@ -36,21 +36,21 @@ public class ConfigTest {
 
         cameraConfig.name = "TestCamera";
 
-        reflectivePipelineSettings.pipelineNickname = "2019Tape";
-        reflectivePipelineSettings.targetModel = TargetModel.get2019Target();
+        REFLECTIVE_PIPELINE_SETTINGS.pipelineNickname = "2019Tape";
+        REFLECTIVE_PIPELINE_SETTINGS.targetModel = TargetModel.get2019Target();
 
-        coloredShapePipelineSettings.pipelineNickname = "2019Cargo";
-        coloredShapePipelineSettings.pipelineIndex = 1;
+        COLORED_SHAPE_PIPELINE_SETTINGS.pipelineNickname = "2019Cargo";
+        COLORED_SHAPE_PIPELINE_SETTINGS.pipelineIndex = 1;
 
-        cameraConfig.addPipelineSetting(reflectivePipelineSettings);
-        cameraConfig.addPipelineSetting(coloredShapePipelineSettings);
+        cameraConfig.addPipelineSetting(REFLECTIVE_PIPELINE_SETTINGS);
+        cameraConfig.addPipelineSetting(COLORED_SHAPE_PIPELINE_SETTINGS);
     }
 
     @Test
     @Order(1)
     public void serializeConfig() throws IOException {
         TestUtils.loadLibraries();
-        JacksonUtils.serializer(Path.of("settings.json"), reflectivePipelineSettings);
+        JacksonUtils.serializer(Path.of("settings.json"), REFLECTIVE_PIPELINE_SETTINGS);
 
         Logger.setLevel(LogGroup.General, Level.DE_PEST);
         configMgr.getConfig().addCameraConfig(cameraConfig);
@@ -80,6 +80,9 @@ public class ConfigTest {
                 configMgr.getConfig().getCameraConfigurations().get("TestCamera").pipelineSettings.get(0);
         var coloredShapePipelineSettings =
                 configMgr.getConfig().getCameraConfigurations().get("TestCamera").pipelineSettings.get(1);
+
+        Assertions.assertEquals(REFLECTIVE_PIPELINE_SETTINGS, reflectivePipelineSettings);
+        Assertions.assertEquals(COLORED_SHAPE_PIPELINE_SETTINGS, coloredShapePipelineSettings);
 
         Assertions.assertTrue(
                 reflectivePipelineSettings instanceof ReflectivePipelineSettings,

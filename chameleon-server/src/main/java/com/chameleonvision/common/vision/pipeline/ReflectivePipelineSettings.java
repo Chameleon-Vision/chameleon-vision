@@ -50,7 +50,7 @@ public class ReflectivePipelineSettings extends AdvancedPipelineSettings {
                         == 0
                 && contourGroupingMode == that.contourGroupingMode
                 && contourIntersection == that.contourIntersection
-                && cameraCalibration.equals(that.cameraCalibration)
+                && Objects.equals(cameraCalibration, that.cameraCalibration)
                 && targetModel.equals(that.targetModel)
                 && cameraPitch.equals(that.cameraPitch)
                 && cornerDetectionStrategy == that.cornerDetectionStrategy;

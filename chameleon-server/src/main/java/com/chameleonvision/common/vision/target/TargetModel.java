@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import org.opencv.core.MatOfPoint3f;
 import org.opencv.core.Point3;
 
@@ -84,6 +86,20 @@ public class TargetModel implements Releasable {
                         new Point3(7.313, -2.662, 0),
                         new Point3(5.936, 2.662, 0));
         return new TargetModel(corners, 4);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TargetModel)) return false;
+        TargetModel that = (TargetModel) o;
+        return Double.compare(that.boxHeight, boxHeight) == 0 &&
+                Objects.equals(realWorldCoordinatesArray, that.realWorldCoordinatesArray);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(realWorldCoordinatesArray, boxHeight);
     }
 
     @Override
