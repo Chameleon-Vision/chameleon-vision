@@ -17,12 +17,17 @@ import org.junit.jupiter.api.*;
 
 public class ConfigTest {
 
-    private static final ConfigManager configMgr = ConfigManager.getInstance();
+    private static final ConfigManager configMgr;
     private static final CameraConfiguration cameraConfig = new CameraConfiguration();
     private static final ReflectivePipelineSettings reflectivePipelineSettings =
             new ReflectivePipelineSettings();
     private static final ColoredShapePipelineSettings coloredShapePipelineSettings =
             new ColoredShapePipelineSettings();
+
+    static {
+        TestUtils.loadLibraries();
+        configMgr = ConfigManager.getInstance();
+    }
 
     @BeforeAll
     public static void init() {
