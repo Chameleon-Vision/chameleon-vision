@@ -29,8 +29,10 @@ Vue.use(VueAxios, axios);
 Vue.prototype.$msgPack = msgPack(true);
 
 import {dataHandleMixin} from './mixins/global/dataHandleMixin'
+import {undoRedoPipelineMixin} from './mixins/pipeline/undoRedo'
 
 Vue.mixin(dataHandleMixin);
+Vue.mixin(undoRedoPipelineMixin)
 new Vue({
     router,
     store,

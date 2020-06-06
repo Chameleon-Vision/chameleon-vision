@@ -25,11 +25,10 @@
             CVselect,
         },
         methods: {
+
         },
         data() {
             return {
-                t: 0,
-                a: 1
             }
         },
         computed: {

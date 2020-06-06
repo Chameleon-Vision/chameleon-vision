@@ -27,7 +27,6 @@ export default {
     },
     mutations: {
         isBinary: (state, value) => {
-            console.log(value)
             state.isBinary = value
         },
         mutatePipeline: (state, {key, value}) => {

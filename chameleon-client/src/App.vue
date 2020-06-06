@@ -74,16 +74,26 @@
         },
         data: () => ({
             timer: undefined,
-            isLogger: true,
+            isLogger: false,
             log: ""
         }),
         created() {
             document.addEventListener("keydown", e => {
-                if (e.key === "`") {
-                    this.isLogger = !this.isLogger;
-                    console.log(this.isLogger)
-                } else if (e.key === "z" && e.ctrlKey) {
-                    console.log("undo")
+                switch (e.key) {
+                    case '`' :
+                        this.isLogger = !this.isLogger;
+                        break;
+                    case "z":
+                        if (e.ctrlKey && this.canUndo) {
+                            this.undo();
+                        }
+                        break;
+                    case "y":
+                        if (e.ctrlKey && this.canRedo) {
+                            this.redo();
+                        }
+                        break;
+
                 }
             });
             this.$options.sockets.onmessage = (data) => {
@@ -133,12 +143,14 @@
         box-shadow: #282828 0 0 5px 1px;
         background-color: #2b2b2b;
     }
+
     ::-webkit-scrollbar {
         width: 0.5em;
         border-radius: 5px;
     }
+
     ::-webkit-scrollbar-track {
-        -webkit-box-shadow: inset 0 0 6px     rgba(0,0,0,0.3);
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
         border-radius: 10px;
     }
 
@@ -147,6 +159,7 @@
         background-color: #4baf62;
         border-radius: 10px;
     }
+
     /*TODO SCROLLBAR CLASS and npm update*/
     .container {
         background-color: #212121;

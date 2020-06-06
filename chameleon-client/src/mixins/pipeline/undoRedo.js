@@ -1,5 +1,6 @@
-import { cloneDeep } from "lodash"
-export const undoRedoMixin = {
+import {cloneDeep} from "lodash"
+
+export const undoRedoPipelineMixin = {
     data() {
         return {
             done: [],
@@ -16,8 +17,7 @@ export const undoRedoMixin = {
         }
     },
     methods: {
-        updateList(val) {
-
+        updatePipeline(val) {
             this.done.push(cloneDeep(val));
             if (this.newMutation) {
                 this.undone = []
@@ -33,7 +33,7 @@ export const undoRedoMixin = {
             let commit = this.done.pop();
             this.undone.push(commit);
             this.newMutation = false;
-            
+
             // this.done.forEach(mutation => {
             //     switch (typeof mutation.payload) {
             //         case 'object':
