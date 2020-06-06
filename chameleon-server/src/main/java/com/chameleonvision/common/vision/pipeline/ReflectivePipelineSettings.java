@@ -7,6 +7,7 @@ import com.chameleonvision.common.vision.pipe.impl.CornerDetectionPipe;
 import com.chameleonvision.common.vision.target.TargetModel;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import java.util.Objects;
 
 @JsonTypeName("ReflectivePipelineSettings")
 public class ReflectivePipelineSettings extends AdvancedPipelineSettings {
@@ -33,5 +34,42 @@ public class ReflectivePipelineSettings extends AdvancedPipelineSettings {
     public ReflectivePipelineSettings() {
         super();
         pipelineType = PipelineType.Reflective;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ReflectivePipelineSettings that = (ReflectivePipelineSettings) o;
+        return solvePNPEnabled == that.solvePNPEnabled
+                && cornerDetectionUseConvexHulls == that.cornerDetectionUseConvexHulls
+                && cornerDetectionExactSideCount == that.cornerDetectionExactSideCount
+                && cornerDetectionSideCount == that.cornerDetectionSideCount
+                && Double.compare(that.cornerDetectionAccuracyPercentage, cornerDetectionAccuracyPercentage)
+                        == 0
+                && contourGroupingMode == that.contourGroupingMode
+                && contourIntersection == that.contourIntersection
+                && cameraCalibration.equals(that.cameraCalibration)
+                && targetModel.equals(that.targetModel)
+                && cameraPitch.equals(that.cameraPitch)
+                && cornerDetectionStrategy == that.cornerDetectionStrategy;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                super.hashCode(),
+                contourGroupingMode,
+                contourIntersection,
+                solvePNPEnabled,
+                cameraCalibration,
+                targetModel,
+                cameraPitch,
+                cornerDetectionStrategy,
+                cornerDetectionUseConvexHulls,
+                cornerDetectionExactSideCount,
+                cornerDetectionSideCount,
+                cornerDetectionAccuracyPercentage);
     }
 }
