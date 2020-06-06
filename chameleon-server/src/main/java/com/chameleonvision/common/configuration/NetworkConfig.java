@@ -8,5 +8,5 @@ public class NetworkConfig {
     public String ip = "";
     public String gateway = "";
     public String netmask = "";
-    public String hostname = "Chameleon-vision";
+    public String hostname = "chameleon-vision";
 }

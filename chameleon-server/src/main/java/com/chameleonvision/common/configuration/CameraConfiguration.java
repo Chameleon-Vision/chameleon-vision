@@ -16,7 +16,6 @@ public class CameraConfiguration {
     public String name = "";
     public String nickname = "";
     public double FOV = 70;
-    public StreamDivisor divisor = StreamDivisor.NONE;
     public CameraCalibrationCoefficients calibration;
 
     @JsonIgnore // this ignores the pipes as we serialize them to their own subfolder
