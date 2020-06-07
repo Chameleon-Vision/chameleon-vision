@@ -11,10 +11,12 @@ import com.chameleonvision.common.vision.pipe.CVPipeResult;
 import com.chameleonvision.common.vision.pipe.impl.*;
 import com.chameleonvision.common.vision.target.PotentialTarget;
 import com.chameleonvision.common.vision.target.TrackedTarget;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 
 public class ColouredShapePipeline
         extends CVPipeline<CVPipelineResult, ColouredShapePipelineSettings> {
@@ -30,12 +32,19 @@ public class ColouredShapePipeline
     private final SpeckleRejectPipe speckleRejectPipe = new SpeckleRejectPipe();
     private final GroupContoursPipe groupContoursPipe = new GroupContoursPipe();
     private final SortContoursPipe sortContoursPipe = new SortContoursPipe();
+    private final CornerDetectionPipe cornerDetectionPipe = new CornerDetectionPipe();
     private final Collect2dTargetsPipe collect2dTargetsPipe = new Collect2dTargetsPipe();
+    private final SolvePNPPipe solvePNPPipe = new SolvePNPPipe();
     private final Draw2dCrosshairPipe draw2dCrosshairPipe = new Draw2dCrosshairPipe();
     private final Draw2dContoursPipe draw2dContoursPipe = new Draw2dContoursPipe();
+    private final Draw3dTargetsPipe draw3dTargetsPipe = new Draw3dTargetsPipe();
 
     private Mat rawInputMat = new Mat();
     private DualMat outputMats = new DualMat();
+    private List<CVShape> shapes;
+    private CVPipeResult<Mat> result;
+    private CVPipeResult<List<TrackedTarget>> targetList;
+    private Point[] rectPoints = new Point[4];
 
     ColouredShapePipeline() {
         settings = new ColouredShapePipelineSettings();
@@ -125,6 +134,25 @@ public class ColouredShapePipeline
                 new Draw2dCrosshairPipe.Draw2dCrosshairParams(
                         settings.offsetRobotOffsetMode, settings.offsetCalibrationPoint);
         draw2dCrosshairPipe.setParams(draw2dCrosshairParams);
+
+        var params =
+                new CornerDetectionPipe.CornerDetectionPipeParameters(
+                        settings.cornerDetectionStrategy,
+                        settings.cornerDetectionUseConvexHulls,
+                        settings.cornerDetectionExactSideCount,
+                        settings.cornerDetectionSideCount,
+                        settings.cornerDetectionAccuracyPercentage);
+        cornerDetectionPipe.setParams(params);
+
+        var draw3dContoursParams =
+                new Draw3dTargetsPipe.Draw3dContoursParams(
+                        settings.cameraCalibration, settings.targetModel);
+        draw3dTargetsPipe.setParams(draw3dContoursParams);
+
+        var solvePNPParams =
+                new SolvePNPPipe.SolvePNPPipeParams(
+                        settings.cameraCalibration, settings.cameraPitch, settings.targetModel);
+        solvePNPPipe.setParams(solvePNPParams);
     }
 
     @Override
@@ -157,8 +185,6 @@ public class ColouredShapePipeline
                 speckleRejectPipe.apply(findContoursResult.result);
         sumPipeNanosElapsed += speckleRejectResult.nanosElapsed;
 
-        List<CVShape> shapes;
-
         if (settings.desiredShape == ContourShape.Circle) {
             CVPipeResult<List<CVShape>> findCirclesResult =
                     findCirclesPipe.apply(Pair.of(hsvPipeResult.result, speckleRejectResult.result));
@@ -189,8 +215,25 @@ public class ColouredShapePipeline
                 collect2dTargetsPipe.apply(sortContoursResult.result);
         sumPipeNanosElapsed += collect2dTargetsResult.nanosElapsed;
 
+        if (settings.solvePNPEnabled && settings.desiredShape == ContourShape.Circle) {
+            var cornerDetectionResult = cornerDetectionPipe.apply(collect2dTargetsResult.result);
+            collect2dTargetsResult.result.forEach(
+                    shape -> {
+                        shape.getMinAreaRect().points(rectPoints);
+                        shape.setCorners(Arrays.asList(rectPoints));
+                    });
+            sumPipeNanosElapsed += cornerDetectionResult.nanosElapsed;
+
+            var solvePNPResult = solvePNPPipe.apply(cornerDetectionResult.result);
+            sumPipeNanosElapsed += solvePNPResult.nanosElapsed;
+
+            targetList = solvePNPResult;
+        } else {
+            targetList = collect2dTargetsResult;
+        }
+
         CVPipeResult<Mat> draw2dCrosshairResult =
-                draw2dCrosshairPipe.apply(Pair.of(outputMatResult.result, collect2dTargetsResult.result));
+                draw2dCrosshairPipe.apply(Pair.of(outputMatResult.result, targetList.result));
         sumPipeNanosElapsed += draw2dCrosshairResult.nanosElapsed;
 
         CVPipeResult<Mat> draw2dContoursResult =
@@ -198,9 +241,18 @@ public class ColouredShapePipeline
                         Pair.of(draw2dCrosshairResult.result, collect2dTargetsResult.result));
         sumPipeNanosElapsed += draw2dContoursResult.nanosElapsed;
 
+        if (settings.solvePNPEnabled && settings.desiredShape == ContourShape.Circle) {
+            result =
+                    draw3dTargetsPipe.apply(
+                            Pair.of(draw2dCrosshairResult.result, collect2dTargetsResult.result));
+            sumPipeNanosElapsed += result.nanosElapsed;
+        } else {
+            result = draw2dContoursResult;
+        }
+
         return new CVPipelineResult(
                 MathUtils.nanosToMillis(sumPipeNanosElapsed),
                 collect2dTargetsResult.result,
-                new Frame(new CVMat(draw2dCrosshairResult.result), frame.frameStaticProperties));
+                new Frame(new CVMat(result.result), frame.frameStaticProperties));
     }
 }

@@ -9,11 +9,9 @@ import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
 import com.chameleonvision.common.vision.opencv.ContourShape;
 import java.io.File;
 import java.util.Objects;
-import org.junit.jupiter.api.Test;
 
 public class ColouredShapePipelineTest {
 
-    @Test
     public static void testTriangleDetection(
             ColouredShapePipeline pipeline,
             ColouredShapePipelineSettings settings,
@@ -26,7 +24,6 @@ public class ColouredShapePipelineTest {
         printTestResults(colouredShapePipelineResult);
     }
 
-    @Test
     public static void testQuadrilateralDetection(
             ColouredShapePipeline pipeline,
             ColouredShapePipelineSettings settings,
@@ -40,7 +37,6 @@ public class ColouredShapePipelineTest {
         printTestResults(colouredShapePipelineResult);
     }
 
-    @Test
     public static void testCustomShapeDetection(
             ColouredShapePipeline pipeline,
             ColouredShapePipelineSettings settings,
@@ -54,7 +50,6 @@ public class ColouredShapePipelineTest {
         printTestResults(colouredShapePipelineResult);
     }
 
-    @Test
     public static void testCircleShapeDetection(
             ColouredShapePipeline pipeline,
             ColouredShapePipelineSettings settings,
@@ -68,7 +63,6 @@ public class ColouredShapePipelineTest {
         printTestResults(colouredShapePipelineResult);
     }
 
-    @Test
     public static void testPowercellDetection(
             ColouredShapePipelineSettings settings, ColouredShapePipeline pipeline) {
         File[] powerCells =
