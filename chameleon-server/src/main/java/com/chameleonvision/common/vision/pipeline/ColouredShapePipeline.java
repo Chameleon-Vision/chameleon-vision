@@ -21,30 +21,30 @@ import org.opencv.core.Point;
 public class ColouredShapePipeline
         extends CVPipeline<CVPipelineResult, ColouredShapePipelineSettings> {
 
-    private final FindPolygonPipe findPolygonPipe = new FindPolygonPipe();
-    private final FilterShapesPipe filterShapesPipe = new FilterShapesPipe();
-    private final FindCirclesPipe findCirclesPipe = new FindCirclesPipe();
     private final RotateImagePipe rotateImagePipe = new RotateImagePipe();
     private final ErodeDilatePipe erodeDilatePipe = new ErodeDilatePipe();
     private final HSVPipe hsvPipe = new HSVPipe();
     private final OutputMatPipe outputMatPipe = new OutputMatPipe();
-    private final FindContoursPipe findContoursPipe = new FindContoursPipe();
     private final SpeckleRejectPipe speckleRejectPipe = new SpeckleRejectPipe();
+    private final FindContoursPipe findContoursPipe = new FindContoursPipe();
+    private final FindPolygonPipe findPolygonPipe = new FindPolygonPipe();
+    private final FindCirclesPipe findCirclesPipe = new FindCirclesPipe();
+    private final FilterShapesPipe filterShapesPipe = new FilterShapesPipe();
     private final GroupContoursPipe groupContoursPipe = new GroupContoursPipe();
     private final SortContoursPipe sortContoursPipe = new SortContoursPipe();
-    private final CornerDetectionPipe cornerDetectionPipe = new CornerDetectionPipe();
     private final Collect2dTargetsPipe collect2dTargetsPipe = new Collect2dTargetsPipe();
+    private final CornerDetectionPipe cornerDetectionPipe = new CornerDetectionPipe();
     private final SolvePNPPipe solvePNPPipe = new SolvePNPPipe();
     private final Draw2dCrosshairPipe draw2dCrosshairPipe = new Draw2dCrosshairPipe();
     private final Draw2dContoursPipe draw2dContoursPipe = new Draw2dContoursPipe();
     private final Draw3dTargetsPipe draw3dTargetsPipe = new Draw3dTargetsPipe();
 
-    private Mat rawInputMat = new Mat();
-    private DualMat outputMats = new DualMat();
+    private final Mat rawInputMat = new Mat();
+    private final DualMat outputMats = new DualMat();
     private List<CVShape> shapes;
     private CVPipeResult<Mat> result;
     private CVPipeResult<List<TrackedTarget>> targetList;
-    private Point[] rectPoints = new Point[4];
+    private final Point[] rectPoints = new Point[4];
 
     ColouredShapePipeline() {
         settings = new ColouredShapePipelineSettings();
@@ -53,19 +53,6 @@ public class ColouredShapePipeline
     @Override
     protected void setPipeParams(
             FrameStaticProperties frameStaticProperties, ColouredShapePipelineSettings settings) {
-
-        FindPolygonPipeParams findPolygonPipeParams =
-                new FindPolygonPipeParams(settings.accuracyPercentage);
-        findPolygonPipe.setParams(findPolygonPipeParams);
-
-        FilterShapesPipeParams filterShapesPipeParams =
-                new FilterShapesPipeParams(
-                        settings.desiredShape,
-                        settings.minArea,
-                        settings.maxArea,
-                        settings.minPeri,
-                        settings.maxPeri);
-        filterShapesPipe.setParams(filterShapesPipeParams);
 
         RotateImagePipe.RotateImageParams rotateImageParams =
                 new RotateImagePipe.RotateImageParams(settings.inputImageRotationMode);
@@ -84,22 +71,17 @@ public class ColouredShapePipeline
                 new OutputMatPipe.OutputMatParams(settings.outputShowThresholded);
         outputMatPipe.setParams(outputMatParams);
 
-        FindContoursPipe.FindContoursParams findContoursParams =
-                new FindContoursPipe.FindContoursParams();
-        findContoursPipe.setParams(findContoursParams);
-
         SpeckleRejectPipe.SpeckleRejectParams speckleRejectParams =
                 new SpeckleRejectPipe.SpeckleRejectParams(settings.contourSpecklePercentage);
         speckleRejectPipe.setParams(speckleRejectParams);
 
-        GroupContoursPipe.GroupContoursParams groupContoursParams =
-                new GroupContoursPipe.GroupContoursParams(
-                        settings.contourGroupingMode, settings.contourIntersection);
-        groupContoursPipe.setParams(groupContoursParams);
+        FindContoursPipe.FindContoursParams findContoursParams =
+                new FindContoursPipe.FindContoursParams();
+        findContoursPipe.setParams(findContoursParams);
 
-        SortContoursPipe.SortContoursParams sortContoursParams =
-                new SortContoursPipe.SortContoursParams(settings.contourSortMode, frameStaticProperties, 5);
-        sortContoursPipe.setParams(sortContoursParams);
+        FindPolygonPipeParams findPolygonPipeParams =
+                new FindPolygonPipeParams(settings.accuracyPercentage);
+        findPolygonPipe.setParams(findPolygonPipeParams);
 
         FindCirclesPipe.FindCirclePipeParams findCirclePipeParams =
                 new FindCirclesPipe.FindCirclePipeParams(
@@ -111,6 +93,24 @@ public class ColouredShapePipeline
                         settings.accuracy);
         findCirclesPipe.setParams(findCirclePipeParams);
 
+        FilterShapesPipeParams filterShapesPipeParams =
+                new FilterShapesPipeParams(
+                        settings.desiredShape,
+                        settings.minArea,
+                        settings.maxArea,
+                        settings.minPeri,
+                        settings.maxPeri);
+        filterShapesPipe.setParams(filterShapesPipeParams);
+
+        GroupContoursPipe.GroupContoursParams groupContoursParams =
+                new GroupContoursPipe.GroupContoursParams(
+                        settings.contourGroupingMode, settings.contourIntersection);
+        groupContoursPipe.setParams(groupContoursParams);
+
+        SortContoursPipe.SortContoursParams sortContoursParams =
+                new SortContoursPipe.SortContoursParams(settings.contourSortMode, frameStaticProperties, 5);
+        sortContoursPipe.setParams(sortContoursParams);
+
         Collect2dTargetsPipe.Collect2dTargetsParams collect2dTargetsParams =
                 new Collect2dTargetsPipe.Collect2dTargetsParams(
                         frameStaticProperties,
@@ -121,6 +121,20 @@ public class ColouredShapePipeline
                         settings.contourTargetOffsetPointEdge,
                         settings.contourTargetOrientation);
         collect2dTargetsPipe.setParams(collect2dTargetsParams);
+
+        var params =
+                new CornerDetectionPipe.CornerDetectionPipeParameters(
+                        settings.cornerDetectionStrategy,
+                        settings.cornerDetectionUseConvexHulls,
+                        settings.cornerDetectionExactSideCount,
+                        settings.cornerDetectionSideCount,
+                        settings.cornerDetectionAccuracyPercentage);
+        cornerDetectionPipe.setParams(params);
+
+        var solvePNPParams =
+                new SolvePNPPipe.SolvePNPPipeParams(
+                        settings.cameraCalibration, settings.cameraPitch, settings.targetModel);
+        solvePNPPipe.setParams(solvePNPParams);
 
         Draw2dContoursPipe.Draw2dContoursParams draw2dContoursParams =
                 new Draw2dContoursPipe.Draw2dContoursParams(settings.outputShowMultipleTargets);
@@ -135,24 +149,10 @@ public class ColouredShapePipeline
                         settings.offsetRobotOffsetMode, settings.offsetCalibrationPoint);
         draw2dCrosshairPipe.setParams(draw2dCrosshairParams);
 
-        var params =
-                new CornerDetectionPipe.CornerDetectionPipeParameters(
-                        settings.cornerDetectionStrategy,
-                        settings.cornerDetectionUseConvexHulls,
-                        settings.cornerDetectionExactSideCount,
-                        settings.cornerDetectionSideCount,
-                        settings.cornerDetectionAccuracyPercentage);
-        cornerDetectionPipe.setParams(params);
-
         var draw3dContoursParams =
                 new Draw3dTargetsPipe.Draw3dContoursParams(
                         settings.cameraCalibration, settings.targetModel);
         draw3dTargetsPipe.setParams(draw3dContoursParams);
-
-        var solvePNPParams =
-                new SolvePNPPipe.SolvePNPPipeParams(
-                        settings.cameraCalibration, settings.cameraPitch, settings.targetModel);
-        solvePNPPipe.setParams(solvePNPParams);
     }
 
     @Override
