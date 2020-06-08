@@ -6,8 +6,8 @@ import com.chameleonvision.common.logging.Logger;
 import com.chameleonvision.common.vision.camera.CameraType;
 import com.chameleonvision.common.vision.pipeline.CVPipelineSettings;
 import com.chameleonvision.common.vision.pipeline.DriverModePipelineSettings;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.chameleonvision.common.vision.processes.PipelineManager;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
@@ -24,6 +24,10 @@ public class CameraConfiguration {
     public CameraType cameraType = CameraType.UsbCamera;
     public CameraCalibrationCoefficients calibration;
     public List<Integer> CameraLEDs = new ArrayList<>();
+
+    public CameraConfiguration(String baseName, String path) {
+        this(baseName, baseName, baseName, path);
+    }
 
     public CameraConfiguration(String baseName, String uniqueName, String nickname, String path) {
         this.baseName = baseName;
