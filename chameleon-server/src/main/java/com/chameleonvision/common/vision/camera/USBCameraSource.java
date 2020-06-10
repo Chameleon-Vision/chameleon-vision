@@ -14,17 +14,18 @@ import java.util.*;
 public class USBCameraSource implements VisionSource {
     private static final int PS3EYE_VID = 0x1415;
     private static final int PS3EYE_PID = 0x2000;
-    CvSink cvSink;
-    UsbCamera camera;
-    final boolean isPS3Eye;
+
+    private final UsbCamera camera;
     private final USBCameraSettables usbCameraSettables;
-    USBFrameProvider usbFrameProvider;
+    private final USBFrameProvider usbFrameProvider;
+
+    public final boolean isPS3Eye;
 
     public USBCameraSource(CameraConfiguration config) {
         this.camera = new UsbCamera(config.nickname, config.path);
         this.isPS3Eye =
                 camera.getInfo().productId == PS3EYE_PID && camera.getInfo().vendorId == PS3EYE_VID;
-        this.cvSink = CameraServer.getInstance().getVideo(this.camera);
+        CvSink cvSink = CameraServer.getInstance().getVideo(this.camera);
         this.usbCameraSettables = new USBCameraSettables(config);
         this.usbFrameProvider =
                 new USBFrameProvider(cvSink, usbCameraSettables.getFrameStaticProperties());
