@@ -7,6 +7,8 @@ import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
 import com.chameleonvision.common.vision.opencv.ContourGroupingMode;
 import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
 import com.chameleonvision.common.vision.opencv.ContourShape;
+import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.util.Objects;
 
@@ -18,7 +20,7 @@ public class ColouredShapePipelineTest {
             FrameStaticProperties frameStaticProperties,
             Frame frame) {
         pipeline.setPipeParams(frameStaticProperties, settings);
-        CVPipelineResult colouredShapePipelineResult = pipeline.process(frame, settings);
+        CVPipelineResult colouredShapePipelineResult = pipeline.run(frame);
         TestUtils.showImage(
                 colouredShapePipelineResult.outputFrame.image.getMat(), "Pipeline output: Triangle.");
         printTestResults(colouredShapePipelineResult);
@@ -31,7 +33,7 @@ public class ColouredShapePipelineTest {
             Frame frame) {
         settings.desiredShape = ContourShape.Quadrilateral;
         pipeline.setPipeParams(frameStaticProperties, settings);
-        CVPipelineResult colouredShapePipelineResult = pipeline.process(frame, settings);
+        CVPipelineResult colouredShapePipelineResult = pipeline.run(frame);
         TestUtils.showImage(
                 colouredShapePipelineResult.outputFrame.image.getMat(), "Pipeline output: Quadrilateral.");
         printTestResults(colouredShapePipelineResult);
@@ -44,12 +46,12 @@ public class ColouredShapePipelineTest {
             Frame frame) {
         settings.desiredShape = ContourShape.Custom;
         pipeline.setPipeParams(frameStaticProperties, settings);
-        CVPipelineResult colouredShapePipelineResult = pipeline.process(frame, settings);
+        CVPipelineResult colouredShapePipelineResult = pipeline.run(frame);
         TestUtils.showImage(
                 colouredShapePipelineResult.outputFrame.image.getMat(), "Pipeline output: Custom.");
         printTestResults(colouredShapePipelineResult);
     }
-
+    @Test
     public static void testCircleShapeDetection(
             ColouredShapePipeline pipeline,
             ColouredShapePipelineSettings settings,
@@ -57,47 +59,33 @@ public class ColouredShapePipelineTest {
             Frame frame) {
         settings.desiredShape = ContourShape.Circle;
         pipeline.setPipeParams(frameStaticProperties, settings);
-        CVPipelineResult colouredShapePipelineResult = pipeline.process(frame, settings);
+        CVPipelineResult colouredShapePipelineResult = pipeline.run(frame);
         TestUtils.showImage(
                 colouredShapePipelineResult.outputFrame.image.getMat(), "Pipeline output: Circle.");
         printTestResults(colouredShapePipelineResult);
     }
-
+    @Test
     public static void testPowercellDetection(
             ColouredShapePipelineSettings settings, ColouredShapePipeline pipeline) {
-        File[] powerCells =
-                new File(
-                                Objects.requireNonNull(
-                                                ColouredShapePipelineTest.class
-                                                        .getClassLoader()
-                                                        .getResource("polygons/powercells"))
-                                        .getPath()
-                                        .substring(1))
-                        .listFiles();
+
         settings.hsvHue.set(10, 40);
         settings.hsvSaturation.set(100, 255);
         settings.hsvValue.set(100, 255);
         settings.maxCannyThresh = 50;
         settings.accuracy = 15;
         settings.allowableThreshold = 5;
-        for (File powerCellImage : powerCells) {
-            var frameProvider =
-                    new FileFrameProvider(powerCellImage.getAbsolutePath(), TestUtils.WPI2019Image.FOV);
-            testCircleShapeDetection(
-                    pipeline, settings, frameProvider.get().frameStaticProperties, frameProvider.get());
-        }
+        var frameProvider =
+                new FileFrameProvider(TestUtils.getPowercellImagePath(TestUtils.PowercellTestImages.kPowercell_test_6), TestUtils.WPI2019Image.FOV);
+        testCircleShapeDetection(
+                pipeline, settings, frameProvider.get().frameStaticProperties, frameProvider.get());
     }
 
     public static void main(String[] args) {
         TestUtils.loadLibraries();
+        System.out.println(TestUtils.getWPIImagePath(TestUtils.WPI2020Image.kBlueGoal_108in_Center));
         var frameProvider =
                 new FileFrameProvider(
-                        Objects.requireNonNull(
-                                        ColouredShapePipelineTest.class
-                                                .getClassLoader()
-                                                .getResource("polygons/polygons.png"))
-                                .getPath()
-                                .substring(1),
+                        TestUtils.getPolygonImagePath(TestUtils.PolygonTestImages.kPolygons),
                         TestUtils.WPI2019Image.FOV);
         var settings = new ColouredShapePipelineSettings();
         settings.hsvHue.set(0, 100);

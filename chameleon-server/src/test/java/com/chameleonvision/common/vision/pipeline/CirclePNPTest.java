@@ -107,12 +107,7 @@ public class CirclePNPTest {
 
         var frameProvider =
                 new FileFrameProvider(
-                        Objects.requireNonNull(
-                                        ColouredShapePipelineTest.class
-                                                .getClassLoader()
-                                                .getResource("polygons/powercells/powercell_test_6.png"))
-                                .getPath()
-                                .substring(1),
+                        TestUtils.getPowercellImagePath(TestUtils.PowercellTestImages.kPowercell_test_6),
                         TestUtils.WPI2020Image.FOV);
 
         CVPipelineResult pipelineResult = pipeline.run(frameProvider.get());
