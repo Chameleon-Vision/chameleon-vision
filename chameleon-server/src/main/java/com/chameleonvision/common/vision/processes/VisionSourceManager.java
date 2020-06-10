@@ -7,6 +7,7 @@ import com.chameleonvision.common.vision.frame.provider.NetworkFrameProvider;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.UsbCameraInfo;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.NotImplementedException;
@@ -15,8 +16,10 @@ import org.opencv.videoio.VideoCapture;
 
 public class VisionSourceManager {
     public List<VisionSource> LoadAllSources(List<CameraConfiguration> camerasConfiguration) {
-        List<UsbCameraInfo> allActiveUsbCameras = loadUsbCameras();
-
+        return LoadAllSources(camerasConfiguration, Arrays.asList(UsbCamera.enumerateUsbCameras()));
+    }
+    public List<VisionSource> LoadAllSources(List<CameraConfiguration> camerasConfiguration, List<UsbCameraInfo> usbCameraInfos) {
+        List<UsbCameraInfo> allActiveUsbCameras = loadUsbCameras(usbCameraInfos);
         var UsbCamerasConfiguration =
                 camerasConfiguration.stream()
                         .filter(configuration -> configuration.cameraType == CameraType.UsbCamera)
@@ -26,9 +29,10 @@ public class VisionSourceManager {
         return loadUSBCameraSources(matchUSBCameras(allActiveUsbCameras, UsbCamerasConfiguration));
     }
 
-    private List<UsbCameraInfo> loadUsbCameras() {
+    private List<UsbCameraInfo> loadUsbCameras(List<UsbCameraInfo> usbCameraInfos) {
         List<UsbCameraInfo> activeCameras = new ArrayList<>();
-        for (UsbCameraInfo info : UsbCamera.enumerateUsbCameras()) {
+        for (UsbCameraInfo info : usbCameraInfos) {
+
             VideoCapture cap = new VideoCapture(info.dev);
             if (cap.isOpened()) {
                 cap.release();

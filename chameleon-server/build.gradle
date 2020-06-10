@@ -15,6 +15,7 @@ shadowJar {
 sourceCompatibility = 11
 
 repositories {
+    jcenter()
     mavenCentral()
     maven {
         url = 'https://frcmaven.wpi.edu:443/artifactory/release'
@@ -67,6 +68,7 @@ dependencies {
     compile "edu.wpi.first.thirdparty.frc2020.opencv:opencv-jni:$openCVVersion:windowsx86-64"
 
     testCompile "ch.qos.logback:logback-classic:0.9.26"
+    testCompile "org.mockito:mockito-core:2.+"
 
     // javacv (ew)
 //    def withoutJunk = {
