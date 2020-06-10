@@ -77,23 +77,22 @@ public class TestUtils {
         }
     }
 
-    public enum PolygonTestImages{
+    public enum PolygonTestImages {
         kPolygons;
 
         public final Path path;
 
         Path getPath() {
             var filename = this.toString().substring(1).toLowerCase();
-            return Path.of("polygons",filename + ".png");
+            return Path.of("polygons", filename + ".png");
         }
 
-        PolygonTestImages(){
+        PolygonTestImages() {
             this.path = getPath();
         }
-
     }
 
-    public enum PowercellTestImages{
+    public enum PowercellTestImages {
         kPowercell_test_1,
         kPowercell_test_2,
         kPowercell_test_3,
@@ -108,14 +107,13 @@ public class TestUtils {
             return Path.of(filename + ".png");
         }
 
-        PowercellTestImages(){
+        PowercellTestImages() {
             this.path = getPath();
         }
-
     }
 
     private static Path getResourcesFolderPath() {
-        return Path.of( "src", "test", "resources").toAbsolutePath();
+        return Path.of("src", "test", "resources").toAbsolutePath();
     }
 
     public static Path getTestImagesPath() {
@@ -126,7 +124,7 @@ public class TestUtils {
         return getResourcesFolderPath().resolve("calibration");
     }
 
-    public static Path getPowercellPath(){
+    public static Path getPowercellPath() {
         return getTestImagesPath().resolve("polygons").resolve("powercells");
     }
 
@@ -142,8 +140,9 @@ public class TestUtils {
         return getTestImagesPath().resolve(image.path);
     }
 
-    public static Path getPowercellImagePath(PowercellTestImages image){return getPowercellPath().resolve(image.path);}
-
+    public static Path getPowercellImagePath(PowercellTestImages image) {
+        return getPowercellPath().resolve(image.path);
+    }
 
     public static void loadLibraries() {
         try {

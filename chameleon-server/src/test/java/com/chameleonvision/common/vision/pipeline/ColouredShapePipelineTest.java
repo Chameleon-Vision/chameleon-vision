@@ -9,9 +9,6 @@ import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
 import com.chameleonvision.common.vision.opencv.ContourShape;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.util.Objects;
-
 public class ColouredShapePipelineTest {
 
     public static void testTriangleDetection(
@@ -51,6 +48,7 @@ public class ColouredShapePipelineTest {
                 colouredShapePipelineResult.outputFrame.image.getMat(), "Pipeline output: Custom.");
         printTestResults(colouredShapePipelineResult);
     }
+
     @Test
     public static void testCircleShapeDetection(
             ColouredShapePipeline pipeline,
@@ -64,6 +62,7 @@ public class ColouredShapePipelineTest {
                 colouredShapePipelineResult.outputFrame.image.getMat(), "Pipeline output: Circle.");
         printTestResults(colouredShapePipelineResult);
     }
+
     @Test
     public static void testPowercellDetection(
             ColouredShapePipelineSettings settings, ColouredShapePipeline pipeline) {
@@ -75,7 +74,9 @@ public class ColouredShapePipelineTest {
         settings.accuracy = 15;
         settings.allowableThreshold = 5;
         var frameProvider =
-                new FileFrameProvider(TestUtils.getPowercellImagePath(TestUtils.PowercellTestImages.kPowercell_test_6), TestUtils.WPI2019Image.FOV);
+                new FileFrameProvider(
+                        TestUtils.getPowercellImagePath(TestUtils.PowercellTestImages.kPowercell_test_6),
+                        TestUtils.WPI2019Image.FOV);
         testCircleShapeDetection(
                 pipeline, settings, frameProvider.get().frameStaticProperties, frameProvider.get());
     }
