@@ -8,7 +8,6 @@ import com.chameleonvision.common.vision.camera.USBCameraSource;
 import edu.wpi.cscore.UsbCameraInfo;
 import java.util.HashMap;
 import java.util.List;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,9 +38,9 @@ public class VisionSourceManagerTest {
         VisionSourceManager visionSourceManager = new VisionSourceManager();
         var i = visionSourceManager.LoadAllSources(camConfig, usbSources);
 
-        var firstSource = (USBCameraSource)i.get(0);
+        var firstSource = (USBCameraSource) i.get(0);
+
 
         Assertions.assertFalse(firstSource.isPS3Eye);
-
     }
 }
