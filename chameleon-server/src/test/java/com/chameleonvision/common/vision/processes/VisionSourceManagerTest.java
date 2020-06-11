@@ -20,15 +20,33 @@ public class VisionSourceManagerTest {
     }
 
     final List<UsbCameraInfo> usbCameraInfos =
-            List.of(new UsbCameraInfo(0, "", "meme", new String[] {""}, 1, 1));
+            List.of(
+                    new UsbCameraInfo(0, "/this-is-a-real-path", "cameraByPath", new String[] {""}, 1, 1),
+                    new UsbCameraInfo(2, "/this-is-a-fake-path1", "cameraById", new String[] {""}, 420, 1),
+                    new UsbCameraInfo(1, "/this-is-a-real-path2", "cameraByPath", new String[] {""}, 1, 1),
+                    new UsbCameraInfo(3, "/this-is-a-fake-path2", "cameraById", new String[] {""}, 420, 1),
+                    new UsbCameraInfo(4, "/fake-path420", "notExisting", new String[] {""}, 420, 1));
 
     final List<CameraConfiguration> camConfig =
-            List.of(new CameraConfiguration("meme", "meme", "nickname", "0"));
+            List.of(
+                    new CameraConfiguration("cameraByPath", "dank meme", "good name", "/this-is-a-real-path"),
+                    new CameraConfiguration(
+                            "cameraByPath", "dank meme2", "very original", "/this-is-a-real-path2"),
+                    new CameraConfiguration("cameraById", "camera", "my camera", "2"),
+                    new CameraConfiguration("cameraById", "camera2", "my camera", "3"));
+
+    final List<USBCameraSource> usbCameraSources =
+            List.of(
+                    new USBCameraSource(camConfig.get(0)),
+                    new USBCameraSource(camConfig.get(1)),
+                    new USBCameraSource(camConfig.get(2)),
+                    new USBCameraSource(camConfig.get(3)),
+                    new USBCameraSource(
+                            new CameraConfiguration("notExisting", "notExisting", "notExisting", "4")));
 
     @Test
     public void visionSourceTest() {
         var usbSources = new HashMap<UsbCameraInfo, VideoCapture>();
-
         for (var camInfo : usbCameraInfos) {
             var videoCapture = new VideoCapture(camInfo.dev);
             var spiedCapture = spy(videoCapture);
@@ -36,11 +54,9 @@ public class VisionSourceManagerTest {
             usbSources.put(camInfo, spiedCapture);
         }
         VisionSourceManager visionSourceManager = new VisionSourceManager();
-        var i = visionSourceManager.LoadAllSources(camConfig, usbSources);
-
-        var firstSource = (USBCameraSource) i.get(0);
-
-
-        Assertions.assertFalse(firstSource.isPS3Eye);
+        List<VisionSource> i = visionSourceManager.LoadAllSources(camConfig, usbSources);
+        for (var source : i) {
+            Assertions.assertEquals(source, usbCameraSources.get(i.indexOf(source)));
+        }
     }
 }

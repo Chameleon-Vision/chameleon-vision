@@ -80,23 +80,23 @@ public class VisionSourceManager {
                 infos.remove(cameraInfo);
                 cameraConfigurations.add(config);
             }
-
-            for (UsbCameraInfo info : infos) {
-                // create new camera config for all new cameras
-                String name = info.name.replaceAll("[^\\x00-\\x7F]", "");
-                String uniqueName = name;
-                int suffix = 0;
-
-                while (containsName(cameraConfigurations, uniqueName)) {
-                    suffix++;
-                    uniqueName = String.format("%s (%d)", uniqueName, suffix);
-                }
-
-                CameraConfiguration configuration =
-                        new CameraConfiguration(name, uniqueName, uniqueName, ((Integer) info.dev).toString());
-                cameraConfigurations.add(configuration);
-            }
         }
+        for (UsbCameraInfo info : infos) {
+            // create new camera config for all new cameras
+            String name = info.name.replaceAll("[^\\x00-\\x7F]", "");
+            String uniqueName = name;
+            int suffix = 0;
+
+            while (containsName(cameraConfigurations, uniqueName)) {
+                suffix++;
+                uniqueName = String.format("%s (%d)", uniqueName, suffix);
+            }
+
+            CameraConfiguration configuration =
+                    new CameraConfiguration(name, uniqueName, uniqueName, ((Integer) info.dev).toString());
+            cameraConfigurations.add(configuration);
+        }
+
         return cameraConfigurations;
     }
 

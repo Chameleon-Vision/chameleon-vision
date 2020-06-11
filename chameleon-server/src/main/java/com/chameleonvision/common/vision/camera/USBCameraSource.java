@@ -9,7 +9,6 @@ import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.cameraserver.CameraServer;
-
 import java.util.*;
 
 public class USBCameraSource implements VisionSource {
@@ -41,9 +40,16 @@ public class USBCameraSource implements VisionSource {
         }
         USBCameraSource tmp = (USBCameraSource) obj;
         boolean i = this.isPS3Eye == tmp.isPS3Eye;
-        boolean j = this.configuration.equals(tmp.configuration);
-        boolean k = this.camera.equals(tmp.camera);
-        return j && i && k;
+
+        boolean r = this.configuration.uniqueName.equals(tmp.configuration.uniqueName);
+        boolean c = this.configuration.baseName.equals(tmp.configuration.baseName);
+        boolean j = this.configuration.nickname.equals(tmp.configuration.nickname);
+
+        boolean k = this.camera.getInfo().name.equals(tmp.camera.getInfo().name);
+        boolean x = this.camera.getInfo().productId == tmp.camera.getInfo().productId;
+        boolean y = this.camera.getInfo().vendorId == tmp.camera.getInfo().vendorId;
+        var t = i && r && c && j && k && x && y;
+        return t;
     }
 
     @Override
