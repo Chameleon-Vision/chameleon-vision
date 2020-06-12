@@ -18,8 +18,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 
-public class ColouredShapePipeline
-        extends CVPipeline<CVPipelineResult, ColouredShapePipelineSettings> {
+public class ColoredShapePipeline
+        extends CVPipeline<CVPipelineResult, ColoredShapePipelineSettings> {
 
     private final RotateImagePipe rotateImagePipe = new RotateImagePipe();
     private final ErodeDilatePipe erodeDilatePipe = new ErodeDilatePipe();
@@ -46,13 +46,13 @@ public class ColouredShapePipeline
     private CVPipeResult<List<TrackedTarget>> targetList;
     private final Point[] rectPoints = new Point[4];
 
-    ColouredShapePipeline() {
-        settings = new ColouredShapePipelineSettings();
+    ColoredShapePipeline() {
+        settings = new ColoredShapePipelineSettings();
     }
 
     @Override
     protected void setPipeParams(
-            FrameStaticProperties frameStaticProperties, ColouredShapePipelineSettings settings) {
+            FrameStaticProperties frameStaticProperties, ColoredShapePipelineSettings settings) {
 
         RotateImagePipe.RotateImageParams rotateImageParams =
                 new RotateImagePipe.RotateImageParams(settings.inputImageRotationMode);
@@ -156,7 +156,7 @@ public class ColouredShapePipeline
     }
 
     @Override
-    protected CVPipelineResult process(Frame frame, ColouredShapePipelineSettings settings) {
+    protected CVPipelineResult process(Frame frame, ColoredShapePipelineSettings settings) {
         setPipeParams(frame.frameStaticProperties, settings);
 
         long sumPipeNanosElapsed = 0L;

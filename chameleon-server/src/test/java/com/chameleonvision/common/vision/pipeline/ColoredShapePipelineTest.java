@@ -9,11 +9,11 @@ import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
 import com.chameleonvision.common.vision.opencv.ContourShape;
 import org.junit.jupiter.api.Test;
 
-public class ColouredShapePipelineTest {
+public class ColoredShapePipelineTest {
 
     public static void testTriangleDetection(
-            ColouredShapePipeline pipeline,
-            ColouredShapePipelineSettings settings,
+            ColoredShapePipeline pipeline,
+            ColoredShapePipelineSettings settings,
             FrameStaticProperties frameStaticProperties,
             Frame frame) {
         pipeline.setPipeParams(frameStaticProperties, settings);
@@ -24,8 +24,8 @@ public class ColouredShapePipelineTest {
     }
 
     public static void testQuadrilateralDetection(
-            ColouredShapePipeline pipeline,
-            ColouredShapePipelineSettings settings,
+            ColoredShapePipeline pipeline,
+            ColoredShapePipelineSettings settings,
             FrameStaticProperties frameStaticProperties,
             Frame frame) {
         settings.desiredShape = ContourShape.Quadrilateral;
@@ -37,8 +37,8 @@ public class ColouredShapePipelineTest {
     }
 
     public static void testCustomShapeDetection(
-            ColouredShapePipeline pipeline,
-            ColouredShapePipelineSettings settings,
+            ColoredShapePipeline pipeline,
+            ColoredShapePipelineSettings settings,
             FrameStaticProperties frameStaticProperties,
             Frame frame) {
         settings.desiredShape = ContourShape.Custom;
@@ -51,8 +51,8 @@ public class ColouredShapePipelineTest {
 
     @Test
     public static void testCircleShapeDetection(
-            ColouredShapePipeline pipeline,
-            ColouredShapePipelineSettings settings,
+            ColoredShapePipeline pipeline,
+            ColoredShapePipelineSettings settings,
             FrameStaticProperties frameStaticProperties,
             Frame frame) {
         settings.desiredShape = ContourShape.Circle;
@@ -65,7 +65,7 @@ public class ColouredShapePipelineTest {
 
     @Test
     public static void testPowercellDetection(
-            ColouredShapePipelineSettings settings, ColouredShapePipeline pipeline) {
+            ColoredShapePipelineSettings settings, ColoredShapePipeline pipeline) {
 
         settings.hsvHue.set(10, 40);
         settings.hsvSaturation.set(100, 255);
@@ -88,7 +88,7 @@ public class ColouredShapePipelineTest {
                 new FileFrameProvider(
                         TestUtils.getPolygonImagePath(TestUtils.PolygonTestImages.kPolygons),
                         TestUtils.WPI2019Image.FOV);
-        var settings = new ColouredShapePipelineSettings();
+        var settings = new ColoredShapePipelineSettings();
         settings.hsvHue.set(0, 100);
         settings.hsvSaturation.set(100, 255);
         settings.hsvValue.set(100, 255);
@@ -100,7 +100,7 @@ public class ColouredShapePipelineTest {
         settings.allowableThreshold = 10;
         settings.accuracyPercentage = 30.0;
 
-        ColouredShapePipeline pipeline = new ColouredShapePipeline();
+        ColoredShapePipeline pipeline = new ColoredShapePipeline();
         testTriangleDetection(
                 pipeline, settings, frameProvider.get().frameStaticProperties, frameProvider.get());
         testQuadrilateralDetection(

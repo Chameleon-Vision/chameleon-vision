@@ -80,7 +80,7 @@ public class CirclePNPTest {
 
     @Test
     public void testCircle() {
-        var pipeline = new ColouredShapePipeline();
+        var pipeline = new ColoredShapePipeline();
 
         pipeline.getSettings().hsvHue.set(0, 100);
         pipeline.getSettings().hsvSaturation.set(100, 255);
