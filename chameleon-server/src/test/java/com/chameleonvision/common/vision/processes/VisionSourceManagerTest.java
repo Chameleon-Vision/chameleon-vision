@@ -25,7 +25,8 @@ public class VisionSourceManagerTest {
                     new UsbCameraInfo(2, "/this-is-a-fake-path1", "cameraById", new String[] {""}, 420, 1),
                     new UsbCameraInfo(1, "/this-is-a-real-path2", "cameraByPath", new String[] {""}, 1, 1),
                     new UsbCameraInfo(3, "/this-is-a-fake-path2", "cameraById", new String[] {""}, 420, 1),
-                    new UsbCameraInfo(4, "/fake-path420", "notExisting", new String[] {""}, 420, 1));
+                    new UsbCameraInfo(4, "/fake-path420", "notExisting", new String[] {""}, 420, 1),
+                    new UsbCameraInfo(5, "/fake-path421", "notExisting", new String[] {""}, 420, 1));
 
     final List<CameraConfiguration> camConfig =
             List.of(
@@ -42,7 +43,9 @@ public class VisionSourceManagerTest {
                     new USBCameraSource(camConfig.get(2)),
                     new USBCameraSource(camConfig.get(3)),
                     new USBCameraSource(
-                            new CameraConfiguration("notExisting", "notExisting", "notExisting", "4")));
+                            new CameraConfiguration("notExisting", "notExisting", "notExisting", "4")),
+                    new USBCameraSource(
+                            new CameraConfiguration("notExisting", "notExisting (1)", "notExisting (1)", "5")));
 
     @Test
     public void visionSourceTest() {
