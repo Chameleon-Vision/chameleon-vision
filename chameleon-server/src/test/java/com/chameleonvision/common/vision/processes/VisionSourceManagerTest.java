@@ -51,8 +51,7 @@ public class VisionSourceManagerTest {
     public void visionSourceTest() {
         var usbSources = new HashMap<UsbCameraInfo, VideoCapture>();
         for (var camInfo : usbCameraInfos) {
-            var videoCapture = new VideoCapture(camInfo.dev);
-            var spiedCapture = spy(videoCapture);
+            var spiedCapture = mock(VideoCapture.class);
             when(spiedCapture.isOpened()).thenReturn(true);
             usbSources.put(camInfo, spiedCapture);
         }
