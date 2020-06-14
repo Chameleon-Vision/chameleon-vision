@@ -6,7 +6,7 @@
             </v-col>
             <v-col :cols="10">
                 <v-slider :value="localValue" @start="isClicked = true" @end="isClicked = false" @change="handleclick"
-                          @input="handleInput" dark class="align-center" :max="max" :min="min" hide-details
+                          @input="handleInput" @mouseup="$emit('rollback')" dark class="align-center" :max="max" :min="min" hide-details
                           color="#4baf62" :step="step">
                     <template v-slot:append>
                         <v-text-field dark :max="max" :min="min" :value="localValue" @input="handleChange"
@@ -33,6 +33,7 @@
             handleChange(val) {
                 if (this.isFocused) {
                     this.localValue = parseFloat(val);
+                    this.$emit('rollback')
                 }
             },
             handleInput(val) {

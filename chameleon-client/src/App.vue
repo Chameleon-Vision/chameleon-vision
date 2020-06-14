@@ -84,13 +84,13 @@
                         this.isLogger = !this.isLogger;
                         break;
                     case "z":
-                        if (e.ctrlKey && this.canUndo) {
-                            this.undo();
+                        if (e.ctrlKey && this.$store.getters.canUndo) {
+                            this.$store.dispatch('undo');
                         }
                         break;
                     case "y":
-                        if (e.ctrlKey && this.canRedo) {
-                            this.redo();
+                        if (e.ctrlKey && this.$store.getters.canRedo) {
+                            this.$store.dispatch('redo');
                         }
                         break;
 

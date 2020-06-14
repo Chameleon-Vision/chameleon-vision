@@ -31,7 +31,8 @@ export default {
         },
         mutatePipeline: (state, {key, value}) => {
             // console.log(`key:${key}, value: ${value}`)
-            this.set(state, key, value)
+            state[key] = value
+            // this.set(state, key, value)
         }
 
     },

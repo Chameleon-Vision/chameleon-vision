@@ -1,6 +1,7 @@
 <template>
     <div>
-        <CVslider name="Exposure" v-model="value.exposure" :min="0" :max="100" @input="handleData('exposure')"/>
+        <CVslider name="Exposure" v-model="value.exposure" :min="0" :max="100" @input="handleData('exposure')"
+                  @rollback="rollback('exposure')"/>
         <CVslider name="Brightness" v-model="value.brightness" :min="0" :max="100" @input="handleData('brightness')"/>
         <CVslider name="Gain" v-if="value.gain !== -1" v-model="value.gain" :min="0" :max="100"
                   @input="handleData('gain')"/>
@@ -24,12 +25,9 @@
             CVslider,
             CVselect,
         },
-        methods: {
-
-        },
+        methods: {},
         data() {
-            return {
-            }
+            return {}
         },
         computed: {
             resolutionList: {
