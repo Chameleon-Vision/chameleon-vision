@@ -7,47 +7,27 @@ import com.chameleonvision.common.vision.frame.provider.NetworkFrameProvider;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.UsbCameraInfo;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.opencv.videoio.VideoCapture;
 
 public class VisionSourceManager {
     public List<VisionSource> LoadAllSources(List<CameraConfiguration> camerasConfiguration) {
-        HashMap<UsbCameraInfo, VideoCapture> usbSources = new HashMap<>();
-
-        for (var usbCam : UsbCamera.enumerateUsbCameras()) {
-            usbSources.put(usbCam, new VideoCapture(usbCam.dev));
-        }
-
-        return LoadAllSources(camerasConfiguration, usbSources);
+        return LoadAllSources(camerasConfiguration, Arrays.asList(UsbCamera.enumerateUsbCameras()));
     }
 
     public List<VisionSource> LoadAllSources(
-            List<CameraConfiguration> camerasConfiguration,
-            HashMap<UsbCameraInfo, VideoCapture> usbCameraInfos) {
-        List<UsbCameraInfo> allActiveUsbCameras = verifyUsbCameras(usbCameraInfos);
+            List<CameraConfiguration> camerasConfiguration, List<UsbCameraInfo> usbCameraInfos) {
         var UsbCamerasConfiguration =
                 camerasConfiguration.stream()
                         .filter(configuration -> configuration.cameraType == CameraType.UsbCamera)
                         .collect(Collectors.toList());
         // var HttpCamerasConfiguration = camerasConfiguration.stream().filter(configuration ->
         // configuration.cameraType == CameraType.HttpCamera);
-        var matchedCameras = matchUSBCameras(allActiveUsbCameras, UsbCamerasConfiguration);
+        var matchedCameras = matchUSBCameras(usbCameraInfos, UsbCamerasConfiguration);
         return loadUSBCameraSources(matchedCameras);
-    }
-
-    private List<UsbCameraInfo> verifyUsbCameras(HashMap<UsbCameraInfo, VideoCapture> captures) {
-        List<UsbCameraInfo> activeCameras = new ArrayList<>();
-        for (var cap : captures.entrySet()) {
-            if (cap.getValue().isOpened()) {
-                cap.getValue().release();
-                activeCameras.add(cap.getKey());
-            }
-        }
-        return activeCameras;
     }
 
     private NetworkFrameProvider loadHTTPCamera(CameraConfiguration config) {
@@ -56,6 +36,7 @@ public class VisionSourceManager {
 
     private List<CameraConfiguration> matchUSBCameras(
             List<UsbCameraInfo> infos, List<CameraConfiguration> cameraConfigurationList) {
+        ArrayList<UsbCameraInfo> loopableInfo = new ArrayList<>(infos);
         List<CameraConfiguration> cameraConfigurations = new ArrayList<>();
 
         for (CameraConfiguration config : cameraConfigurationList) {
@@ -63,25 +44,25 @@ public class VisionSourceManager {
             if (!StringUtils.isNumeric(config.path)) {
                 // matching by path
                 cameraInfo =
-                        infos.stream()
+                        loopableInfo.stream()
                                 .filter(usbCameraInfo -> usbCameraInfo.path.equals(config.path))
                                 .findFirst()
                                 .orElse(null);
             } else {
                 // match by index
                 cameraInfo =
-                        infos.stream()
+                        loopableInfo.stream()
                                 .filter(usbCameraInfo -> usbCameraInfo.dev == Integer.parseInt(config.path))
                                 .findFirst()
                                 .orElse(null);
             }
 
             if (cameraInfo != null) {
-                infos.remove(cameraInfo);
+                loopableInfo.remove(cameraInfo);
                 cameraConfigurations.add(config);
             }
         }
-        for (UsbCameraInfo info : infos) {
+        for (UsbCameraInfo info : loopableInfo) {
             // create new camera config for all new cameras
             String name = info.name.replaceAll("[^\\x00-\\x7F]", "");
             String uniqueName = name;
