@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 public class ReflectivePipelineTest {
 
-   private static final Logger logger = new Logger(ReflectivePipeline.class, LogGroup.VisionProcess);
+    private static final Logger logger = new Logger(ReflectivePipeline.class, LogGroup.VisionProcess);
 
     @Test
     public void test2019() {
@@ -94,6 +94,6 @@ public class ReflectivePipelineTest {
     private static void printTestResults(CVPipelineResult pipelineResult) {
         double fps = 1000 / pipelineResult.getLatencyMillis();
         logger.debug("Pipeline ran in " + pipelineResult.getLatencyMillis() + "ms (" + fps + " fps)");
-//        System.out.println("Found " + pipelineResult.targets.size() + " valid targets");
+        //        System.out.println("Found " + pipelineResult.targets.size() + " valid targets");
     }
 }

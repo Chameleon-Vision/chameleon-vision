@@ -6,7 +6,8 @@ import com.chameleonvision.common.util.math.MathUtils;
 
 public class PipelineProfiler {
 
-    private static final Logger reflectiveLogger = new Logger(ReflectivePipeline.class, LogGroup.VisionProcess);
+    private static final Logger reflectiveLogger =
+            new Logger(ReflectivePipeline.class, LogGroup.VisionProcess);
 
     public static void printReflectiveProfile(long[] nanos) {
         if (nanos.length != 14) {
@@ -28,7 +29,9 @@ public class PipelineProfiler {
 
         // check which target method is used
         if (nanos[10] != 0 && nanos[11] != 0) {
-            sb.append("CornerDetection: ").append(MathUtils.roundTo(nanos[10] / 1e+6, 3)).append("ms, "); //
+            sb.append("CornerDetection: ")
+                    .append(MathUtils.roundTo(nanos[10] / 1e+6, 3))
+                    .append("ms, "); //
             sb.append("SolvePNP: ").append(MathUtils.roundTo(nanos[11] / 1e+6, 3)).append("ms, "); //
         } else {
             sb.append("CornerDetection: Skipped, "); //
@@ -41,7 +44,9 @@ public class PipelineProfiler {
         if (nanos[13] > 0) {
             sb.append("Draw2dTarget: ").append(MathUtils.roundTo(nanos[13] / 1e+6, 3)).append("ms");
         } else {
-            sb.append("Draw3dTarget: ").append(MathUtils.roundTo((nanos[13] * -1) / 1e+6, 3)).append("ms");
+            sb.append("Draw3dTarget: ")
+                    .append(MathUtils.roundTo((nanos[13] * -1) / 1e+6, 3))
+                    .append("ms");
         }
 
         reflectiveLogger.trace(sb.toString());

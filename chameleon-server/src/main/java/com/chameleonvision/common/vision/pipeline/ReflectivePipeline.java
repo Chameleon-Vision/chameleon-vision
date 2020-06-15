@@ -10,8 +10,8 @@ import com.chameleonvision.common.vision.opencv.DualMat;
 import com.chameleonvision.common.vision.pipe.CVPipeResult;
 import com.chameleonvision.common.vision.pipe.impl.Collect2dTargetsPipe;
 import com.chameleonvision.common.vision.pipe.impl.CornerDetectionPipe;
-import com.chameleonvision.common.vision.pipe.impl.Draw2dTargetsPipe;
 import com.chameleonvision.common.vision.pipe.impl.Draw2dCrosshairPipe;
+import com.chameleonvision.common.vision.pipe.impl.Draw2dTargetsPipe;
 import com.chameleonvision.common.vision.pipe.impl.Draw3dTargetsPipe;
 import com.chameleonvision.common.vision.pipe.impl.ErodeDilatePipe;
 import com.chameleonvision.common.vision.pipe.impl.FilterContoursPipe;
@@ -227,12 +227,14 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
         CVPipeResult<Mat> drawTargetResult;
 
         if (settings.solvePNPEnabled) {
-            drawTargetResult = draw3dTargetsPipe.apply(
+            drawTargetResult =
+                    draw3dTargetsPipe.apply(
                             Pair.of(draw2dCrosshairResult.result, collect2dTargetsResult.result));
             pipeNanos[13] = -drawTargetResult.nanosElapsed;
         } else {
-            drawTargetResult = draw2dTargetsPipe.apply(
-                    Pair.of(draw2dCrosshairResult.result, collect2dTargetsResult.result));
+            drawTargetResult =
+                    draw2dTargetsPipe.apply(
+                            Pair.of(draw2dCrosshairResult.result, collect2dTargetsResult.result));
             pipeNanos[13] = drawTargetResult.nanosElapsed;
         }
         sumPipeNanosElapsed += drawTargetResult.nanosElapsed;
