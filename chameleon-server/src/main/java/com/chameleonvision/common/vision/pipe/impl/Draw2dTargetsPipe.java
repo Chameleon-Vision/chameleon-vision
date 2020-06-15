@@ -10,8 +10,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
-public class Draw2dContoursPipe
-        extends CVPipe<Pair<Mat, List<TrackedTarget>>, Mat, Draw2dContoursPipe.Draw2dContoursParams> {
+public class Draw2dTargetsPipe
+        extends CVPipe<Pair<Mat, List<TrackedTarget>>, Mat, Draw2dTargetsPipe.Draw2dContoursParams> {
 
     private List<MatOfPoint> m_drawnContours = new ArrayList<>();
 
