@@ -68,6 +68,10 @@ dependencies {
 
     testCompile "ch.qos.logback:logback-classic:0.9.26"
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    // https://mvnrepository.com/artifact/com.pi4j/pi4j-core
+    compile group: 'com.pi4j', name: 'pi4j-core', version: '1.2'
+
+
 
 
     // javacv (ew)
