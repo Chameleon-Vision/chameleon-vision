@@ -1,6 +1,6 @@
 package com.chameleonvision._2;
 
-import static com.chameleonvision.common.util.Platform.CurrentPlatform;
+import static com.chameleonvision.common.hardware.Platform.CurrentPlatform;
 
 import com.chameleonvision._2.config.ConfigManager;
 import com.chameleonvision._2.vision.VisionManager;
@@ -9,7 +9,7 @@ import com.chameleonvision.common.datatransfer.networktables.NetworkTablesManage
 import com.chameleonvision.common.networking.NetworkManager;
 import com.chameleonvision.common.scripting.ScriptEventType;
 import com.chameleonvision.common.scripting.ScriptManager;
-import com.chameleonvision.common.util.Platform;
+import com.chameleonvision.common.hardware.Platform;
 import com.chameleonvision.common.util.math.IPUtils;
 import edu.wpi.cscore.CameraServerCvJNI;
 import edu.wpi.cscore.CameraServerJNI;

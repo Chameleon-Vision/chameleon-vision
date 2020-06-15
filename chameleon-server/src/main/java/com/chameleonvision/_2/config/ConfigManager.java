@@ -2,7 +2,7 @@ package com.chameleonvision._2.config;
 
 import com.chameleonvision._2.util.ProgramDirectoryUtilities;
 import com.chameleonvision._2.vision.pipeline.CVPipelineSettings;
-import com.chameleonvision.common.util.Platform;
+import com.chameleonvision.common.hardware.Platform;
 import com.chameleonvision.common.util.ShellExec;
 import com.chameleonvision.common.util.file.FileUtils;
 import com.chameleonvision.common.util.jackson.JacksonUtils;

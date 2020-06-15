@@ -1,9 +1,9 @@
 package com.chameleonvision.common.scripting;
 
+import com.chameleonvision.common.hardware.Platform;
 import com.chameleonvision.common.logging.LogGroup;
 import com.chameleonvision.common.logging.Logger;
 import com.chameleonvision.common.util.LoopingRunnable;
-import com.chameleonvision.common.util.Platform;
 import com.chameleonvision.common.util.file.JacksonUtils;
 import java.io.IOException;
 import java.nio.file.Files;
