@@ -1,8 +1,8 @@
 package com.chameleonvision.common.util.file;
 
+import com.chameleonvision.common.hardware.Platform;
 import com.chameleonvision.common.logging.LogGroup;
 import com.chameleonvision.common.logging.Logger;
-import com.chameleonvision.common.util.Platform;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

@@ -5,7 +5,7 @@ import com.chameleonvision._2.util.Helpers;
 import com.chameleonvision._2.vision.camera.USBCameraCapture;
 import com.chameleonvision._2.vision.pipeline.CVPipeline;
 import com.chameleonvision._2.vision.pipeline.CVPipelineSettings;
-import com.chameleonvision.common.util.Platform;
+import com.chameleonvision.common.hardware.Platform;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.UsbCameraInfo;
 import java.util.*;
