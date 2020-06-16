@@ -28,10 +28,10 @@ export default {
         undo: (context) => {
             let commit = context.getters.lastDone;
             context.commit('removeLastDone')
-            context.commit('addUndone', commit);
             context.commit('updateStatus', false)
             for (let key in commit) {
                 if (commit.hasOwnProperty(key)) {
+                    context.commit('addUndone', {[key]: context.getters["pipeline"][key]});
                     context.commit('mutatePipeline', {'key': key, 'value': commit[key]});
                 }
             }
@@ -51,10 +51,10 @@ export default {
     },
     getters: {
         lastDone: state => {
-            return state.done.pop()
+            return state.done[state.done.length - 1]
         },
         lastUnDone: state => {
-            return state.undone.pop()
+            return state.undone[state.undone.length - 1]
         },
         canUndo: state => {
             return state.done.length
@@ -63,4 +63,5 @@ export default {
             return state.undone.length
         }
     }
+
 };

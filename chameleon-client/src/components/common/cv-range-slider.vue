@@ -6,7 +6,7 @@
             </v-col>
             <v-col :cols="10">
                 <v-range-slider :value="localValue" @input="handleInput" :max="max" :min="min" hide-details
-                                class="align-center" dark color="#4baf62" :step="step" @mouseup="$emit('rollback')">
+                                class="align-center" dark color="#4baf62" :step="step" @mouseup="$emit('rollback', localValue)">
                     <template v-slot:prepend>
                         <v-text-field dark :value="localValue[0]" :max="max" :min="min" @input="handleChange"
                                       @focus="prependFocused = true" @blur="prependFocused = false" class="mt-0 pt-0"
@@ -26,6 +26,7 @@
 
 <script>
     export default {
+        //TODO use mouse down to save rollback value when sliding
         name: 'RangeSlider',
         props: ['name', 'min', 'max', 'value', 'step'],
         data() {
@@ -43,7 +44,7 @@
                 }
                 if (this.prependFocused || this.appendFocused) {
                     this.$set(this.localValue, i, val);
-                    this.$emit('rollback')
+                    this.$emit('rollback', this.localValue)
                 }
             },
             handleInput(val) {

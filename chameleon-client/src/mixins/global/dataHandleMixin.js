@@ -8,9 +8,8 @@ export const dataHandleMixin = {
             this.handleInput(val, this.value[val]);
             this.$emit('update')
         },
-        rollback(val) {
-            console.log(`rollback on ${val}`)
-            this.$store.commit('updatePipeline', {[val]: this.$store.getters.pipeline[val]})
+        rollback(val, e) {
+            this.$store.commit('updatePipeline', {[val]: e})
         }
     }
 };

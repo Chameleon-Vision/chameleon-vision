@@ -1,16 +1,21 @@
 <template>
     <div>
         <CVslider name="Exposure" v-model="value.exposure" :min="0" :max="100" @input="handleData('exposure')"
-                  @rollback="rollback('exposure')"/>
-        <CVslider name="Brightness" v-model="value.brightness" :min="0" :max="100" @input="handleData('brightness')"/>
+                  @rollback="e => rollback('exposure', e)"/>
+        <CVslider name="Brightness" v-model="value.brightness" :min="0" :max="100" @input="handleData('brightness')"
+                  @rollback="e => rollback('brightness', e)"/>
         <CVslider name="Gain" v-if="value.gain !== -1" v-model="value.gain" :min="0" :max="100"
-                  @input="handleData('gain')"/>
+                  @input="handleData('gain')"
+                  @rollback="e => rollback('gain', e)"/>
         <CVselect name="Orientation" v-model="value.rotationMode" :list="['Normal','90° CW','180°','90° CCW']"
-                  @input="handleData('rotationMode')"/>
+                  @input="handleData('rotationMode')"
+                  @rollback="e => e => rollback('rotationMode',e)"/>
         <CVselect name="Resolution" v-model="value.videoModeIndex" :list="resolutionList"
-                  @input="handleData('videoModeIndex')"/>
+                  @input="handleData('videoModeIndex')"
+                  @rollback="e => rollback('videoModeIndex', e)"/>
         <CVselect name="Stream Resolution" v-model="value.streamDivisor"
-                  :list="streamResolutionList" @input="handleData('streamDivisor')"/>
+                  :list="streamResolutionList" @input="handleData('streamDivisor')"
+                  @rollback="e => rollback('streamDivisor', e)"/>
     </div>
 </template>
 

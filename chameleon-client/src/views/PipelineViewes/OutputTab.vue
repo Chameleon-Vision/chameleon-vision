@@ -2,16 +2,24 @@
     <div>
         <CVselect name="Sort Mode" v-model="value.sortMode"
                   :list="['Largest','Smallest','Highest','Lowest','Rightmost','Leftmost','Centermost']"
-                  @input="handleData('sortMode')"/>
+                  @input="handleData('sortMode')"
+                  @rollback="rollback('sortMode',e)"/>
+
         <CVselect v-model="value.targetRegion" name="Target Region" :list="['Center','Top','Bottom','Left','Right']"
-                  @input="handleData('targetRegion')"/>
+                  @input="handleData('targetRegion')"
+                  @rollback="e=> rollback('targetRegion',e)"/>
+
         <CVselect name="Target Orientation" :list="['Portrait', 'Landscape']" v-model="value.targetOrientation"
-                  @input="handleData('targetOrientation')"/>
-        <CVswitch name="Output multiple" v-model="value.multiple" @input="handleData('multiple')"/>
+                  @input="handleData('targetOrientation')"
+                  @rollback="e=> rollback('targetOrientation',e)"/>
+
+        <CVswitch name="Output multiple" v-model="value.multiple" @input="handleData('multiple')"
+                  @rollback="e=> rollback('multiple',e)"/>
         <span>Calibrate:</span>
         <v-divider dark color="white"/>
         <CVselect name="Calibration Mode" v-model="value.calibrationMode" :list="['None','Single point','Dual point']"
-                  @input="handleData('calibrationMode')"/>
+                  @input="handleData('calibrationMode')"
+                  @rollback="e=> rollback('calibrationMode',e)"/>
         <component :raw-point="rawPoint" :is="selectedComponent" @update="doUpdate" @snackbar="showSnackbar"/>
         <v-snackbar :timeout="3000" v-model="snackbar" top color="error">
             <span style="color:#000">{{snackbarText}}</span>

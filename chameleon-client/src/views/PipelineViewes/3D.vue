@@ -2,7 +2,8 @@
     <div>
         <v-row align="center" justify="start" dense>
             <v-col :cols="6">
-                <CVswitch :disabled="allow3D" v-model="value.is3D" name="Enable 3D" @input="handleData('is3D')"/>
+                <CVswitch :disabled="allow3D" v-model="value.is3D" name="Enable 3D" @input="handleData('is3D')"
+                          @rollback="e=> rollback('is3D',e)"/>
             </v-col>
             <v-col>
                 <input type="file" ref="file" style="display: none" accept=".csv" @change="readFile">
@@ -13,7 +14,8 @@
             </v-col>
         </v-row>
         <CVslider name="Contour simplification" v-model="value.accuracy" :min="0" :max="100"
-                  @input="handleData('accuracy')"/>
+                  @input="handleData('accuracy')"
+                  @rollback="e=> rollback('accuracy',e)"/>
         <v-row>
             <v-col>
                 <mini-map class="miniMapClass" :targets="targets" :horizontal-f-o-v="horizontalFOV"/>

@@ -160,7 +160,6 @@
         border-radius: 10px;
     }
 
-    /*TODO SCROLLBAR CLASS and npm update*/
     .container {
         background-color: #212121;
         padding: 0 !important;

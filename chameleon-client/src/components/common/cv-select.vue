@@ -5,7 +5,8 @@
                 <span>{{name}}</span>
             </v-col>
             <v-col :cols="9">
-                <v-select @change="$emit('rollback')" v-model="localValue" :items="indexList" item-text="name" item-value="index" dark
+                <v-select @change="$emit('rollback', localValue)" v-model="localValue" :items="indexList"
+                          item-text="name" item-value="index" dark
                           color="#4baf62" item-color="green" :disabled="disabled"/>
             </v-col>
         </v-row>

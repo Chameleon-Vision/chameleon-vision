@@ -5,7 +5,8 @@
                 <span>{{name}}</span>
             </v-col>
             <v-col>
-                <v-switch dark :disabled="disabled" v-model="localValue" color="#4baf62" @change="$emit('rollback')"/>
+                <v-switch dark :disabled="disabled" v-model="localValue" color="#4baf62"
+                          @change="$emit('rollback', localValue)"/>
             </v-col>
         </v-row>
     </div>
