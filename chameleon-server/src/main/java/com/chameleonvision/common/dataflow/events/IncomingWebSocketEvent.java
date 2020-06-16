@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class IncomingWebSocketEvent<T> extends DataChangeEvent<T> {
     public IncomingWebSocketEvent(DataChangeDestination destType, String propertyName, T newValue) {
-        super(DataChangeSource.DMS_WEBSOCKET, destType, propertyName, newValue);
+        super(DataChangeSource.DCS_WEBSOCKET, destType, propertyName, newValue);
     }
 
     @SuppressWarnings("unchecked")
