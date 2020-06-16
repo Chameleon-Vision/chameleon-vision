@@ -12,16 +12,10 @@ public enum SocketMessageType {
     SMT_ADDNEWPIPELINE("addNewPipeline"),
     SMT_COMMAND("command"),
     SMT_CURRENTCAMERA("currentCamera"),
-    SMT_IS3D("is3D"),
+    SMT_PIPELINESETTINGCHANGE("changePipelineSetting"),
     SMT_CURRENTPIPELINE("currentPipeline"),
     SMT_ISPNPCALIBRATION("isPNPCalibration"),
-    SMT_TAKECALIBRATIONSNAPSHOP("takeCalibrationSnapshot"),
-    SMT_ROTATIONMODE("rotationMode"),
-    SMT_EXPOSURE("exposure"),
-    SMT_BRIGHTNESS("brightness"),
-    SMT_GAIN("gain"),
-    SMT_VIDEOMODEINDEX("videoModeIndex"),
-    SMT_STREAMDIVISOR("streamDivisor");
+    SMT_TAKECALIBRATIONSNAPSHOT("takeCalibrationSnapshot");
 
     public final String entryKey;
 
