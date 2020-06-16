@@ -16,5 +16,8 @@ public class HardwareTest {
         System.out.println("Memory: " + GPU.MEMORY.value());
         System.out.println("Temperature: " + GPU.TEMPERATURE.value());
         System.out.println("Utilization: : " + GPU.UTILIZATION.value());
+
+        System.out.println("Printing RAM Info: ");
+        System.out.println("Utilization: : " + RAM.UTILIZATION.value());
     }
 }

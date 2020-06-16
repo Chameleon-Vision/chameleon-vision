@@ -7,7 +7,7 @@ import org.apache.commons.io.IOUtils;
 public enum CPU {
     MEMORY("vcgencmd get_mem arm"),
     TEMPERATURE("cat /sys/class/thermal/thermal_zone0/temp"),
-    UTILIZATION("top -b -n 1 | sed -n \"s/^%Cpu.*ni, \\([0-9.]*\\) .*$/\\1% Idle/p\"");
+    UTILIZATION("top -b -n 1 | sed -n \"s/^%Cpu\"");
 
     public final String command;
 
