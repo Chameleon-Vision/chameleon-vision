@@ -14,8 +14,8 @@ public enum RAM {
         try {
             return Double.parseDouble(
                     IOUtils.toString(
-                            new ProcessBuilder("bash", "-c", command).start().getInputStream(),
-                            StandardCharsets.UTF_8)
+                                    new ProcessBuilder("bash", "-c", command).start().getInputStream(),
+                                    StandardCharsets.UTF_8)
                             .replaceAll("[^\\d.]", ""));
         } catch (IOException e) {
             e.printStackTrace();
