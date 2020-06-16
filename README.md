@@ -57,7 +57,7 @@ We recommend the use of [IntelliJ IDEA](https://www.jetbrains.com/idea/) for run
 
 4. Gradle will automatically download the necessary dependencies 
 
-5. Run `Main` under `src/main/java/com.chameleonvision/_2/`
+Note: At this time, the program is not in a runnable state.
  
 ## Authors
 
@@ -82,7 +82,7 @@ We recommend the use of [IntelliJ IDEA](https://www.jetbrains.com/idea/) for run
 
 * [JSON](https://json.org)
 
-* [Google](https://github.com/google) - Specifically [Gson](https://github.com/google/gson)
+* [FasterXML](https://github.com/FasterXML) - Specifically [jackson](https://github.com/FasterXML/jackson)
 
 ## License  
-Usage of Chameleon Vision must fall under all terms of [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode)
+Usage of Chameleon Vision must fall under all terms of [GNU General Public License](https://www.gnu.org/licenses/gpl-3.0.html)
