@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 
-public enum GPU {
-    MEMORY("vcgencmd get_mem gpu"),
-    TEMPERATURE("vcgencmd measure_temp"),
-    UTILIZATION("top -b -n 1 | sed -n \"s/^%Gpu\"");
+public enum RAM {
+    UTILIZATION("free -h");
 
     public final String command;
 
@@ -16,8 +14,8 @@ public enum GPU {
         try {
             return Double.parseDouble(
                     IOUtils.toString(
-                                    new ProcessBuilder("bash", "-c", command).start().getInputStream(),
-                                    StandardCharsets.UTF_8)
+                            new ProcessBuilder("bash", "-c", command).start().getInputStream(),
+                            StandardCharsets.UTF_8)
                             .replaceAll("[^\\d.]", ""));
         } catch (IOException e) {
             e.printStackTrace();
@@ -25,7 +23,7 @@ public enum GPU {
         }
     }
 
-    GPU(String command) {
+    RAM(String command) {
         this.command = command;
     }
 }
