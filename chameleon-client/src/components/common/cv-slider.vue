@@ -6,7 +6,7 @@
             </v-col>
             <v-col :cols="10">
                 <v-slider :value="localValue" @start="isClicked = true" @end="isClicked = false" @change="handleclick"
-                          @input="handleInput" @mouseup="$emit('rollback', localValue)" dark class="align-center"
+                          @input="handleInput" @mousedown="$emit('rollback', localValue)" dark class="align-center"
                           :max="max" :min="min" hide-details
                           color="#4baf62" :step="step">
                     <template v-slot:append>
@@ -22,7 +22,6 @@
 
 <script>
     export default {
-        //TODO use mouse down to save rollback value when sliding
         name: 'Slider',
         props: ['min', 'max', 'name', 'value', 'step'],
         data() {
