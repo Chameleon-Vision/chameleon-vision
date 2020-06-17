@@ -9,10 +9,10 @@ public class QuirkyCamera {
                     // ps3 eye
                     new QuirkyCamera(0x1415, 0x2000, "PS3Eye", List.of(CameraQuirks.Gain)));
 
-    int usbVid;
-    int usbPid;
-    String name;
-    List<CameraQuirks> quirks;
+    public final int usbVid;
+    public final int usbPid;
+    public final String name;
+    public List<CameraQuirks> quirks;
 
     public QuirkyCamera(int usbVid, int usbPid, String baseName, List<CameraQuirks> quirks) {
         this.usbVid = usbVid;
