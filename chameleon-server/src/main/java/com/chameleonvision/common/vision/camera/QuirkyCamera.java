@@ -1,14 +1,13 @@
 package com.chameleonvision.common.vision.camera;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class QuirkyCamera {
-    public static final List<QuirkyCamera> quirkyCameras = List.of(
-            // ps3 eye
-            new QuirkyCamera(0x1415, 0x2000, "PS3Eye", List.of(CameraQuirks.Gain))
-    );
+    public static final List<QuirkyCamera> quirkyCameras =
+            List.of(
+                    // ps3 eye
+                    new QuirkyCamera(0x1415, 0x2000, "PS3Eye", List.of(CameraQuirks.Gain)));
 
     int usbVid;
     int usbPid;
@@ -24,10 +23,13 @@ public class QuirkyCamera {
 
     public QuirkyCamera(int usbVid, int usbPid, String baseName) {
         this(usbVid, usbPid, baseName, new ArrayList<>());
-        QuirkyCamera quirky = quirkyCameras.stream().filter(quirkyCamera -> quirkyCamera.name.equals(baseName) && quirkyCamera.usbPid == usbPid && quirkyCamera.usbVid == usbVid).findFirst().orElse(null);
+        QuirkyCamera quirky =
+                quirkyCameras.stream()
+                        .filter(quirkyCamera -> quirkyCamera.usbPid == usbPid && quirkyCamera.usbVid == usbVid)
+                        .findFirst()
+                        .orElse(null);
         if (quirky != null) {
             this.quirks = quirky.quirks;
         }
     }
-
 }

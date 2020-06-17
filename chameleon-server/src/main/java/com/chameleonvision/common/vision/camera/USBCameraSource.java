@@ -9,7 +9,6 @@ import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.cameraserver.CameraServer;
-
 import java.util.*;
 
 public class USBCameraSource implements VisionSource {
@@ -23,7 +22,8 @@ public class USBCameraSource implements VisionSource {
     public USBCameraSource(CameraConfiguration config) {
         this.configuration = config;
         this.camera = new UsbCamera(config.nickname, config.path);
-        this.cameraQuirks = new QuirkyCamera(camera.getInfo().productId, camera.getInfo().vendorId, config.baseName);
+        this.cameraQuirks =
+                new QuirkyCamera(camera.getInfo().productId, camera.getInfo().vendorId, config.baseName);
         CvSink cvSink = CameraServer.getInstance().getVideo(this.camera);
         this.usbCameraSettables = new USBCameraSettables(config);
         this.usbFrameProvider =
