@@ -28,7 +28,7 @@ export default {
         },
     },
     actions: {
-        undo: (context) => {
+        undo: (context, {vm}) => {
             let commit = context.getters.lastDone;
             context.commit('removeLastDone')
             context.commit('updateStatus', false)
@@ -36,17 +36,19 @@ export default {
                 if (commit.hasOwnProperty(key)) {
                     context.commit('addUndone', {[key]: context.getters["pipeline"][key]});
                     context.commit('mutatePipeline', {'key': key, 'value': commit[key]});
+                    vm.handleInput(key, commit[key]);
                 }
             }
             context.commit('updateStatus', true)
         },
-        redo: (context) => {
+        redo: (context, {vm}) => {
             let commit = context.getters.lastUnDone;
             context.commit('removeLastUnDone');
             context.commit('updateStatus', false)
             for (let key in commit) {
                 if (commit.hasOwnProperty(key)) {
                     context.commit('mutatePipeline', {'key': key, 'value': commit[key]});
+                    vm.handleInput(key, commit[key]);
                 }
             }
             context.commit('updateStatus', true)

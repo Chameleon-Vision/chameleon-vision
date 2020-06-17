@@ -85,12 +85,12 @@
                         break;
                     case "z":
                         if (e.ctrlKey && this.$store.getters.canUndo) {
-                            this.$store.dispatch('undo');
+                            this.$store.dispatch('undo', {vm: this});
                         }
                         break;
                     case "y":
                         if (e.ctrlKey && this.$store.getters.canRedo) {
-                            this.$store.dispatch('redo');
+                            this.$store.dispatch('redo', {vm: this});
                         }
                         break;
 
