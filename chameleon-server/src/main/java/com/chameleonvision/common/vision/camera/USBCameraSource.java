@@ -9,24 +9,21 @@ import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.cameraserver.CameraServer;
+
 import java.util.*;
 
 public class USBCameraSource implements VisionSource {
-    private static final int PS3EYE_VID = 0x1415;
-    private static final int PS3EYE_PID = 0x2000;
-
     private final UsbCamera camera;
     private final USBCameraSettables usbCameraSettables;
     private final USBFrameProvider usbFrameProvider;
     private final CameraConfiguration configuration;
 
-    public final boolean isPS3Eye;
+    private final QuirkyCamera cameraQuirks;
 
     public USBCameraSource(CameraConfiguration config) {
         this.configuration = config;
         this.camera = new UsbCamera(config.nickname, config.path);
-        this.isPS3Eye =
-                camera.getInfo().productId == PS3EYE_PID && camera.getInfo().vendorId == PS3EYE_VID;
+        this.cameraQuirks = new QuirkyCamera(camera.getInfo().productId, camera.getInfo().vendorId, config.baseName);
         CvSink cvSink = CameraServer.getInstance().getVideo(this.camera);
         this.usbCameraSettables = new USBCameraSettables(config);
         this.usbFrameProvider =
@@ -39,7 +36,7 @@ public class USBCameraSource implements VisionSource {
             return false;
         }
         USBCameraSource tmp = (USBCameraSource) obj;
-        boolean i = this.isPS3Eye == tmp.isPS3Eye;
+        boolean i = this.cameraQuirks.quirks.equals(tmp.cameraQuirks.quirks);
 
         boolean r = this.configuration.uniqueName.equals(tmp.configuration.uniqueName);
         boolean c = this.configuration.baseName.equals(tmp.configuration.baseName);
@@ -94,7 +91,7 @@ public class USBCameraSource implements VisionSource {
 
         @Override
         public void setGain(int gain) {
-            if (isPS3Eye) {
+            if (cameraQuirks.quirks.contains(CameraQuirks.Gain)) {
                 camera.getProperty("gain_automatic").set(0);
                 camera.getProperty("gain").set(gain);
             }
