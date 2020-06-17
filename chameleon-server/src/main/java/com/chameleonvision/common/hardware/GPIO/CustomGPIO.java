@@ -2,7 +2,7 @@ package com.chameleonvision.common.hardware.GPIO;
 
 import com.chameleonvision.common.hardware.RunCommand;
 
-public class CustomGPIO extends GPIOBase{
+public class CustomGPIO extends GPIOBase {
 
     private boolean currentState;
 
@@ -32,25 +32,30 @@ public class CustomGPIO extends GPIOBase{
 
     @Override
     public void blink(long delay, long duration) {
-        RunCommand.execute(commands.get("setState").replace("{delay}", String.valueOf(delay)).replace("{duration}",  String.valueOf(duration)));
+        RunCommand.execute(
+                commands
+                        .get("setState")
+                        .replace("{delay}", String.valueOf(delay))
+                        .replace("{duration}", String.valueOf(duration)));
     }
 
     @Override
     public void pulse(long duration, boolean blocking) {
-        RunCommand.execute(commands.get("pulse").replace("{blocking}", String.valueOf(blocking)).replace("{duration}",  String.valueOf(duration)));
+        RunCommand.execute(
+                commands
+                        .get("pulse")
+                        .replace("{blocking}", String.valueOf(blocking))
+                        .replace("{duration}", String.valueOf(duration)));
     }
 
     @Override
-    public  boolean shutdown() {
+    public boolean shutdown() {
         RunCommand.execute(commands.get("shutdown"));
         return true;
     }
 
     @Override
-    public boolean getState(){
+    public boolean getState() {
         return currentState;
     }
-
-
-
 }

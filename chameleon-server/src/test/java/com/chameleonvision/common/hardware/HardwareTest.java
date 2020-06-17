@@ -1,20 +1,22 @@
-
 package com.chameleonvision.common.hardware;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.chameleonvision.common.hardware.GPIO.CustomGPIO;
 import com.chameleonvision.common.hardware.GPIO.GPIOBase;
 import com.chameleonvision.common.hardware.GPIO.PiGPIO;
+import com.chameleonvision.common.hardware.PWM.CustomPWM;
+import com.chameleonvision.common.hardware.PWM.PWMBase;
+import com.chameleonvision.common.hardware.PWM.PiPWM;
 import com.chameleonvision.common.hardware.metrics.CPU;
 import com.chameleonvision.common.hardware.metrics.GPU;
 import com.chameleonvision.common.hardware.metrics.RAM;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class HardwareTest {
 
     @Test
-    public  void testHardware() {
+    public void testHardware() {
 
         System.out.println("Printing CPU Info:");
         System.out.println("Memory: " + CPU.getMemory());
@@ -31,10 +33,11 @@ public class HardwareTest {
     }
 
     @Test
-    public  void testGPIO(){
+    public void testGPIO() {
         GPIOBase gpio;
-        if(Platform.isRaspberryPi()){gpio = new PiGPIO(0);}
-        else{
+        if (Platform.isRaspberryPi()) {
+            gpio = new PiGPIO(0);
+        } else {
             gpio = new CustomGPIO();
             gpio.setToggleCommand("gpio toggle");
             gpio.setLowCommand("gpio setLow");
@@ -45,13 +48,48 @@ public class HardwareTest {
             gpio.setShutdownCommand("gpio shutdown");
         }
 
-        gpio.setHigh();
+        gpio.setHigh(); // HIGH
         assertTrue(gpio.getState());
 
-        gpio.setLow();
+        gpio.setLow(); // LOW
+        assertFalse(gpio.getState());
+
+        gpio.togglePin(); // HIGH
         assertTrue(gpio.getState());
 
+        gpio.togglePin(); // LOW
+        assertFalse(gpio.getState());
+
+        gpio.setState(true); // HIGH
+        assertTrue(gpio.getState());
+
+        gpio.setState(false); // LOW
+        assertFalse(gpio.getState());
+
+        var success = gpio.shutdown();
+        assertTrue(success);
+
+        gpio.pulse(10, false);
+        gpio.blink(2, 10);
     }
 
+    @Test
+    public void testPWM() {
+        PWMBase pwm;
+        if (Platform.isRaspberryPi()) {
+            pwm = new PiPWM(0);
+        } else {
+            pwm = new CustomPWM();
+            pwm.setPwmRateCommand("pwm setRate {rate}");
+            pwm.setPwmRangeCommand("pwm setRange {range}");
+        }
+        pwm.setPwmRange(100);
+        assertEquals(pwm.getPwmRange(), 100);
 
+        pwm.setPwmRate(10);
+        assertEquals(pwm.getPwmRate(), 10);
+
+        var success = pwm.shutdown();
+        assertTrue(success);
+    }
 }
