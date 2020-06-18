@@ -10,8 +10,8 @@ import java.util.List;
 @SuppressWarnings({"rawtypes", "unused"})
 public class PipelineManager {
 
-    private static final int DRIVERMODE_INDEX = -1;
-    private static final int CAL_3D_INDEX = -2;
+    public static final int DRIVERMODE_INDEX = -1;
+    public static final int CAL_3D_INDEX = -2;
 
     public final List<CVPipeline> userPipelines;
     private final Calibration3dPipeline calibration3dPipeline = new Calibration3dPipeline();

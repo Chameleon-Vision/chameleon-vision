@@ -1,11 +1,13 @@
 package com.chameleonvision.common.dataflow;
 
 import com.chameleonvision.common.dataflow.events.DataChangeEvent;
+import com.chameleonvision.common.logging.Level;
 import com.chameleonvision.common.logging.LogGroup;
 import com.chameleonvision.common.logging.Logger;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("rawtypes")
 public class DataChangeService {
@@ -33,6 +35,10 @@ public class DataChangeService {
         dispatchThread.start();
     }
 
+    public boolean hasEvents() {
+        return !eventQueue.isEmpty();
+    }
+
     private void dispatchFromQueue() {
         while (true) {
             try {
@@ -52,6 +58,17 @@ public class DataChangeService {
     public void subscribe(DataChangeSubscriber subscriber) {
         if (!subscribers.addIfAbsent(subscriber)) {
             logger.warn("Attempted to add already added subscriber!");
+        } else {
+            if (logger.shouldLog(Level.TRACE)) {
+                var sources =
+                        subscriber.wantedSources.stream().map(Enum::toString).collect(Collectors.joining(", "));
+                var dests =
+                        subscriber.wantedDestinations.stream()
+                                .map(Enum::toString)
+                                .collect(Collectors.joining(", "));
+
+                logger.trace("Added subscriber - " + "Sources: " + sources + ", Destinations: " + dests);
+            }
         }
     }
 

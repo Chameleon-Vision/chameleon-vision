@@ -12,14 +12,15 @@ public class Server {
                             javalinConfig.addStaticFiles("web");
                             javalinConfig.enableCorsForAllOrigins();
                         });
-        /*Web Socket Events */
+        /* Web Socket Events */
         app.ws(
                 "/websocket",
                 ws -> {
-                    ws.onConnect(SocketHandler::onConnect);
-                    ws.onClose(SocketHandler::onClose);
-                    ws.onBinaryMessage(SocketHandler::onBinaryMessage);
+                    ws.onConnect(SocketHandler.getInstance()::onConnect);
+                    ws.onClose(SocketHandler.getInstance()::onClose);
+                    ws.onBinaryMessage(SocketHandler.getInstance()::onBinaryMessage);
                 });
+
         /*API Events*/
         //        app.post("/api/settings/general",
         // com.chameleonvision._2.web.RequestHandler::onGeneralSettings);
@@ -36,6 +37,7 @@ public class Server {
         //        app.post("/api/vision/pnpModel",
         // com.chameleonvision._2.web.RequestHandler::onPnpModel);
         //        app.post("/api/install", RequestHandler::onInstallOrUpdate);
+
         app.start(port);
     }
 }

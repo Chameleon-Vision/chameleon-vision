@@ -7,7 +7,7 @@ public class DataChangeEvent<T> {
     public final DataChangeSource sourceType;
     public final DataChangeDestination destType;
     public final String propertyName;
-    public final T newValue;
+    public final T data;
 
     public DataChangeEvent(
             DataChangeSource sourceType,
@@ -17,6 +17,6 @@ public class DataChangeEvent<T> {
         this.sourceType = sourceType;
         this.destType = destType;
         this.propertyName = propertyName;
-        this.newValue = newValue;
+        this.data = newValue;
     }
 }

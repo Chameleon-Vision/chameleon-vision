@@ -1,5 +1,6 @@
 package com.chameleonvision.common.dataflow;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,4 +12,6 @@ public enum DataChangeSource {
     DCS_OTHER;
 
     public static final List<DataChangeSource> AllSources = Arrays.asList(DataChangeSource.values());
+
+    public static class DataChangeSourceList extends ArrayList<DataChangeSource> {}
 }
