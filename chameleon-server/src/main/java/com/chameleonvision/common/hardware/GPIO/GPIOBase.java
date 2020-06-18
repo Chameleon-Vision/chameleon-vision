@@ -1,5 +1,7 @@
 package com.chameleonvision.common.hardware.GPIO;
 
+import com.chameleonvision.common.util.ShellExec;
+
 import java.util.HashMap;
 
 public abstract class GPIOBase {
@@ -12,6 +14,17 @@ public abstract class GPIOBase {
                     put("shutdown", "");
                 }
             };
+
+    private static final ShellExec runCommand = new ShellExec(true, true);
+
+    public static String execute(String command){
+        try {
+            runCommand.executeBashCommand(command);
+        }catch (Exception e){
+            return "";
+        }
+        return runCommand.getOutput();
+    }
 
     public void setStateCommand(String command) {
         commands.replace("setState", command);

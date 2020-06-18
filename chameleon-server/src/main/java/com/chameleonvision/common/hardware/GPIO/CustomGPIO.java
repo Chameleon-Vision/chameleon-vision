@@ -1,6 +1,5 @@
 package com.chameleonvision.common.hardware.GPIO;
 
-import com.chameleonvision.common.hardware.RunCommand;
 
 public class CustomGPIO extends GPIOBase {
 
@@ -13,7 +12,7 @@ public class CustomGPIO extends GPIOBase {
 
     @Override
     public void togglePin() {
-        RunCommand.execute(
+        execute(
                 commands
                         .get("setState")
                         .replace("{s}", String.valueOf(!currentState))
@@ -23,7 +22,7 @@ public class CustomGPIO extends GPIOBase {
 
     @Override
     public void setLow() {
-        RunCommand.execute(
+        execute(
                 commands
                         .get("setState")
                         .replace("{s}", String.valueOf(false))
@@ -33,7 +32,7 @@ public class CustomGPIO extends GPIOBase {
 
     @Override
     public void setHigh() {
-        RunCommand.execute(
+        execute(
                 commands
                         .get("setState")
                         .replace("{s}", String.valueOf(true))
@@ -43,7 +42,7 @@ public class CustomGPIO extends GPIOBase {
 
     @Override
     public void setState(boolean state) {
-        RunCommand.execute(
+        execute(
                 commands
                         .get("setState")
                         .replace("{s}", String.valueOf(state))
@@ -53,7 +52,7 @@ public class CustomGPIO extends GPIOBase {
 
     @Override
     public void blink(long delay, long duration) {
-        RunCommand.execute(
+        execute(
                 commands
                         .get("setState")
                         .replace("{delay}", String.valueOf(delay))
@@ -63,7 +62,7 @@ public class CustomGPIO extends GPIOBase {
 
     @Override
     public void pulse(long duration, boolean blocking) {
-        RunCommand.execute(
+        execute(
                 commands
                         .get("pulse")
                         .replace("{blocking}", String.valueOf(blocking))
@@ -73,7 +72,7 @@ public class CustomGPIO extends GPIOBase {
 
     @Override
     public boolean shutdown() {
-        RunCommand.execute(commands.get("shutdown"));
+        execute(commands.get("shutdown"));
         return true;
     }
 

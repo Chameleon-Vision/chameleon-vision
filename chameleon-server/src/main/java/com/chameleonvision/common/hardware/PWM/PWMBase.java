@@ -1,5 +1,7 @@
 package com.chameleonvision.common.hardware.PWM;
 
+import com.chameleonvision.common.util.ShellExec;
+
 import java.util.HashMap;
 
 public abstract class PWMBase {
@@ -11,6 +13,17 @@ public abstract class PWMBase {
                     put("shutdown", "");
                 }
             };
+
+    private final ShellExec runCommand = new ShellExec(true, true);
+
+    public String execute(String command){
+        try {
+            runCommand.executeBashCommand(command);
+        }catch (Exception e){
+            return "";
+        }
+        return runCommand.getOutput();
+    }
 
     public void setPwmRateCommand(String command) {
         commands.replace("setRate", command);

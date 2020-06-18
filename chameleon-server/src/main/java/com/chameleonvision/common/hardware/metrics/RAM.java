@@ -1,11 +1,10 @@
 package com.chameleonvision.common.hardware.metrics;
 
-import com.chameleonvision.common.hardware.RunCommand;
 
-public class RAM {
+public class RAM extends MetricsBase{
     private static final String utilizationCommand = "free -h";
 
     public static double getUtilization() {
-        return RunCommand.execute(utilizationCommand);
+        return execute(utilizationCommand);
     }
 }

@@ -64,11 +64,11 @@ public class HardwareTest {
         gpio.setState(false); // LOW
         assertFalse(gpio.getState());
 
-        var success = gpio.shutdown();
-        assertTrue(success);
-
         gpio.pulse(10, false);
         gpio.blink(2, 10);
+
+        var success = gpio.shutdown();
+        assertTrue(success);
     }
 
     @Test
