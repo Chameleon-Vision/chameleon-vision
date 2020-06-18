@@ -18,6 +18,18 @@ public abstract class DataChangeSubscriber {
         hash = Objects.hash(wantedSources, wantedDestinations);
     }
 
+    public DataChangeSubscriber() {
+        this(DataChangeSource.AllSources, DataChangeDestination.AllDestinations);
+    }
+
+    public DataChangeSubscriber(DataChangeSource.DataChangeSourceList wantedSources) {
+        this(wantedSources, DataChangeDestination.AllDestinations);
+    }
+
+    public DataChangeSubscriber(DataChangeDestination.DataChangeDestinationList wantedDestinations) {
+        this(DataChangeSource.AllSources, wantedDestinations);
+    }
+
     public abstract void onDataChangeEvent(DataChangeEvent event);
 
     @Override
