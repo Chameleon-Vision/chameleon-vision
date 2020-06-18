@@ -17,6 +17,7 @@ public class HardwareTest {
 
     @Test
     public void testHardware() {
+        if (!Platform.isRaspberryPi()) return;
 
         System.out.println("Printing CPU Info:");
         System.out.println("Memory: " + CPU.getMemory());
@@ -38,13 +39,10 @@ public class HardwareTest {
         if (Platform.isRaspberryPi()) {
             gpio = new PiGPIO(0);
         } else {
-            gpio = new CustomGPIO();
-            gpio.setToggleCommand("gpio toggle");
-            gpio.setLowCommand("gpio setLow");
-            gpio.setHighCommand("gpio setHigh");
-            gpio.setStateCommand("gpio setState {s}");
-            gpio.setBlinkCommand("gpio blink {delay} {duration}");
-            gpio.setPulseCommand("gpio pulse {blocking} {duration}");
+            gpio = new CustomGPIO(0);
+            gpio.setStateCommand("gpio setState {p} {s}");
+            gpio.setBlinkCommand("gpio blink {p} {delay} {duration}");
+            gpio.setPulseCommand("gpio pulse {p} {blocking} {duration}");
             gpio.setShutdownCommand("gpio shutdown");
         }
 

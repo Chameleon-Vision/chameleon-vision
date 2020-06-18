@@ -5,28 +5,49 @@ import com.chameleonvision.common.hardware.RunCommand;
 public class CustomGPIO extends GPIOBase {
 
     private boolean currentState;
+    private int port;
+
+    public CustomGPIO(int port) {
+        this.port = port;
+    }
 
     @Override
     public void togglePin() {
-        RunCommand.execute(commands.get("toggle"));
+        RunCommand.execute(
+                commands
+                        .get("setState")
+                        .replace("{s}", String.valueOf(!currentState))
+                        .replace("{p}", String.valueOf(this.port)));
         currentState = !currentState;
     }
 
     @Override
     public void setLow() {
-        RunCommand.execute(commands.get("setLow"));
+        RunCommand.execute(
+                commands
+                        .get("setState")
+                        .replace("{s}", String.valueOf(false))
+                        .replace("{p}", String.valueOf(this.port)));
         currentState = false;
     }
 
     @Override
     public void setHigh() {
-        RunCommand.execute(commands.get("setHigh"));
+        RunCommand.execute(
+                commands
+                        .get("setState")
+                        .replace("{s}", String.valueOf(true))
+                        .replace("{p}", String.valueOf(this.port)));
         currentState = true;
     }
 
     @Override
     public void setState(boolean state) {
-        RunCommand.execute(commands.get("setState").replace("{s}", String.valueOf(state)));
+        RunCommand.execute(
+                commands
+                        .get("setState")
+                        .replace("{s}", String.valueOf(state))
+                        .replace("{p}", String.valueOf(this.port)));
         currentState = state;
     }
 
@@ -36,7 +57,8 @@ public class CustomGPIO extends GPIOBase {
                 commands
                         .get("setState")
                         .replace("{delay}", String.valueOf(delay))
-                        .replace("{duration}", String.valueOf(duration)));
+                        .replace("{duration}", String.valueOf(duration))
+                        .replace("{p}", String.valueOf(this.port)));
     }
 
     @Override
@@ -45,7 +67,8 @@ public class CustomGPIO extends GPIOBase {
                 commands
                         .get("pulse")
                         .replace("{blocking}", String.valueOf(blocking))
-                        .replace("{duration}", String.valueOf(duration)));
+                        .replace("{duration}", String.valueOf(duration))
+                        .replace("{p}", String.valueOf(this.port)));
     }
 
     @Override

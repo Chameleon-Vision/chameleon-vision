@@ -3,30 +3,15 @@ package com.chameleonvision.common.hardware.GPIO;
 import java.util.HashMap;
 
 public abstract class GPIOBase {
-    HashMap<String, String> commands =
+    public HashMap<String, String> commands =
             new HashMap<>() {
                 {
-                    put("toggle", "");
-                    put("setLow", "");
-                    put("setHigh", "");
                     put("setState", "");
                     put("blink", "");
                     put("pulse", "");
                     put("shutdown", "");
                 }
             };
-
-    public void setToggleCommand(String command) {
-        commands.replace("toggle", command);
-    }
-
-    public void setLowCommand(String command) {
-        commands.replace("setLow", command);
-    }
-
-    public void setHighCommand(String command) {
-        commands.replace("setHigh", command);
-    }
 
     public void setStateCommand(String command) {
         commands.replace("setState", command);
