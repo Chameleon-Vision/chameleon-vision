@@ -14,9 +14,9 @@ public abstract class PWMBase {
                 }
             };
 
-    private final ShellExec runCommand = new ShellExec(true, true);
+    private static final ShellExec runCommand = new ShellExec(true, true);
 
-    public String execute(String command){
+    public static String execute(String command){
         try {
             runCommand.executeBashCommand(command);
         }catch (Exception e){
