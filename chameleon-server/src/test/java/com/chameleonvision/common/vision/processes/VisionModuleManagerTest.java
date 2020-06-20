@@ -1,7 +1,7 @@
 package com.chameleonvision.common.vision.processes;
 
 import com.chameleonvision.common.configuration.CameraConfiguration;
-import com.chameleonvision.common.datatransfer.DataConsumer;
+import com.chameleonvision.common.dataflow.DataConsumer;
 import com.chameleonvision.common.util.TestUtils;
 import com.chameleonvision.common.vision.frame.FrameProvider;
 import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
@@ -88,10 +88,6 @@ public class VisionModuleManagerTest {
         @Override
         public void accept(Data data) {
             this.data = data;
-        }
-
-        public Data getData() {
-            return data;
         }
     }
 

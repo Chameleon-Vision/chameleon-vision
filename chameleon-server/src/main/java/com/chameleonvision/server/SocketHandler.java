@@ -184,7 +184,6 @@ public class SocketHandler {
                                             break;
                                         }
                                 }
-                                break;
                             }
                         case SMT_CURRENTCAMERA:
                             {
