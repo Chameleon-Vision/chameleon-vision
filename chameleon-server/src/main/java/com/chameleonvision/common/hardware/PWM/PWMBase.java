@@ -1,7 +1,6 @@
 package com.chameleonvision.common.hardware.PWM;
 
 import com.chameleonvision.common.util.ShellExec;
-
 import java.util.HashMap;
 
 public abstract class PWMBase {
@@ -16,10 +15,10 @@ public abstract class PWMBase {
 
     private static final ShellExec runCommand = new ShellExec(true, true);
 
-    public static String execute(String command){
+    public static String execute(String command) {
         try {
             runCommand.executeBashCommand(command);
-        }catch (Exception e){
+        } catch (Exception e) {
             return "";
         }
         return runCommand.getOutput();

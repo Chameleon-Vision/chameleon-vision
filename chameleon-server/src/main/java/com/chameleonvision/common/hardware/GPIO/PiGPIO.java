@@ -1,16 +1,13 @@
 package com.chameleonvision.common.hardware.GPIO;
 
-import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioFactory;
-import com.pi4j.io.gpio.GpioPinDigitalOutput;
-import com.pi4j.io.gpio.RaspiPin;
+import com.pi4j.io.gpio.*;
 
 public class PiGPIO extends GPIOBase {
     private static final GpioController gpio = GpioFactory.getInstance();
     private final GpioPinDigitalOutput pin;
 
     public PiGPIO(int address) {
-        this.pin = gpio.provisionDigitalOutputPin(RaspiPin.getPinByAddress(address));
+        this.pin = gpio.provisionDigitalOutputPin(RaspiPin.getPinByAddress(address), PinState.LOW);
     }
 
     @Override
@@ -51,6 +48,6 @@ public class PiGPIO extends GPIOBase {
 
     @Override
     public boolean getState() {
-        return pin.getState().isHigh();
+        return pin.isHigh();
     }
 }

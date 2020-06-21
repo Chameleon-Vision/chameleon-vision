@@ -1,6 +1,5 @@
 package com.chameleonvision.common.hardware.GPIO;
 
-
 public class CustomGPIO extends GPIOBase {
 
     private boolean currentState;

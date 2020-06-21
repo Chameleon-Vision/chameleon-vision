@@ -79,7 +79,7 @@ public class HardwareTest {
         if (Platform.isRaspberryPi()) {
             try {
                 pwm = new PiPWM(1);
-            }catch (UnsupportedPinModeException e){
+            } catch (UnsupportedPinModeException e) {
                 System.out.println("Invalid PWN port.");
                 return;
             }

@@ -1,7 +1,6 @@
 package com.chameleonvision.common.hardware.GPIO;
 
 import com.chameleonvision.common.util.ShellExec;
-
 import java.util.HashMap;
 
 public abstract class GPIOBase {
@@ -17,10 +16,10 @@ public abstract class GPIOBase {
 
     private static final ShellExec runCommand = new ShellExec(true, true);
 
-    public static String execute(String command){
+    public static String execute(String command) {
         try {
             runCommand.executeBashCommand(command);
-        }catch (Exception e){
+        } catch (Exception e) {
             return "";
         }
         return runCommand.getOutput();
