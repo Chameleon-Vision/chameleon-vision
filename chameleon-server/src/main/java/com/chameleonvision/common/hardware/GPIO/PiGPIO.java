@@ -17,12 +17,12 @@ public class PiGPIO extends GPIOBase {
 
     @Override
     public void setLow() {
-        pin.low();
+        pin.setState(PinState.LOW);
     }
 
     @Override
     public void setHigh() {
-        pin.high();
+        pin.setState(PinState.HIGH);
     }
 
     @Override
@@ -48,6 +48,6 @@ public class PiGPIO extends GPIOBase {
 
     @Override
     public boolean getState() {
-        return pin.isHigh();
+        return pin.isState(PinState.HIGH);
     }
 }
