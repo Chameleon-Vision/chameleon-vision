@@ -39,9 +39,9 @@ public class HardwareTest {
     public void testGPIO() {
         GPIOBase gpio;
         if (Platform.isRaspberryPi()) {
-            gpio = new PiGPIO(17);
+            gpio = new PiGPIO(0);
         } else {
-            gpio = new CustomGPIO(17);
+            gpio = new CustomGPIO(0);
             gpio.setStateCommand("gpio setState {p} {s}");
             gpio.setBlinkCommand("gpio blink {p} {delay} {duration}");
             gpio.setPulseCommand("gpio pulse {p} {blocking} {duration}");
