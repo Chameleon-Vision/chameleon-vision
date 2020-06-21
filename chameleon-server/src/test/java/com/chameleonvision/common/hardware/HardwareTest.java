@@ -23,16 +23,16 @@ public class HardwareTest {
         System.out.println("Testing on platform: " + Platform.CurrentPlatform);
 
         System.out.println("Printing CPU Info:");
-        System.out.println("Memory: " + CPU.getMemory());
-        System.out.println("Temperature: " + CPU.getTemp());
-        System.out.println("Utilization: : " + CPU.getUtilization());
+        System.out.println("Memory: " + CPU.getMemory() + "MB");
+        System.out.println("Temperature: " + CPU.getTemp() + "C");
+        System.out.println("Utilization: : " + CPU.getUtilization() + "%");
 
         System.out.println("Printing GPU Info:");
-        System.out.println("Memory: " + GPU.getMemory());
-        System.out.println("Temperature: " + GPU.getTemp());
+        System.out.println("Memory: " + GPU.getMemory() + "MB");
+        System.out.println("Temperature: " + GPU.getTemp() + "C");
 
         System.out.println("Printing RAM Info: ");
-        System.out.println("Utilization: : " + RAM.getUtilization());
+        System.out.println("Used RAM: : " + RAM.getUsedRam() + "MB");
     }
 
     @Test
@@ -78,13 +78,13 @@ public class HardwareTest {
         PWMBase pwm;
         if (Platform.isRaspberryPi()) {
             try {
-                pwm = new PiPWM(12);
+                pwm = new PiPWM(1);
             }catch (UnsupportedPinModeException e){
                 System.out.println("Invalid PWN port.");
                 return;
             }
         } else {
-            pwm = new CustomPWM(12);
+            pwm = new CustomPWM(1);
             pwm.setPwmRateCommand("pwm setRate {p} {rate}");
             pwm.setPwmRangeCommand("pwm setRange {p} {range}");
         }
