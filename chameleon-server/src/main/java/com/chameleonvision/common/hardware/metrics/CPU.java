@@ -2,15 +2,15 @@ package com.chameleonvision.common.hardware.metrics;
 
 
 public class CPU extends MetricsBase{
-    private static final String memoryCommand = "vcgencmd get_mem arm";
-    private static final String temperatureCommand = "cat /sys/class/thermal/thermal_zone0/temp";
-    private static final String utilizationCommand = "top -b -n 1 | sed -n \"s/^%Cpu\"";
+    private static final String memoryCommand = "vcgencmd get_mem arm | grep -x -E '[0-9]+'";
+    private static final String temperatureCommand = "cat /sys/class/thermal/thermal_zone0/temp | grep -x -E '[0-9]+'";
+    private static final String utilizationCommand = "cat /proc/stat | grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage \"\"}'";
 
     public static double getMemory() { return execute(memoryCommand);
     }
 
     public static double getTemp() {
-        return execute(temperatureCommand);
+        return execute(temperatureCommand) / 1000;
     }
 
     public static double getUtilization() {

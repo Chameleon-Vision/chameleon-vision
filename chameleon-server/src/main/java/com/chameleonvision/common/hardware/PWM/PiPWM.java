@@ -1,6 +1,7 @@
 package com.chameleonvision.common.hardware.PWM;
 
 import com.pi4j.io.gpio.*;
+import com.pi4j.io.gpio.exception.UnsupportedPinModeException;
 import com.pi4j.util.CommandArgumentParser;
 
 public class PiPWM extends PWMBase {
@@ -8,7 +9,7 @@ public class PiPWM extends PWMBase {
     private final GpioPinPwmOutput pwm;
     private int pwmRange = 0;
 
-    public PiPWM(int address) {
+    public PiPWM(int address) throws UnsupportedPinModeException {
         this.pwm =
                 gpio.provisionPwmOutputPin(
                         CommandArgumentParser.getPin(RaspiPin.class, RaspiPin.getPinByAddress(address)));

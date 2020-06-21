@@ -11,6 +11,7 @@ import com.chameleonvision.common.hardware.PWM.PiPWM;
 import com.chameleonvision.common.hardware.metrics.CPU;
 import com.chameleonvision.common.hardware.metrics.GPU;
 import com.chameleonvision.common.hardware.metrics.RAM;
+import com.pi4j.io.gpio.exception.UnsupportedPinModeException;
 import org.junit.jupiter.api.Test;
 
 public class HardwareTest {
@@ -18,6 +19,8 @@ public class HardwareTest {
     @Test
     public void testHardware() {
         if (!Platform.isRaspberryPi()) return;
+
+        System.out.println("Testing on platform: " + Platform.CurrentPlatform);
 
         System.out.println("Printing CPU Info:");
         System.out.println("Memory: " + CPU.getMemory());
@@ -27,7 +30,6 @@ public class HardwareTest {
         System.out.println("Printing GPU Info:");
         System.out.println("Memory: " + GPU.getMemory());
         System.out.println("Temperature: " + GPU.getTemp());
-        System.out.println("Utilization: : " + GPU.getUtilization());
 
         System.out.println("Printing RAM Info: ");
         System.out.println("Utilization: : " + RAM.getUtilization());
@@ -37,9 +39,9 @@ public class HardwareTest {
     public void testGPIO() {
         GPIOBase gpio;
         if (Platform.isRaspberryPi()) {
-            gpio = new PiGPIO(0);
+            gpio = new PiGPIO(17);
         } else {
-            gpio = new CustomGPIO(0);
+            gpio = new CustomGPIO(17);
             gpio.setStateCommand("gpio setState {p} {s}");
             gpio.setBlinkCommand("gpio blink {p} {delay} {duration}");
             gpio.setPulseCommand("gpio pulse {p} {blocking} {duration}");
@@ -75,11 +77,16 @@ public class HardwareTest {
     public void testPWM() {
         PWMBase pwm;
         if (Platform.isRaspberryPi()) {
-            pwm = new PiPWM(0);
+            try {
+                pwm = new PiPWM(12);
+            }catch (UnsupportedPinModeException e){
+                System.out.println("Invalid PWN port.");
+                return;
+            }
         } else {
-            pwm = new CustomPWM();
-            pwm.setPwmRateCommand("pwm setRate {rate}");
-            pwm.setPwmRangeCommand("pwm setRange {range}");
+            pwm = new CustomPWM(12);
+            pwm.setPwmRateCommand("pwm setRate {p} {rate}");
+            pwm.setPwmRangeCommand("pwm setRange {p} {range}");
         }
         pwm.setPwmRange(100);
         assertEquals(pwm.getPwmRange(), 100);
