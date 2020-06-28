@@ -5,10 +5,8 @@ import com.chameleonvision.common.vision.opencv.Contour;
 import com.chameleonvision.common.vision.opencv.Releasable;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import java.util.List;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
-import org.opencv.core.RotatedRect;
+
+import org.opencv.core.*;
 
 public class TrackedTarget implements Releasable {
     public final Contour m_mainContour;
@@ -67,6 +65,9 @@ public class TrackedTarget implements Releasable {
 
     public RotatedRect getMinAreaRect() {
         return m_mainContour.getMinAreaRect();
+    }
+    public Rect getBoundingRect(){
+        return m_mainContour.getBoundingRect();
     }
 
     public MatOfPoint2f getApproximateBoundingPolygon() {
