@@ -9,20 +9,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class UIConsumer implements Observer<CVPipelineResult> {
     private final Logger logger = new Logger(UIConsumer.class, LogGroup.VisionProcess);
     long lastUIUpdateMs;
 
     @Override
-    public void onSubscribe(@NonNull Disposable d) {
-
-    }
+    public void onSubscribe(@NonNull Disposable d) {}
 
     @Override
     public void onNext(@NotNull CVPipelineResult result) {
@@ -30,8 +27,9 @@ public class UIConsumer implements Observer<CVPipelineResult> {
         if (currentMillis - lastUIUpdateMs > 1000 / 30) {
             lastUIUpdateMs = currentMillis;
 
-//            if (cameraCapture.getProperties().name.equals(ConfigManager.settings.currentCamera)) {
-//            TODO SOMEHOW get the cam name from module manager?
+            //            if
+            // (cameraCapture.getProperties().name.equals(ConfigManager.settings.currentCamera)) {
+            //            TODO SOMEHOW get the cam name from module manager?
             HashMap<String, Object> WebSend = new HashMap<>();
             HashMap<String, Object> point = new HashMap<>();
             HashMap<String, Object> pointMap;
@@ -72,7 +70,5 @@ public class UIConsumer implements Observer<CVPipelineResult> {
     }
 
     @Override
-    public void onComplete() {
-
-    }
+    public void onComplete() {}
 }

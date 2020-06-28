@@ -6,13 +6,11 @@ import com.chameleonvision.common.vision.frame.FrameProvider;
 import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
 import com.chameleonvision.common.vision.pipeline.CVPipelineResult;
 import edu.wpi.cscore.VideoMode;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import io.reactivex.rxjava3.annotations.NonNull;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import org.junit.jupiter.api.*;
 
 public class VisionModuleManagerTest {
@@ -90,9 +88,7 @@ public class VisionModuleManagerTest {
         CVPipelineResult result;
 
         @Override
-        public void onSubscribe(@NonNull Disposable d) {
-
-        }
+        public void onSubscribe(@NonNull Disposable d) {}
 
         @Override
         public void onNext(@NonNull CVPipelineResult o) {
@@ -100,14 +96,10 @@ public class VisionModuleManagerTest {
         }
 
         @Override
-        public void onError(@NonNull Throwable e) {
-
-        }
+        public void onError(@NonNull Throwable e) {}
 
         @Override
-        public void onComplete() {
-
-        }
+        public void onComplete() {}
     }
 
     @Test

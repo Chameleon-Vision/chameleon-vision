@@ -4,19 +4,14 @@ import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.FrameConsumer;
 import com.chameleonvision.common.vision.pipeline.CVPipelineResult;
 import io.reactivex.rxjava3.core.Observer;
-
-import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
- * This is the God Class
- *
- * <p>VisionModule has a pipeline manager, vision runner, and data providers. The data providers
- * provide info on settings changes. VisionModuleManager holds a list of all current vision modules.
- */
-
-
+* This is the God Class
+*
+* <p>VisionModule has a pipeline manager, vision runner, and data providers. The data providers
+* provide info on settings changes. VisionModuleManager holds a list of all current vision modules.
+*/
 public class VisionModule {
     public final PipelineManager pipelineManager;
     private final VisionSource visionSource;
@@ -65,7 +60,8 @@ public class VisionModule {
             frameConsumer.accept(frame);
         }
     }
-    public String getSourceNickname(){
+
+    public String getSourceNickname() {
         return visionSource.getCameraConfiguration().nickname;
     }
 }

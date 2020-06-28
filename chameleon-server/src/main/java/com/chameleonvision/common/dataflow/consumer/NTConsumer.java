@@ -12,7 +12,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,9 +33,7 @@ public class NTConsumer implements Observer<CVPipelineResult> {
 
     public NTConsumer(String name) {
         objectMapper = new ObjectMapper();
-        NetworkTable table =
-                NetworkTableInstance.getDefault()
-                        .getTable("/chameleon-vision/" + name);
+        NetworkTable table = NetworkTableInstance.getDefault().getTable("/chameleon-vision/" + name);
         ntValidEntry = table.getEntry("isValid");
 
         ntPitchEntry = table.getEntry("targetPitch");
@@ -55,9 +52,7 @@ public class NTConsumer implements Observer<CVPipelineResult> {
     }
 
     @Override
-    public void onSubscribe(@NonNull Disposable d) {
-
-    }
+    public void onSubscribe(@NonNull Disposable d) {}
 
     @Override
     public void onNext(CVPipelineResult result) {
@@ -75,9 +70,9 @@ public class NTConsumer implements Observer<CVPipelineResult> {
 
         ntTargetRotation.setNumber(bestTarget.getMinAreaRect().angle);
         double[] targetArray = {
-                bestTarget.getRobotRelativePose().getTranslation().getX(),
-                bestTarget.getRobotRelativePose().getTranslation().getY(),
-                bestTarget.getRobotRelativePose().getRotation().getDegrees()
+            bestTarget.getRobotRelativePose().getTranslation().getX(),
+            bestTarget.getRobotRelativePose().getTranslation().getY(),
+            bestTarget.getRobotRelativePose().getRotation().getDegrees()
         };
         ntPoseEntry.setDoubleArray(targetArray);
 
@@ -107,12 +102,8 @@ public class NTConsumer implements Observer<CVPipelineResult> {
     }
 
     @Override
-    public void onError(@NonNull Throwable e) {
-
-    }
+    public void onError(@NonNull Throwable e) {}
 
     @Override
-    public void onComplete() {
-
-    }
+    public void onComplete() {}
 }

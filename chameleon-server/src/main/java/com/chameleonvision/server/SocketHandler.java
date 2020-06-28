@@ -6,11 +6,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.websocket.*;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
-
 import org.msgpack.jackson.dataformat.MessagePackFactory;
 
 @SuppressWarnings("rawtypes")
@@ -31,8 +29,7 @@ public class SocketHandler {
     public void onBinaryMessage(WsBinaryMessageContext context) {
         try {
             Map<String, Object> deserializedData =
-                    objectMapper.readValue(context.data(), new TypeReference<>() {
-                    });
+                    objectMapper.readValue(context.data(), new TypeReference<>() {});
 
             for (Map.Entry<String, Object> entry : deserializedData.entrySet()) {
                 try {

@@ -25,11 +25,11 @@ public class VisionModuleManager {
         }
     }
 
-    public VisionModule getUIvisionModule(){
+    public VisionModule getUIvisionModule() {
         return UIvisionModule;
     }
 
-    public void changeCamera(int index){
+    public void changeCamera(int index) {
         UIvisionModule = visionModules.get(index);
     }
 }
