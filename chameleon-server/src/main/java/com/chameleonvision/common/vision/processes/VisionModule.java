@@ -1,23 +1,27 @@
 package com.chameleonvision.common.vision.processes;
 
-import com.chameleonvision.common.dataflow.DataConsumer;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.FrameConsumer;
 import com.chameleonvision.common.vision.pipeline.CVPipelineResult;
+import io.reactivex.rxjava3.core.Observer;
+
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
-* This is the God Class
-*
-* <p>VisionModule has a pipeline manager, vision runner, and data providers. The data providers
-* provide info on settings changes. VisionModuleManager holds a list of all current vision modules.
-*/
-public class VisionModule {
+ * This is the God Class
+ *
+ * <p>VisionModule has a pipeline manager, vision runner, and data providers. The data providers
+ * provide info on settings changes. VisionModuleManager holds a list of all current vision modules.
+ */
 
+
+public class VisionModule {
     private final PipelineManager pipelineManager;
     private final VisionSource visionSource;
     private final VisionRunner visionRunner;
-    private final LinkedList<DataConsumer> dataConsumers = new LinkedList<>();
+    private final LinkedList<Observer<CVPipelineResult>> dataConsumers = new LinkedList<>();
     private final LinkedList<FrameConsumer> frameConsumers = new LinkedList<>();
 
     public VisionModule(PipelineManager pipelineManager, VisionSource visionSource) {
@@ -36,21 +40,19 @@ public class VisionModule {
 
     void consumeResult(CVPipelineResult result) {
         // TODO: put result in to Data (not this way!)
-        var data = new Data();
-        data.result = result;
-        consumeData(data);
+        consumeData(result);
 
         var frame = result.outputFrame;
         consumeFrame(frame);
     }
 
-    void consumeData(Data data) {
+    void consumeData(CVPipelineResult data) {
         for (var dataConsumer : dataConsumers) {
-            dataConsumer.accept(data);
+            dataConsumer.onNext(data);
         }
     }
 
-    public void addDataConsumer(DataConsumer dataConsumer) {
+    public void addDataConsumer(Observer dataConsumer) {
         dataConsumers.add(dataConsumer);
     }
 
