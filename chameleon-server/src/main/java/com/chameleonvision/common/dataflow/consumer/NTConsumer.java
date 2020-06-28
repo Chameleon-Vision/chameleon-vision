@@ -1,4 +1,4 @@
-package com.chameleonvision.dataflow.consumer;
+package com.chameleonvision.common.dataflow.consumer;
 
 import com.chameleonvision.common.logging.LogGroup;
 import com.chameleonvision.common.logging.Logger;
@@ -23,13 +23,13 @@ public class NTConsumer implements Observer<CVPipelineResult> {
     private final NetworkTableEntry ntAuxListEntry;
     private final NetworkTableEntry ntAreaEntry;
     private final NetworkTableEntry ntLatencyEntry;
-    private NetworkTableEntry ntValidEntry;
+    private final NetworkTableEntry ntValidEntry;
     private final NetworkTableEntry ntPoseEntry;
     private final NetworkTableEntry ntFittedHeightEntry;
     private final NetworkTableEntry ntFittedWidthEntry;
     private final NetworkTableEntry ntBoundingHeightEntry;
     private final NetworkTableEntry ntBoundingWidthEntry;
-    private NetworkTableEntry ntTargetRotation;
+    private final NetworkTableEntry ntTargetRotation;
     private final ObjectMapper objectMapper;
 
     public NTConsumer(String name) {
@@ -73,7 +73,13 @@ public class NTConsumer implements Observer<CVPipelineResult> {
         ntFittedHeightEntry.setDouble(bestTarget.getMinAreaRect().size.height);
         ntFittedWidthEntry.setDouble(bestTarget.getMinAreaRect().size.width);
 
-        ntPoseEntry.setNumber(bestTarget.getMinAreaRect().angle);
+        ntTargetRotation.setNumber(bestTarget.getMinAreaRect().angle);
+        double[] targetArray = {
+                bestTarget.getRobotRelativePose().getTranslation().getX(),
+                bestTarget.getRobotRelativePose().getTranslation().getY(),
+                bestTarget.getRobotRelativePose().getRotation().getDegrees()
+        };
+        ntPoseEntry.setDoubleArray(targetArray);
 
         try {
             ntAuxListEntry.setString(

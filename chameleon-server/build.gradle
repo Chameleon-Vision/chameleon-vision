@@ -2,13 +2,15 @@ plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '5.2.0'
     id "com.diffplug.gradle.spotless" version "3.28.0"
+    id 'application'
 }
 
 group 'com.chameleonvision'
 version '3.0-SNAPSHOT'
 
+
 shadowJar {
-    configurations = [project.configurations.compile]
+    configurations = [project.configurations.runtimeClasspath]
     archiveFileName.set("chameleonvision-${project.version}.jar")
 }
 
@@ -96,11 +98,11 @@ task testHeadless(type: Test) {
 }
 
 spotless {
-  java {
-    googleJavaFormat()
-    paddedCell()
-    indentWithTabs(2)
-    indentWithSpaces(4)
-    removeUnusedImports()
-  }
+    java {
+        googleJavaFormat()
+        paddedCell()
+        indentWithTabs(2)
+        indentWithSpaces(4)
+        removeUnusedImports()
+    }
 }

@@ -117,6 +117,10 @@ public class PipelineManager {
         }
     }
 
+    public void enterDriverMode() {
+        setPipelineInternal(DRIVERMODE_INDEX);
+    }
+
     public static final Comparator<CVPipelineSettings> PipelineSettingsIndexComparator =
             (o1, o2) -> {
                 int o1Index = o1.pipelineIndex;
@@ -146,12 +150,19 @@ public class PipelineManager {
     }
 
     public void removePipeline(int index) {
+        if (index == currentPipelineIndex) {
+            currentPipelineIndex -= 1;
+        }
         userPipelines.remove(index);
+        reassignIndexes();
     }
 
     public void addPipeline() {
         userPipelines.add(new ReflectivePipeline());
     }
 
-    // TODO: adding/removing pipelines
+    public void changeCurrentPipeline(int index) {
+        setPipelineInternal(index);
+    }
+
 }

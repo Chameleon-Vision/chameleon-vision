@@ -18,7 +18,7 @@ import java.util.LinkedList;
 
 
 public class VisionModule {
-    private final PipelineManager pipelineManager;
+    public final PipelineManager pipelineManager;
     private final VisionSource visionSource;
     private final VisionRunner visionRunner;
     private final LinkedList<Observer<CVPipelineResult>> dataConsumers = new LinkedList<>();
@@ -64,5 +64,8 @@ public class VisionModule {
         for (var frameConsumer : frameConsumers) {
             frameConsumer.accept(frame);
         }
+    }
+    public String getSourceNickname(){
+        return visionSource.getCameraConfiguration().nickname;
     }
 }

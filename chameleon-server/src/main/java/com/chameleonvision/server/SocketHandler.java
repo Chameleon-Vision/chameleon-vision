@@ -2,8 +2,6 @@ package com.chameleonvision.server;
 
 import com.chameleonvision.common.logging.LogGroup;
 import com.chameleonvision.common.logging.Logger;
-import com.chameleonvision.common.vision.pipeline.PipelineType;
-import com.chameleonvision.common.vision.processes.PipelineManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,15 +11,14 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
 
 @SuppressWarnings("rawtypes")
 public class SocketHandler {
 
     private final Logger logger = new Logger(SocketHandler.class, LogGroup.Server);
-    private final List<WsContext> users = new ArrayList<>();
-    private final ObjectMapper objectMapper = new ObjectMapper(new MessagePackFactory());
+    private static final List<WsContext> users = new ArrayList<>();
+    private static final ObjectMapper objectMapper = new ObjectMapper(new MessagePackFactory());
 
     public void onConnect(WsConnectContext context) {
         users.add(context);
@@ -51,17 +48,19 @@ public class SocketHandler {
         }
     }
 
-    // TODO: change to use the DataFlow system
-    private void sendMessage(Object message, WsContext user) throws JsonProcessingException {
+    public static void sendMessage(Object message, WsContext user) throws JsonProcessingException {
         ByteBuffer b = ByteBuffer.wrap(objectMapper.writeValueAsBytes(message));
         user.send(b);
     }
 
-    // TODO: change to use the DataFlow system
-    private void broadcastMessage(Object message, WsContext userToSkip)
+    public static void broadcastMessage(Object message) throws JsonProcessingException {
+        broadcastMessage(message, null);
+    }
+
+    public static void broadcastMessage(Object message, WsContext userToSkip)
             throws JsonProcessingException {
         for (WsContext user : users) {
-            if (user != userToSkip) {
+            if (!user.getSessionId().equals(userToSkip.getSessionId())) {
                 sendMessage(message, user);
             }
         }
