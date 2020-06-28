@@ -1,9 +1,7 @@
 package com.chameleonvision.common.vision.processes;
 
-import com.chameleonvision.common.vision.pipeline.CVPipeline;
-import com.chameleonvision.common.vision.pipeline.CVPipelineSettings;
-import com.chameleonvision.common.vision.pipeline.Calibration3dPipeline;
-import com.chameleonvision.common.vision.pipeline.DriverModePipeline;
+import com.chameleonvision.common.vision.pipeline.*;
+
 import java.util.Comparator;
 import java.util.List;
 
@@ -17,7 +15,9 @@ public class PipelineManager {
     private final Calibration3dPipeline calibration3dPipeline = new Calibration3dPipeline();
     private final DriverModePipeline driverModePipeline = new DriverModePipeline();
 
-    /** Index of the currently active pipeline. */
+    /**
+     * Index of the currently active pipeline.
+     */
     private int currentPipelineIndex = DRIVERMODE_INDEX;
 
     /**
@@ -37,7 +37,9 @@ public class PipelineManager {
         this.userPipelines = userPipelines;
     }
 
-    /** Creates a PipelineManager with a DriverModePipeline, and a Calibration3dPipeline. */
+    /**
+     * Creates a PipelineManager with a DriverModePipeline, and a Calibration3dPipeline.
+     */
     public PipelineManager() {
         this(List.of());
     }
@@ -115,6 +117,10 @@ public class PipelineManager {
         }
     }
 
+    public void enterDriverMode() {
+        setPipelineInternal(DRIVERMODE_INDEX);
+    }
+
     public static final Comparator<CVPipelineSettings> PipelineSettingsIndexComparator =
             (o1, o2) -> {
                 int o1Index = o1.pipelineIndex;
@@ -143,33 +149,20 @@ public class PipelineManager {
         }
     }
 
-    /**
-     * @param index The index of the Pipeline to be removed
-     */
     public void removePipeline(int index) {
+        if (index == currentPipelineIndex) {
+            currentPipelineIndex -= 1;
+        }
         userPipelines.remove(index);
         reassignIndexes();
     }
 
-    /**
-     * Adds a new CVPipeline to the userPipelines list at a specified index
-     * @param index Index to add the pipeline to
-     * @param userPipeline Pipeline to add to the PipelineManager list
-     */
-    public void addPipeline(int index, CVPipeline userPipeline) {
-        userPipeline.getSettings().piplineIndex = index;
-        userPipelines.add(index, userPipeline);
-        for (int i = index; i < userPipelines.size(); i++) {
-            getPipelineSettings(i).pipelineIndex = i;
-        }
+    public void addPipeline() {
+        userPipelines.add(new ReflectivePipeline());
     }
 
-    /**
-     * Adds a new CVPipline onto the end of the userPipelines list
-     * @param userPipeline Pipeline to add to the PipelineManager list
-     */
-    public void addPipeline(CVPipeline userPipeline) {
-        userPipeline.getSettings().pipelineIndex = userPipelines.size() -1;
-        userPipelines.add(userPipeline);
+    public void changeCurrentPipeline(int index) {
+        setPipelineInternal(index);
     }
+
 }

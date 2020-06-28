@@ -5,6 +5,7 @@ import io.javalin.Javalin;
 public class Server {
 
     public static void main(int port) {
+        SocketHandler socketHandler = new SocketHandler();
         Javalin app =
                 Javalin.create(
                         javalinConfig -> {
@@ -16,9 +17,9 @@ public class Server {
         app.ws(
                 "/websocket",
                 ws -> {
-                    ws.onConnect(SocketHandler.getInstance()::onConnect);
-                    ws.onClose(SocketHandler.getInstance()::onClose);
-                    ws.onBinaryMessage(SocketHandler.getInstance()::onBinaryMessage);
+                    ws.onConnect(socketHandler::onConnect);
+                    ws.onClose(socketHandler::onClose);
+                    ws.onBinaryMessage(socketHandler::onBinaryMessage);
                 });
 
         /*API Events*/
