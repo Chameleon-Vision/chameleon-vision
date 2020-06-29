@@ -7,9 +7,8 @@ import com.chameleonvision.common.vision.opencv.CVMat;
 import com.chameleonvision.common.vision.pipe.impl.Draw2dCrosshairPipe;
 import com.chameleonvision.common.vision.pipe.impl.ResizeImagePipe;
 import com.chameleonvision.common.vision.pipe.impl.RotateImagePipe;
-import java.util.List;
-
 import com.chameleonvision.common.vision.processes.PipelineManager;
+import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class DriverModePipeline

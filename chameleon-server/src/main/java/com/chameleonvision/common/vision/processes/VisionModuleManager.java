@@ -11,10 +11,11 @@ public class VisionModuleManager {
     public VisionModuleManager(List<VisionSource> visionSources) {
         for (var visionSource : visionSources) {
 
-            // TODO: loading existing pipelines from config
+            //             TODO: loading existing pipelines from config
             var pipelineManager = new PipelineManager();
-
-            visionModules.add(new VisionModule(pipelineManager, visionSource));
+            //
+            var module = new VisionModule(pipelineManager, visionSource);
+            visionModules.add(module);
         }
         UIvisionModule = visionModules.get(0);
     }

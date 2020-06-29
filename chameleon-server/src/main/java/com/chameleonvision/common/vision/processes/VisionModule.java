@@ -1,12 +1,15 @@
 package com.chameleonvision.common.vision.processes;
 
+import com.chameleonvision.common.dataflow.consumer.UIConsumer;
 import com.chameleonvision.common.dataflow.providers.Provider;
 import com.chameleonvision.common.dataflow.providers.UIProvider;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.FrameConsumer;
+import com.chameleonvision.common.vision.frame.consumer.MJPGFrameConsumer;
 import com.chameleonvision.common.vision.pipeline.CVPipelineResult;
 import io.reactivex.rxjava3.core.Observer;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
 * This is the God Class
@@ -18,9 +21,9 @@ public class VisionModule {
     public final PipelineManager pipelineManager;
     private final VisionSource visionSource;
     private final VisionRunner visionRunner;
-    private final LinkedList<Observer<CVPipelineResult>> dataConsumers = new LinkedList<>();
-    private final LinkedList<Provider> dataProviders = new LinkedList<>();
-    private final LinkedList<FrameConsumer> frameConsumers = new LinkedList<>();
+    private final List<Observer<CVPipelineResult>> dataConsumers = new ArrayList<>();
+    private final List<Provider> dataProviders = new ArrayList<>();
+    private final List<FrameConsumer> frameConsumers = new ArrayList<>();
 
     public VisionModule(PipelineManager pipelineManager, VisionSource visionSource) {
         this.pipelineManager = pipelineManager;
@@ -30,6 +33,19 @@ public class VisionModule {
                         this.visionSource.getFrameProvider(),
                         this.pipelineManager::getCurrentPipeline,
                         this::consumeResult);
+        initMjpgStreamer();
+        UIProvider ui = new UIProvider(this);
+        dataProviders.add(ui);
+        UIConsumer uiConsumer = new UIConsumer();
+        dataConsumers.add(uiConsumer);
+    }
+
+    private void initMjpgStreamer() {
+        String name = visionSource.getCameraConfiguration().nickname;
+        int width = visionSource.getSettables().getCurrentVideoMode().width;
+        int height = visionSource.getSettables().getCurrentVideoMode().height;
+        MJPGFrameConsumer mjpgFrameConsumer = new MJPGFrameConsumer(name, width, height);
+        addFrameConsumer(mjpgFrameConsumer);
     }
 
     public void start() {
@@ -50,7 +66,7 @@ public class VisionModule {
         }
     }
 
-    public void addDataConsumer(Observer dataConsumer) {
+    public void addDataConsumer(Observer<CVPipelineResult> dataConsumer) {
         dataConsumers.add(dataConsumer);
     }
 
@@ -68,7 +84,7 @@ public class VisionModule {
         return visionSource.getCameraConfiguration().nickname;
     }
 
-    public LinkedList<Observer<CVPipelineResult>> getDataConsumers() {
+    public List<Observer<CVPipelineResult>> getDataConsumers() {
         return dataConsumers;
     }
 

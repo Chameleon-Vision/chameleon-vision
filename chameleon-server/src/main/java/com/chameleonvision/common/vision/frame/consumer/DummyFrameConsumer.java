@@ -8,4 +8,9 @@ public class DummyFrameConsumer implements FrameConsumer {
     public void accept(Frame frame) {
         frame.release(); // lol ez
     }
+
+    @Override
+    public int getPort() {
+        return 0;
+    }
 }

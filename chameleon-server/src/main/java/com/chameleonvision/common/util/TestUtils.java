@@ -1,6 +1,7 @@
 package com.chameleonvision.common.util;
 
 import edu.wpi.cscore.CameraServerCvJNI;
+import edu.wpi.cscore.CameraServerJNI;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -147,6 +148,7 @@ public class TestUtils {
     public static void loadLibraries() {
         try {
             CameraServerCvJNI.forceLoad();
+            CameraServerJNI.forceLoad();
         } catch (IOException e) {
             // ignored
         }

@@ -15,8 +15,7 @@ public class Calibration3dPipeline extends CVPipeline<CVPipelineResult, CVPipeli
 
     @Override
     protected void setPipeParams(
-            FrameStaticProperties frameStaticProperties, CVPipelineSettings settings) {
-    }
+            FrameStaticProperties frameStaticProperties, CVPipelineSettings settings) {}
 
     @Override
     protected CVPipelineResult process(Frame frame, CVPipelineSettings settings) {

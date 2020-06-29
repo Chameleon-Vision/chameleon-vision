@@ -10,8 +10,8 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.cameraserver.CameraServer;
-
 import java.util.*;
+import org.apache.commons.lang3.StringUtils;
 
 public class USBCameraSource implements VisionSource {
     private final UsbCamera camera;
@@ -23,7 +23,12 @@ public class USBCameraSource implements VisionSource {
 
     public USBCameraSource(CameraConfiguration config) {
         this.configuration = config;
-        this.camera = new UsbCamera(config.nickname, config.path);
+        if (StringUtils.isNumeric(config.path)) {
+            this.camera = new UsbCamera(config.nickname, Integer.parseInt(config.path));
+        } else {
+            this.camera = new UsbCamera(config.nickname, config.path);
+        }
+
         this.cameraQuirks =
                 new QuirkyCamera(camera.getInfo().productId, camera.getInfo().vendorId, config.baseName);
         CvSink cvSink = CameraServer.getInstance().getVideo(this.camera);
