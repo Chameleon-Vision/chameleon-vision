@@ -10,12 +10,12 @@ public class VisionModuleManager {
 
     public VisionModuleManager(List<VisionSource> visionSources) {
         for (var visionSource : visionSources) {
+            var pipelineManager =
+                    new PipelineManager(
+                            visionSource.getCameraConfiguration().pipelineSettings,
+                            visionSource.getCameraConfiguration().driveModeSettings);
 
-            //             TODO: loading existing pipelines from config
-            var pipelineManager = new PipelineManager();
-            //
             var module = new VisionModule(pipelineManager, visionSource);
-            module.initMjpgStreamer();
             visionModules.add(module);
         }
         UIvisionModule = visionModules.get(0);

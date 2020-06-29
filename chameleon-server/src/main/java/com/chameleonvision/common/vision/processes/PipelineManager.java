@@ -10,12 +10,14 @@ public class PipelineManager {
     public static final int DRIVERMODE_INDEX = -1;
     public static final int CAL_3D_INDEX = -2;
 
-    public final List<CVPipeline> userPipelines;
+    public final List<CVPipelineSettings> userPipelines;
     private final Calibration3dPipeline calibration3dPipeline = new Calibration3dPipeline();
     private final DriverModePipeline driverModePipeline = new DriverModePipeline();
 
     /** Index of the currently active pipeline. */
     private int currentPipelineIndex = DRIVERMODE_INDEX;
+
+    private CVPipeline currentPipeline;
 
     /**
     * Index of the last active user-created pipeline. <br>
@@ -30,13 +32,21 @@ public class PipelineManager {
     *
     * @param userPipelines Pipelines to add to the manager.
     */
-    public PipelineManager(List<CVPipeline> userPipelines) {
+    public PipelineManager(List<CVPipelineSettings> userPipelines) {
         this.userPipelines = userPipelines;
+        setPipelineInternal(0);
+    }
+
+    public PipelineManager(
+            List<CVPipelineSettings> userPipelines,
+            DriverModePipelineSettings driverModePipelineSettings) {
+        this(userPipelines);
+        this.driverModePipeline.setSettings(driverModePipelineSettings);
     }
 
     /** Creates a PipelineManager with a DriverModePipeline, and a Calibration3dPipeline. */
     public PipelineManager() {
-        this(List.of());
+        this(List.of(new ReflectivePipelineSettings()));
     }
 
     /**
@@ -45,13 +55,13 @@ public class PipelineManager {
     * @param index Index of desired pipeline.
     * @return The desired pipeline.
     */
-    public CVPipeline getPipeline(int index) {
+    public CVPipelineSettings getPipeline(int index) {
         if (index < 0) {
             switch (index) {
                 case DRIVERMODE_INDEX:
-                    return driverModePipeline;
+                    return driverModePipeline.getSettings();
                 case CAL_3D_INDEX:
-                    return calibration3dPipeline;
+                    return calibration3dPipeline.getSettings();
             }
         }
 
@@ -65,7 +75,7 @@ public class PipelineManager {
     * @return The gotten settings of the pipeline whose index was provided.
     */
     public CVPipelineSettings getPipelineSettings(int index) {
-        return getPipeline(index).getSettings();
+        return getPipeline(index);
     }
 
     /**
@@ -74,7 +84,7 @@ public class PipelineManager {
     * @return The currently active pipeline.
     */
     public CVPipeline getCurrentPipeline() {
-        return getPipeline(currentPipelineIndex);
+        return currentPipeline;
     }
 
     /**
@@ -83,7 +93,7 @@ public class PipelineManager {
     * @return The currently active pipelines settings
     */
     public CVPipelineSettings getCurrentPipelineSettings() {
-        return getPipelineSettings(currentPipelineIndex);
+        return currentPipeline.getSettings();
     }
 
     /**
@@ -100,6 +110,30 @@ public class PipelineManager {
         }
 
         currentPipelineIndex = index;
+        setActivePipeline(currentPipelineIndex);
+    }
+
+    private void setActivePipeline(int index) {
+        switch (index) {
+            case DRIVERMODE_INDEX:
+                currentPipeline = driverModePipeline;
+                break;
+            case CAL_3D_INDEX:
+                currentPipeline = calibration3dPipeline;
+                break;
+            default:
+                {
+                    CVPipelineSettings settings = getPipelineSettings(index);
+                    switch (settings.pipelineType) {
+                        case ColoredShape:
+                            currentPipeline = new ColoredShapePipeline((ColoredShapePipelineSettings) settings);
+                            break;
+                        case Reflective:
+                            currentPipeline = new ReflectivePipeline((ReflectivePipelineSettings) settings);
+                            break;
+                    }
+                }
+        }
     }
 
     /**
@@ -129,16 +163,13 @@ public class PipelineManager {
                 return 1;
             };
 
-    public static final Comparator<CVPipeline> PipelineIndexComparator =
-            (o1, o2) -> PipelineSettingsIndexComparator.compare(o1.getSettings(), o2.getSettings());
-
     /**
     * Sorts the pipeline list by index, and reassigns their indexes to match the new order. <br>
     * <br>
     * I don't like this but I have no other ideas, and it works so ¯\_(ツ)_/¯
     */
     private void reassignIndexes() {
-        userPipelines.sort(PipelineIndexComparator);
+        userPipelines.sort(PipelineSettingsIndexComparator);
         for (int i = 0; i < userPipelines.size(); i++) {
             getPipelineSettings(i).pipelineIndex = i;
         }
@@ -148,6 +179,7 @@ public class PipelineManager {
         if (index == currentPipelineIndex) {
             currentPipelineIndex -= 1;
         }
+        //        TODO CALL REMOVAL OF FILE USING CONFIG MANAGER
         userPipelines.remove(index);
         reassignIndexes();
     }
@@ -156,9 +188,9 @@ public class PipelineManager {
         removePipeline(currentPipelineIndex);
     }
 
-    public void addPipeline(CVPipeline cvPipeline) {
-        cvPipeline.getSettings().pipelineIndex = userPipelines.size() - 1;
-        userPipelines.add(cvPipeline);
+    public void addPipeline(CVPipelineSettings settings) {
+        settings.pipelineIndex = userPipelines.size() - 1;
+        userPipelines.add(settings);
     }
 
     public void changeCurrentPipeline(int index) {

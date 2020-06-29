@@ -37,6 +37,7 @@ public class VisionModule {
         dataProviders.add(ui);
         UIConsumer uiConsumer = new UIConsumer();
         dataConsumers.add(uiConsumer);
+        initMjpgStreamer();
     }
 
     public void initMjpgStreamer() {
@@ -52,9 +53,7 @@ public class VisionModule {
     }
 
     void consumeResult(CVPipelineResult result) {
-        // TODO: put result in to Data (not this way!)
         consumeData(result);
-
         var frame = result.outputFrame;
         consumeFrame(frame);
     }

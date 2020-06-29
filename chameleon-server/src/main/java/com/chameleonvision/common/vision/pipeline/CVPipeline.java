@@ -15,6 +15,10 @@ public abstract class CVPipeline<R extends CVPipelineResult, S extends CVPipelin
         return settings;
     }
 
+    public void setSettings(S settings) {
+        this.settings = settings;
+    }
+
     public R run(Frame frame) {
         long pipelineStartNanos = System.nanoTime();
 

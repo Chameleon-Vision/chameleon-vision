@@ -2,7 +2,7 @@ package com.chameleonvision.common.dataflow.providers;
 
 import com.chameleonvision.common.configuration.ConfigManager;
 import com.chameleonvision.common.vision.frame.FrameDivisor;
-import com.chameleonvision.common.vision.pipeline.ReflectivePipeline;
+import com.chameleonvision.common.vision.pipeline.ReflectivePipelineSettings;
 import com.chameleonvision.common.vision.processes.VisionModule;
 import java.lang.reflect.Field;
 
@@ -21,8 +21,8 @@ public class UIProvider extends Provider {
                 }
             case "addNewPipeline":
                 {
-                    ReflectivePipeline pipe = new ReflectivePipeline();
-                    pipe.getSettings().pipelineNickname = (String) value;
+                    ReflectivePipelineSettings pipe = new ReflectivePipelineSettings();
+                    pipe.pipelineNickname = (String) value;
                     parentModule.pipelineManager.addPipeline(pipe);
                     break;
                 }

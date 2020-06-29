@@ -5,6 +5,7 @@ import com.chameleonvision.common.util.TestUtils;
 import com.chameleonvision.common.vision.frame.FrameProvider;
 import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
 import com.chameleonvision.common.vision.pipeline.CVPipelineResult;
+import com.chameleonvision.common.vision.pipeline.ReflectivePipelineSettings;
 import edu.wpi.cscore.VideoMode;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
@@ -27,6 +28,7 @@ public class VisionModuleManagerTest {
 
         public TestSource(FrameProvider provider) {
             this.config = new CameraConfiguration("", "", "", "");
+            this.config.pipelineSettings.add(new ReflectivePipelineSettings());
             this.provider = provider;
         }
 
@@ -124,7 +126,7 @@ public class VisionModuleManagerTest {
 
         moduleManager.startModules();
 
-        sleep(500);
+        sleep(1000);
 
         Assertions.assertNotNull(module0DataConsumer.result);
         Assertions.assertNotNull(module0DataConsumer.result);
