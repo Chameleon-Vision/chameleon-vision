@@ -78,8 +78,7 @@ public class VisionModuleManagerTest {
 
         @Override
         public VideoMode getCurrentVideoMode() {
-            return new VideoMode(0,320, 240, 30);
-
+            return new VideoMode(0, 320, 240, 30);
         }
 
         @Override

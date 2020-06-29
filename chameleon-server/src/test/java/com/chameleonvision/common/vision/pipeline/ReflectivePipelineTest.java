@@ -1,6 +1,5 @@
 package com.chameleonvision.common.vision.pipeline;
 
-import com.chameleonvision.common.configuration.ConfigManager;
 import com.chameleonvision.common.logging.LogGroup;
 import com.chameleonvision.common.logging.Logger;
 import com.chameleonvision.common.util.TestUtils;
@@ -11,7 +10,6 @@ import com.chameleonvision.common.vision.opencv.ContourGroupingMode;
 import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
 
 public class ReflectivePipelineTest {
 
