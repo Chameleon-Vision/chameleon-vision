@@ -21,7 +21,6 @@ public class Server {
                     ws.onClose(socketHandler::onClose);
                     ws.onBinaryMessage(socketHandler::onBinaryMessage);
                 });
-
         /*API Events*/
         //        app.post("/api/settings/general",
         // com.chameleonvision._2.web.RequestHandler::onGeneralSettings);

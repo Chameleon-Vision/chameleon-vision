@@ -5,8 +5,8 @@ import java.util.List;
 
 /** VisionModuleManager has many VisionModules, and provides camera configuration data to them. */
 public class VisionModuleManager {
-    protected final List<VisionModule> visionModules = new ArrayList<>();
-    private VisionModule UIvisionModule;
+    public static final List<VisionModule> visionModules = new ArrayList<>();
+    public static VisionModule UIvisionModule;
 
     public VisionModuleManager(List<VisionSource> visionSources) {
         for (var visionSource : visionSources) {
@@ -25,11 +25,11 @@ public class VisionModuleManager {
         }
     }
 
-    public VisionModule getUIvisionModule() {
+    public static VisionModule getUIvisionModule() {
         return UIvisionModule;
     }
 
-    public void changeCamera(int index) {
+    public static void changeCamera(int index) {
         UIvisionModule = visionModules.get(index);
     }
 }

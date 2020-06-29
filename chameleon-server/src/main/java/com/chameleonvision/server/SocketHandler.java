@@ -2,6 +2,7 @@ package com.chameleonvision.server;
 
 import com.chameleonvision.common.logging.LogGroup;
 import com.chameleonvision.common.logging.Logger;
+import com.chameleonvision.common.vision.processes.VisionModuleManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,13 +36,26 @@ public class SocketHandler {
                 try {
                     var entryKey = entry.getKey();
                     var entryValue = entry.getValue();
+                    switch (entryKey) {
+                        case "currentCamera":
+                            {
+                                VisionModuleManager.changeCamera((Integer) entryValue);
+                                break;
+                            }
+                        default:
+                            {
+                                VisionModuleManager.getUIvisionModule()
+                                        .getUIDataProvider()
+                                        .onMessage(entryKey, entryValue);
+                                break;
+                            }
+                    }
                 } catch (Exception ex) {
                     // ignored
                 }
             }
         } catch (IOException e) {
-            // TODO: log
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 

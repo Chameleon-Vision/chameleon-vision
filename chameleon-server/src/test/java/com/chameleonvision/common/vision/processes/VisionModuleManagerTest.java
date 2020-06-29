@@ -38,6 +38,11 @@ public class VisionModuleManagerTest {
         public VisionSourceSettables getSettables() {
             return new TestSettables(new CameraConfiguration("", "", "", ""));
         }
+
+        @Override
+        public CameraConfiguration getCameraConfiguration() {
+            return null;
+        }
     }
 
     private static class TestSettables extends VisionSourceSettables {

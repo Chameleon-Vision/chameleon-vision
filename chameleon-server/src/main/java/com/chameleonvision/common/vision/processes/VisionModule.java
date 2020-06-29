@@ -1,5 +1,7 @@
 package com.chameleonvision.common.vision.processes;
 
+import com.chameleonvision.common.dataflow.providers.Provider;
+import com.chameleonvision.common.dataflow.providers.UIProvider;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.FrameConsumer;
 import com.chameleonvision.common.vision.pipeline.CVPipelineResult;
@@ -17,6 +19,7 @@ public class VisionModule {
     private final VisionSource visionSource;
     private final VisionRunner visionRunner;
     private final LinkedList<Observer<CVPipelineResult>> dataConsumers = new LinkedList<>();
+    private final LinkedList<Provider> dataProviders = new LinkedList<>();
     private final LinkedList<FrameConsumer> frameConsumers = new LinkedList<>();
 
     public VisionModule(PipelineManager pipelineManager, VisionSource visionSource) {
@@ -63,5 +66,18 @@ public class VisionModule {
 
     public String getSourceNickname() {
         return visionSource.getCameraConfiguration().nickname;
+    }
+
+    public LinkedList<Observer<CVPipelineResult>> getDataConsumers() {
+        return dataConsumers;
+    }
+
+    public UIProvider getUIDataProvider() {
+        return (UIProvider)
+                dataProviders.stream().filter(c -> c instanceof UIProvider).findFirst().orElse(null);
+    }
+
+    public VisionSource getVisionSource() {
+        return visionSource;
     }
 }
