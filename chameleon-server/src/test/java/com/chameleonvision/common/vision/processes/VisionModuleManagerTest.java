@@ -23,9 +23,10 @@ public class VisionModuleManagerTest {
     private static class TestSource implements VisionSource {
 
         private final FrameProvider provider;
+        private final CameraConfiguration config;
 
         public TestSource(FrameProvider provider) {
-
+            this.config = new CameraConfiguration("", "", "", "");
             this.provider = provider;
         }
 
@@ -36,12 +37,12 @@ public class VisionModuleManagerTest {
 
         @Override
         public VisionSourceSettables getSettables() {
-            return new TestSettables(new CameraConfiguration("", "", "", ""));
+            return new TestSettables(config);
         }
 
         @Override
         public CameraConfiguration getCameraConfiguration() {
-            return null;
+            return config;
         }
     }
 
@@ -77,7 +78,8 @@ public class VisionModuleManagerTest {
 
         @Override
         public VideoMode getCurrentVideoMode() {
-            return null;
+            return new VideoMode(0,320, 240, 30);
+
         }
 
         @Override

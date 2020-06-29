@@ -15,6 +15,7 @@ public class VisionModuleManager {
             var pipelineManager = new PipelineManager();
             //
             var module = new VisionModule(pipelineManager, visionSource);
+            module.initMjpgStreamer();
             visionModules.add(module);
         }
         UIvisionModule = visionModules.get(0);

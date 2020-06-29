@@ -1,5 +1,8 @@
 package com.chameleonvision.common.vision.pipeline;
 
+import com.chameleonvision.common.configuration.ConfigManager;
+import com.chameleonvision.common.logging.LogGroup;
+import com.chameleonvision.common.logging.Logger;
 import com.chameleonvision.common.util.TestUtils;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
@@ -12,18 +15,10 @@ import org.slf4j.LoggerFactory;
 
 public class ReflectivePipelineTest {
 
-    public static void setLoggingLevel(ch.qos.logback.classic.Level level) {
-        ch.qos.logback.classic.Logger root =
-                (ch.qos.logback.classic.Logger)
-                        org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-        root.setLevel(level);
-    }
-
     @Test
     public void testDebug() {
-        var logger = LoggerFactory.getLogger(ReflectivePipelineTest.class);
-        setLoggingLevel(ch.qos.logback.classic.Level.WARN);
-        logger.warn(String.valueOf(logger.isDebugEnabled()));
+        Logger logger = new Logger(ReflectivePipelineTest.class, LogGroup.General);
+        logger.warn("yo");
         logger.info("hi");
         logger.debug("debug");
     }

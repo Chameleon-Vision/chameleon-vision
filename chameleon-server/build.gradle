@@ -71,7 +71,6 @@ dependencies {
     compile "edu.wpi.first.thirdparty.frc2020.opencv:opencv-jni:$openCVVersion:osxx86-64"
     compile "edu.wpi.first.thirdparty.frc2020.opencv:opencv-jni:$openCVVersion:windowsx86-64"
 
-    testCompile "ch.qos.logback:logback-classic:0.9.26"
     compile "org.slf4j:slf4j-simple:1.8.0-beta4"
 
     // test stuff

@@ -33,14 +33,13 @@ public class VisionModule {
                         this.visionSource.getFrameProvider(),
                         this.pipelineManager::getCurrentPipeline,
                         this::consumeResult);
-        initMjpgStreamer();
         UIProvider ui = new UIProvider(this);
         dataProviders.add(ui);
         UIConsumer uiConsumer = new UIConsumer();
         dataConsumers.add(uiConsumer);
     }
 
-    private void initMjpgStreamer() {
+    public void initMjpgStreamer() {
         String name = visionSource.getCameraConfiguration().nickname;
         int width = visionSource.getSettables().getCurrentVideoMode().width;
         int height = visionSource.getSettables().getCurrentVideoMode().height;
