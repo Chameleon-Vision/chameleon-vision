@@ -1,6 +1,8 @@
 package com.chameleonvision.common.dataflow.providers;
 
+import com.chameleonvision.common.configuration.ConfigManager;
 import com.chameleonvision.common.util.numbers.DoubleCouple;
+import com.chameleonvision.common.vision.frame.FrameDivisor;
 import com.chameleonvision.common.vision.pipeline.ReflectivePipeline;
 import com.chameleonvision.common.vision.processes.VisionModule;
 
@@ -34,7 +36,7 @@ public class UIProvider extends Provider {
                         parentModule.pipelineManager.removeCurrentPipeline();
                         break;
                     case "save":
-//                        TODO CALL CONFIG MANAGER TO SAVE ALL CONFIGS
+                        ConfigManager.getInstance().save();
                         break;
                 }
             }
@@ -62,7 +64,7 @@ public class UIProvider extends Provider {
                 break;
             }
             case "streamDivisor": {
-//                TODO CALL CHANGE FOR STREAM DIVISOR
+                parentModule.pipelineManager.getCurrentPipeline().getSettings().outputFrameDivisor = FrameDivisor.values()[(Integer) value];
                 break;
             }
         }
