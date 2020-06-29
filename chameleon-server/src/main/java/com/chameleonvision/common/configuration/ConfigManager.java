@@ -165,7 +165,7 @@ public class ConfigManager {
         }
     }
 
-    private HashMap<String, CameraConfiguration> loadCameraConfigs() {
+    public HashMap<String, CameraConfiguration> loadCameraConfigs() {
         HashMap<String, CameraConfiguration> loadedConfigurations = new HashMap<>();
         try {
             var subdirectories =

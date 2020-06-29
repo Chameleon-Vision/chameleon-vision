@@ -157,7 +157,7 @@ public class PipelineManager {
      * @param userPipeline Pipeline to add to the PipelineManager list
      */
     public void addPipeline(int index, CVPipeline userPipeline) {
-        userPipeline.getSettings().piplineIndex = index;
+        userPipeline.getSettings().pipelineIndex = index;
         userPipelines.add(index, userPipeline);
         for (int i = index; i < userPipelines.size(); i++) {
             getPipelineSettings(i).pipelineIndex = i;
@@ -165,7 +165,7 @@ public class PipelineManager {
     }
 
     /**
-     * Adds a new CVPipline onto the end of the userPipelines list
+     * Adds a new CVPipeline onto the end of the userPipelines list
      * @param userPipeline Pipeline to add to the PipelineManager list
      */
     public void addPipeline(CVPipeline userPipeline) {
