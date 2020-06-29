@@ -123,7 +123,7 @@ public class VisionModuleManagerTest {
         var module0DataConsumer = new TestDataConsumer();
 
         moduleManager.visionModules.get(0).addDataConsumer(module0DataConsumer);
-
+        moduleManager.visionModules.get(0).pipelineManager.enterDriverMode();
         moduleManager.startModules();
 
         sleep(1500);
