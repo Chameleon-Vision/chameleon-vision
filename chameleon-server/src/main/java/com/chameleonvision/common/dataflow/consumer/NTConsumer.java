@@ -1,5 +1,6 @@
 package com.chameleonvision.common.dataflow.consumer;
 
+import com.chameleonvision.common.NetworkTables.NTManager;
 import com.chameleonvision.common.logging.LogGroup;
 import com.chameleonvision.common.logging.Logger;
 import com.chameleonvision.common.vision.pipeline.CVPipelineResult;
@@ -33,7 +34,7 @@ public class NTConsumer implements Observer<CVPipelineResult> {
 
     public NTConsumer(String name) {
         objectMapper = new ObjectMapper();
-        NetworkTable table = NetworkTableInstance.getDefault().getTable("/chameleon-vision/" + name);
+        NetworkTable table = NetworkTableInstance.getDefault().getTable(NTManager.TableName + name);
         ntValidEntry = table.getEntry("isValid");
 
         ntPitchEntry = table.getEntry("targetPitch");

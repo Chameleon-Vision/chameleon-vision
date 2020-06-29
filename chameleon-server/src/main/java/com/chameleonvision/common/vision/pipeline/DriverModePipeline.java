@@ -8,6 +8,8 @@ import com.chameleonvision.common.vision.pipe.impl.Draw2dCrosshairPipe;
 import com.chameleonvision.common.vision.pipe.impl.ResizeImagePipe;
 import com.chameleonvision.common.vision.pipe.impl.RotateImagePipe;
 import java.util.List;
+
+import com.chameleonvision.common.vision.processes.PipelineManager;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class DriverModePipeline
@@ -21,6 +23,7 @@ public class DriverModePipeline
 
     public DriverModePipeline() {
         settings = new DriverModePipelineSettings();
+        settings.pipelineIndex = PipelineManager.DRIVERMODE_INDEX;
     }
 
     @Override

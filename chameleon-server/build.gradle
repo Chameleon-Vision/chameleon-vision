@@ -8,6 +8,7 @@ plugins {
 group 'com.chameleonvision'
 version '3.0-SNAPSHOT'
 
+mainClassName = 'com.chameleonvision.Main'
 
 shadowJar {
     configurations = [project.configurations.runtimeClasspath]
