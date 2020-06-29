@@ -5,6 +5,7 @@ import io.javalin.Javalin;
 public class Server {
 
     public static void main(int port) {
+        SocketHandler socketHandler = new SocketHandler();
         Javalin app =
                 Javalin.create(
                         javalinConfig -> {
@@ -12,13 +13,13 @@ public class Server {
                             javalinConfig.addStaticFiles("web");
                             javalinConfig.enableCorsForAllOrigins();
                         });
-        /*Web Socket Events */
+        /* Web Socket Events */
         app.ws(
                 "/websocket",
                 ws -> {
-                    ws.onConnect(SocketHandler::onConnect);
-                    ws.onClose(SocketHandler::onClose);
-                    ws.onBinaryMessage(SocketHandler::onBinaryMessage);
+                    ws.onConnect(socketHandler::onConnect);
+                    ws.onClose(socketHandler::onClose);
+                    ws.onBinaryMessage(socketHandler::onBinaryMessage);
                 });
         /*API Events*/
         //        app.post("/api/settings/general",
@@ -36,6 +37,7 @@ public class Server {
         //        app.post("/api/vision/pnpModel",
         // com.chameleonvision._2.web.RequestHandler::onPnpModel);
         //        app.post("/api/install", RequestHandler::onInstallOrUpdate);
+
         app.start(port);
     }
 }

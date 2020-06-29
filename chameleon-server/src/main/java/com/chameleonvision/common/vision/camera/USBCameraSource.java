@@ -59,6 +59,11 @@ public class USBCameraSource implements VisionSource {
         return this.usbCameraSettables;
     }
 
+    @Override
+    public CameraConfiguration getCameraConfiguration() {
+        return configuration;
+    }
+
     public class USBCameraSettables extends VisionSourceSettables {
         protected USBCameraSettables(CameraConfiguration configuration) {
             super(configuration);

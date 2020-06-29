@@ -1,35 +1,61 @@
 package com.chameleonvision.server;
 
+import com.chameleonvision.common.logging.LogGroup;
+import com.chameleonvision.common.logging.Logger;
+import com.chameleonvision.common.vision.processes.VisionModuleManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.websocket.*;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
 
+@SuppressWarnings("rawtypes")
 public class SocketHandler {
-    static List<WsContext> users = new ArrayList<>();
-    static ObjectMapper objectMapper = new ObjectMapper(new MessagePackFactory());
 
-    public static void onConnect(WsConnectContext context) {
+    private final Logger logger = new Logger(SocketHandler.class, LogGroup.Server);
+    private static final List<WsContext> users = new ArrayList<>();
+    private static final ObjectMapper objectMapper = new ObjectMapper(new MessagePackFactory());
+
+    public void onConnect(WsConnectContext context) {
         users.add(context);
     }
 
-    static void onClose(WsCloseContext context) {
+    protected void onClose(WsCloseContext context) {
         users.remove(context);
     }
 
-    public static void onBinaryMessage(WsBinaryMessageContext context) {
+    public void onBinaryMessage(WsBinaryMessageContext context) {
         try {
-            Map<String, Object> data =
-                    objectMapper.readValue(context.data(), new TypeReference<Map<String, Object>>() {});
-            // TODO pass data to ui data provider
+            Map<String, Object> deserializedData =
+                    objectMapper.readValue(context.data(), new TypeReference<>() {});
+
+            for (Map.Entry<String, Object> entry : deserializedData.entrySet()) {
+                try {
+                    var entryKey = entry.getKey();
+                    var entryValue = entry.getValue();
+                    switch (entryKey) {
+                        case "currentCamera":
+                            {
+                                VisionModuleManager.changeCamera((Integer) entryValue);
+                                break;
+                            }
+                        default:
+                            {
+                                VisionModuleManager.getUIvisionModule()
+                                        .getUIDataProvider()
+                                        .onMessage(entryKey, entryValue);
+                                break;
+                            }
+                    }
+                } catch (Exception ex) {
+                    // ignored
+                }
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -38,16 +64,16 @@ public class SocketHandler {
         user.send(b);
     }
 
+    public static void broadcastMessage(Object message) throws JsonProcessingException {
+        broadcastMessage(message, null);
+    }
+
     public static void broadcastMessage(Object message, WsContext userToSkip)
             throws JsonProcessingException {
         for (WsContext user : users) {
-            if (user != userToSkip) {
+            if (!user.getSessionId().equals(userToSkip.getSessionId())) {
                 sendMessage(message, user);
             }
         }
-    }
-
-    public static void broadcastMessage(Object message) throws JsonProcessingException {
-        broadcastMessage(message, null);
     }
 }
