@@ -19,8 +19,8 @@ public class VisionModuleManager {
     public VisionModuleManager(List<VisionSource> visionSources) {
         for (var visionSource : visionSources) {
 
-            // TODO: loading existing pipelines from config
             var pipelineManager = new PipelineManager();
+            HashMap<String, CameraConfiguration> cameraConfigs = configManager.loadCameraConfigs();
 
             for (CameraConfiguration cameraConfig : cameraConfigs.values()) {
                 for (CVPipelineSettings cvPipeSettings : cameraConfig.pipelineSettings)
