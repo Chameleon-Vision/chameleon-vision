@@ -3,7 +3,6 @@ package com.chameleonvision.common.vision.target;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.chameleonvision.common.util.TestUtils;
-import com.chameleonvision.common.util.numbers.DoubleCouple;
 import com.chameleonvision.common.vision.opencv.Contour;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +40,7 @@ public class TrackedTargetTest {
                         TargetOffsetPointEdge.Center,
                         new Point(0, 0),
                         new Point(imageSize.width / 2, imageSize.height / 2),
-                        new DoubleCouple(0.0, 0.0),
+                        List.of(0.0, 0.0),
                         RobotOffsetPointMode.None,
                         61,
                         34.3,

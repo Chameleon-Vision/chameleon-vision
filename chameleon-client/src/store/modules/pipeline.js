@@ -2,30 +2,36 @@ import Vue from 'vue'
 
 export default {
     state: {
-        exposure: 0,
-        brightness: 0,
-        gain: 0,
-        rotationMode: 0,
-        hue: [0, 15],
-        saturation: [0, 15],
-        value: [0, 25],
+        showBinaryImage: 0,
+
+        cameraExposure: 0,
+        cameraBrightness: 0,
+        cameraGain: 0,
+        inputImageRotationMode: 0,
+        cameraVideoModeIndex: 0,
+        outputFrameDivisor: 0,
+
+        hsvHue: [0, 15],
+        hsvSaturation: [0, 15],
+        hsvValue: [0, 25],
         erode: false,
         dilate: false,
-        area: [0, 12],
-        ratio: [0, 12],
-        extent: [0, 12],
-        speckle: 5,
-        targetGrouping: 0,
-        targetIntersection: 0,
-        sortMode: 0,
-        multiple: false,
-        isBinary: 0,
-        calibrationMode: 0,
-        videoModeIndex: 0,
-        streamDivisor: 0,
-        is3D: false,
-        targetRegion: 0,
-        targetOrientation: 1
+
+        contourArea: [0, 12],
+        contourRatio: [0, 12],
+        contourExtent: [0, 12],
+        contourSpecklePercentage: 5,
+        contourGroupingMode: 0,
+        contourIntersection: 0,
+
+        contourSortMode: 0,
+        contourTargetOrientation: 1,
+        outputMultiple: false,
+        offsetRobotOffsetMode: 0,
+        contourTargetOffsetPointEdge: 0,
+
+        solvePNPEnabled: false,
+        cornerDetectionAccuracyPercentage: 10
     },
     mutations: {
         isBinary: (state, value) => {

@@ -1,24 +1,24 @@
 <template>
   <div>
     <CVslider
-      v-model="value.exposure"
+      v-model="value.cameraExposure"
       name="Exposure"
       :min="0"
       :max="100"
-      @input="handleData('exposure')"
-      @rollback="e => rollback('exposure', e)"
+      @input="handleData('cameraExposure')"
+      @rollback="e => rollback('cameraExposure', e)"
     />
     <CVslider
-      v-model="value.brightness"
+      v-model="value.cameraBrightness"
       name="Brightness"
       :min="0"
       :max="100"
-      @input="handleData('brightness')"
-      @rollback="e => rollback('brightness', e)"
+      @input="handleData('cameraBrightness')"
+      @rollback="e => rollback('cameraBrightness', e)"
     />
     <CVslider
-      v-if="value.gain !== -1"
-      v-model="value.gain"
+      v-if="value.cameraGain !== -1"
+      v-model="value.cameraGain"
       name="Gain"
       :min="0"
       :max="100"
@@ -26,25 +26,25 @@
       @rollback="e => rollback('gain', e)"
     />
     <CVselect
-      v-model="value.rotationMode"
+      v-model="value.inputImageRotationMode"
       name="Orientation"
       :list="['Normal','90° CW','180°','90° CCW']"
-      @input="handleData('rotationMode')"
-      @rollback="e => e => rollback('rotationMode',e)"
+      @input="handleData('inputImageRotationMode')"
+      @rollback="e => e => rollback('inputImageRotationMode',e)"
     />
     <CVselect
-      v-model="value.videoModeIndex"
+      v-model="value.cameraVideoModeIndex"
       name="Resolution"
       :list="resolutionList"
-      @input="handleData('videoModeIndex')"
-      @rollback="e => rollback('videoModeIndex', e)"
+      @input="handleData('cameraVideoModeIndex')"
+      @rollback="e => rollback('cameraVideoModeIndex', e)"
     />
     <CVselect
-      v-model="value.streamDivisor"
+      v-model="value.outputFrameDivisor"
       name="Stream Resolution"
       :list="streamResolutionList"
-      @input="handleData('streamDivisor')"
-      @rollback="e => rollback('streamDivisor', e)"
+      @input="handleData('outputFrameDivisor')"
+      @rollback="e => rollback('outputFrameDivisor', e)"
     />
   </div>
 </template>
@@ -68,7 +68,7 @@
             resolutionList: {
                 get() {
                     let tmp_list = [];
-                    for (let i of this.$store.state.resolutionList) {
+                    for (let i of this.$store.state.cameraSettings.resolutionList) {
                         tmp_list.push(`${i['width']} X ${i['height']} at ${i['fps']} FPS, ${i['pixelFormat']}`)
                     }
                     return tmp_list;
@@ -76,7 +76,7 @@
             },
             streamResolutionList: {
                 get() {
-                    let cam_res = this.$store.state.resolutionList[this.value.videoModeIndex];
+                    let cam_res = this.$store.state.cameraSettings.resolutionList[this.value.cameraVideoModeIndex];
                     let tmp_list = [];
                     tmp_list.push(`${Math.floor(cam_res['width'])} X ${Math.floor(cam_res['height'])}`);
                     for (let x = 2; x <= 6; x += 2) {

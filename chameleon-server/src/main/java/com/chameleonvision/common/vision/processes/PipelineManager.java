@@ -1,8 +1,11 @@
 package com.chameleonvision.common.vision.processes;
 
 import com.chameleonvision.common.vision.pipeline.*;
+import java.lang.reflect.Field;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings({"rawtypes", "unused"})
 public class PipelineManager {
@@ -34,6 +37,9 @@ public class PipelineManager {
     */
     public PipelineManager(List<CVPipelineSettings> userPipelines) {
         this.userPipelines = userPipelines;
+        if (userPipelines.size() == 0) {
+            this.userPipelines.add(new ReflectivePipelineSettings());
+        }
         setPipelineInternal(0);
     }
 
@@ -195,5 +201,29 @@ public class PipelineManager {
 
     public void changeCurrentPipeline(int index) {
         setPipelineInternal(index);
+    }
+
+    public HashMap<String, Object> getOrdinalPipeline() {
+        HashMap<String, Object> tmp = new HashMap<>();
+        var currentPipelineSettings = getCurrentPipelineSettings();
+
+        for (Field field : currentPipelineSettings.getClass().getFields()) {
+            try {
+                if (!field.getType().isEnum()) {
+                    // if the field is not an enum, get it based on the current pipeline
+                    tmp.put(field.getName(), field.get(currentPipelineSettings));
+                } else {
+                    var ordinal = (Enum) field.get(currentPipelineSettings);
+                    tmp.put(field.getName(), ordinal.ordinal());
+                }
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return tmp;
+    }
+
+    public List<String> getPipelineNameList() {
+        return userPipelines.stream().map(pipe -> pipe.pipelineNickname).collect(Collectors.toList());
     }
 }

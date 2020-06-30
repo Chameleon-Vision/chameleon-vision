@@ -8,6 +8,7 @@ import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
 import com.chameleonvision.common.vision.opencv.CVMat;
 import com.chameleonvision.common.vision.opencv.ContourGroupingMode;
 import com.chameleonvision.common.vision.opencv.ContourIntersectionDirection;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -25,9 +26,9 @@ public class ReflectivePipelineTest {
     public void test2019() {
         TestUtils.loadLibraries();
         var pipeline = new ReflectivePipeline();
-        pipeline.getSettings().hsvHue.set(60, 100);
-        pipeline.getSettings().hsvSaturation.set(100, 255);
-        pipeline.getSettings().hsvValue.set(190, 255);
+        pipeline.getSettings().hsvHue = List.of(60, 100);
+        pipeline.getSettings().hsvSaturation = List.of(100, 255);
+        pipeline.getSettings().hsvValue = List.of(190, 255);
         pipeline.getSettings().outputShowThresholded = true;
         pipeline.getSettings().outputShowMultipleTargets = true;
         pipeline.getSettings().contourGroupingMode = ContourGroupingMode.Dual;
@@ -56,9 +57,9 @@ public class ReflectivePipelineTest {
         TestUtils.loadLibraries();
         var pipeline = new ReflectivePipeline();
 
-        pipeline.getSettings().hsvHue.set(60, 100);
-        pipeline.getSettings().hsvSaturation.set(200, 255);
-        pipeline.getSettings().hsvValue.set(200, 255);
+        pipeline.getSettings().hsvHue = List.of(60, 100);
+        pipeline.getSettings().hsvSaturation = List.of(200, 255);
+        pipeline.getSettings().hsvValue = List.of(200, 255);
         pipeline.getSettings().outputShowThresholded = true;
 
         var frameProvider =

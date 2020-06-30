@@ -15,12 +15,13 @@ import org.msgpack.jackson.dataformat.MessagePackFactory;
 @SuppressWarnings("rawtypes")
 public class SocketHandler {
 
-    private final Logger logger = new Logger(SocketHandler.class, LogGroup.Server);
+    private static final Logger logger = new Logger(SocketHandler.class, LogGroup.Server);
     private static final List<WsContext> users = new ArrayList<>();
     private static final ObjectMapper objectMapper = new ObjectMapper(new MessagePackFactory());
 
     public void onConnect(WsConnectContext context) {
         users.add(context);
+        sendFullSettings();
     }
 
     protected void onClose(WsCloseContext context) {
@@ -59,6 +60,22 @@ public class SocketHandler {
         }
     }
 
+    public static void sendFullSettings() {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("cameraSettings", VisionModuleManager.getUIvisionModule().getOrdinalCamera());
+        map.put(
+                "pipeline", VisionModuleManager.getUIvisionModule().pipelineManager.getOrdinalPipeline());
+        map.put(
+                "pipelineList",
+                VisionModuleManager.getUIvisionModule().pipelineManager.getPipelineNameList());
+        map.put("cameraList", VisionModuleManager.getCameraNickNameList());
+        try {
+            broadcastMessage(map);
+        } catch (JsonProcessingException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
     public static void sendMessage(Object message, WsContext user) throws JsonProcessingException {
         ByteBuffer b = ByteBuffer.wrap(objectMapper.writeValueAsBytes(message));
         user.send(b);
@@ -71,7 +88,7 @@ public class SocketHandler {
     public static void broadcastMessage(Object message, WsContext userToSkip)
             throws JsonProcessingException {
         for (WsContext user : users) {
-            if (!user.getSessionId().equals(userToSkip.getSessionId())) {
+            if (!user.getSessionId().equals(userToSkip)) {
                 sendMessage(message, user);
             }
         }

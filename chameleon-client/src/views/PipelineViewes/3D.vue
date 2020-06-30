@@ -7,11 +7,11 @@
     >
       <v-col :cols="6">
         <CVswitch
-          v-model="value.is3D"
+          v-model="value.solvePNPEnabled"
           :disabled="allow3D"
           name="Enable 3D"
-          @input="handleData('is3D')"
-          @rollback="e=> rollback('is3D',e)"
+          @input="handleData('solvePNPEnabled')"
+          @rollback="e=> rollback('solvePNPEnabled',e)"
         />
       </v-col>
       <v-col>
@@ -32,12 +32,12 @@
       </v-col>
     </v-row>
     <CVslider
-      v-model="value.accuracy"
+      v-model="value.cornerDetectionAccuracyPercentage"
       name="Contour simplification"
       :min="0"
       :max="100"
-      @input="handleData('accuracy')"
-      @rollback="e=> rollback('accuracy',e)"
+      @input="handleData('cornerDetectionAccuracyPercentage')"
+      @rollback="e=> rollback('cornerDetectionAccuracyPercentage',e)"
     />
     <v-row>
       <v-col>

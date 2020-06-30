@@ -12,7 +12,7 @@ Vue.config.productionTip = false;
 if (process.env.NODE_ENV === "production") {
     Vue.prototype.$address = location.host;
 } else if (process.env.NODE_ENV === "development") {
-    Vue.prototype.$address = location.hostname + ":5800";
+    Vue.prototype.$address = location.hostname;
 }
 
 const wsURL = 'ws://' + Vue.prototype.$address + '/websocket';

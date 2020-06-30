@@ -10,6 +10,8 @@ public abstract class VisionSourceSettables {
 
     protected VisionSourceSettables(CameraConfiguration configuration) {
         this.configuration = configuration;
+        this.frameStaticProperties =
+                new FrameStaticProperties(getCurrentVideoMode(), this.configuration.FOV);
     }
 
     FrameStaticProperties frameStaticProperties;

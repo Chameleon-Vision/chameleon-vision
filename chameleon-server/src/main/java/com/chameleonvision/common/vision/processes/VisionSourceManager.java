@@ -14,11 +14,11 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 
 public class VisionSourceManager {
-    public List<VisionSource> LoadAllSources(List<CameraConfiguration> camerasConfiguration) {
+    public List<CameraConfiguration> LoadAllSources(List<CameraConfiguration> camerasConfiguration) {
         return LoadAllSources(camerasConfiguration, Arrays.asList(UsbCamera.enumerateUsbCameras()));
     }
 
-    public List<VisionSource> LoadAllSources(
+    public List<CameraConfiguration> LoadAllSources(
             List<CameraConfiguration> camerasConfiguration, List<UsbCameraInfo> usbCameraInfos) {
         var UsbCamerasConfiguration =
                 camerasConfiguration.stream()
@@ -26,8 +26,7 @@ public class VisionSourceManager {
                         .collect(Collectors.toList());
         // var HttpCamerasConfiguration = camerasConfiguration.stream().filter(configuration ->
         // configuration.cameraType == CameraType.HttpCamera);
-        var matchedCameras = matchUSBCameras(usbCameraInfos, UsbCamerasConfiguration);
-        return loadUSBCameraSources(matchedCameras);
+        return matchUSBCameras(usbCameraInfos, UsbCamerasConfiguration);
     }
 
     private NetworkFrameProvider loadHTTPCamera(CameraConfiguration config) {
@@ -81,7 +80,7 @@ public class VisionSourceManager {
         return cameraConfigurations;
     }
 
-    private List<VisionSource> loadUSBCameraSources(List<CameraConfiguration> configurations) {
+    public List<VisionSource> loadUSBCameraSources(List<CameraConfiguration> configurations) {
         List<VisionSource> usbCameraSources = new ArrayList<>();
         configurations.forEach(
                 configuration -> usbCameraSources.add(new USBCameraSource(configuration)));

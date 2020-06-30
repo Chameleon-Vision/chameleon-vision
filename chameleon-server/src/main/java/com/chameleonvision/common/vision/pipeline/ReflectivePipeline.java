@@ -27,6 +27,7 @@ import com.chameleonvision.common.vision.target.TrackedTarget;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 
 /** Represents a pipeline for tracking retro-reflective targets. */
 public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectivePipelineSettings> {
@@ -109,7 +110,9 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
                         settings.offsetRobotOffsetMode,
                         settings.offsetDualLineM,
                         settings.offsetDualLineB,
-                        settings.offsetCalibrationPoint.toPoint(),
+                        new Point(
+                                settings.offsetCalibrationPoint.get(0).doubleValue(),
+                                settings.offsetCalibrationPoint.get(1).doubleValue()),
                         settings.contourTargetOffsetPointEdge,
                         settings.contourTargetOrientation);
         collect2dTargetsPipe.setParams(collect2dTargetsParams);

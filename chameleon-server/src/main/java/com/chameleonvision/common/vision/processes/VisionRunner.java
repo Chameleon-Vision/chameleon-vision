@@ -1,5 +1,7 @@
 package com.chameleonvision.common.vision.processes;
 
+import com.chameleonvision.common.logging.LogGroup;
+import com.chameleonvision.common.logging.Logger;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.FrameProvider;
 import com.chameleonvision.common.vision.pipeline.CVPipeline;
@@ -15,6 +17,7 @@ public class VisionRunner {
     private final Supplier<Frame> frameSupplier;
     private final Supplier<CVPipeline> pipelineSupplier;
     private final Consumer<CVPipelineResult> pipelineResultConsumer;
+    private static final Logger logger = new Logger(VisionRunner.class, LogGroup.VisionProcess);
 
     private long loopCount;
 
@@ -55,7 +58,7 @@ public class VisionRunner {
                 pipelineResultConsumer.accept(pipelineResult);
             } catch (Exception ex) {
                 if (hasThrown) {
-                    System.err.println(
+                    logger.error(
                             "Exception in thread \"" + visionProcessThread.getName() + "\", loop " + loopCount);
                     ex.printStackTrace();
                     hasThrown = true;

@@ -2,6 +2,7 @@ package com.chameleonvision.common.vision.processes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /** VisionModuleManager has many VisionModules, and provides camera configuration data to them. */
 public class VisionModuleManager {
@@ -29,6 +30,10 @@ public class VisionModuleManager {
 
     public static VisionModule getUIvisionModule() {
         return UIvisionModule;
+    }
+
+    public static List<String> getCameraNickNameList() {
+        return visionModules.stream().map(VisionModule::getSourceNickname).collect(Collectors.toList());
     }
 
     public static void changeCamera(int index) {

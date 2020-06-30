@@ -121,7 +121,9 @@ public class ColoredShapePipeline
                         settings.offsetRobotOffsetMode,
                         settings.offsetDualLineM,
                         settings.offsetDualLineB,
-                        settings.offsetCalibrationPoint.toPoint(),
+                        new Point(
+                                settings.offsetCalibrationPoint.get(0).doubleValue(),
+                                settings.offsetCalibrationPoint.get(1).doubleValue()),
                         settings.contourTargetOffsetPointEdge,
                         settings.contourTargetOrientation);
         collect2dTargetsPipe.setParams(collect2dTargetsParams);

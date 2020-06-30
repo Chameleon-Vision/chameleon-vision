@@ -1,7 +1,6 @@
 package com.chameleonvision.common.vision.pipe.impl;
 
 import com.chameleonvision.common.util.ColorHelper;
-import com.chameleonvision.common.util.numbers.DoubleCouple;
 import com.chameleonvision.common.vision.pipe.CVPipe;
 import com.chameleonvision.common.vision.target.RobotOffsetPointMode;
 import com.chameleonvision.common.vision.target.TrackedTarget;
@@ -27,8 +26,8 @@ public class Draw2dCrosshairPipe
             switch (params.m_calibrationMode) {
                 case Single:
                     if (!params.m_calibrationPoint.isEmpty()) {
-                        x = params.m_calibrationPoint.getFirst();
-                        y = params.m_calibrationPoint.getSecond();
+                        x = params.m_calibrationPoint.get(0).doubleValue();
+                        y = params.m_calibrationPoint.get(1).doubleValue();
                     }
                     break;
                 case Dual:
@@ -49,12 +48,12 @@ public class Draw2dCrosshairPipe
 
     public static class Draw2dCrosshairParams {
         private RobotOffsetPointMode m_calibrationMode;
-        private DoubleCouple m_calibrationPoint;
+        private List<Number> m_calibrationPoint;
         public boolean m_showCrosshair = true;
         public Color m_crosshairColor = Color.GREEN;
 
         public Draw2dCrosshairParams(
-                RobotOffsetPointMode calibrationMode, DoubleCouple calibrationPoint) {
+                RobotOffsetPointMode calibrationMode, List<Number> calibrationPoint) {
             m_calibrationMode = calibrationMode;
             m_calibrationPoint = calibrationPoint;
         }

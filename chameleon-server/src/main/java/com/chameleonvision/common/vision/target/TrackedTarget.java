@@ -1,6 +1,5 @@
 package com.chameleonvision.common.vision.target;
 
-import com.chameleonvision.common.util.numbers.DoubleCouple;
 import com.chameleonvision.common.vision.opencv.Contour;
 import com.chameleonvision.common.vision.opencv.Releasable;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -153,7 +152,7 @@ public class TrackedTarget implements Releasable {
         // RobotOffset calculation values
         final Point userOffsetPoint;
         final Point cameraCenterPoint;
-        final DoubleCouple offsetEquationValues;
+        final List<Number> offsetEquationValues;
         final RobotOffsetPointMode robotOffsetPointMode;
 
         // yaw calculation values
@@ -170,7 +169,7 @@ public class TrackedTarget implements Releasable {
                 TargetOffsetPointEdge targetOffsetPointEdge,
                 Point userOffsetPoint,
                 Point cameraCenterPoint,
-                DoubleCouple offsetEquationValues,
+                List<Number> offsetEquationValues,
                 RobotOffsetPointMode robotOffsetPointMode,
                 double horizontalFocalLength,
                 double verticalFocalLength,

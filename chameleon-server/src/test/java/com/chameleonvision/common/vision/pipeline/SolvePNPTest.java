@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -81,9 +82,9 @@ public class SolvePNPTest {
     public void test2019() {
         var pipeline = new ReflectivePipeline();
 
-        pipeline.getSettings().hsvHue.set(60, 100);
-        pipeline.getSettings().hsvSaturation.set(100, 255);
-        pipeline.getSettings().hsvValue.set(190, 255);
+        pipeline.getSettings().hsvHue = List.of(60, 100);
+        pipeline.getSettings().hsvSaturation = List.of(100, 255);
+        pipeline.getSettings().hsvValue = List.of(190, 255);
         pipeline.getSettings().outputShowThresholded = true;
         pipeline.getSettings().outputShowMultipleTargets = true;
         pipeline.getSettings().solvePNPEnabled = true;
@@ -116,9 +117,9 @@ public class SolvePNPTest {
     public void test2020() {
         var pipeline = new ReflectivePipeline();
 
-        pipeline.getSettings().hsvHue.set(60, 100);
-        pipeline.getSettings().hsvSaturation.set(100, 255);
-        pipeline.getSettings().hsvValue.set(60, 255);
+        pipeline.getSettings().hsvHue = List.of(60, 100);
+        pipeline.getSettings().hsvSaturation = List.of(100, 255);
+        pipeline.getSettings().hsvValue = List.of(60, 255);
         pipeline.getSettings().outputShowThresholded = true;
         pipeline.getSettings().solvePNPEnabled = true;
         pipeline.getSettings().cornerDetectionAccuracyPercentage = 4;
@@ -188,9 +189,9 @@ public class SolvePNPTest {
                         TestUtils.WPI2019Image.FOV);
 
         var settings = new ReflectivePipelineSettings();
-        settings.hsvHue.set(60, 100);
-        settings.hsvSaturation.set(100, 255);
-        settings.hsvValue.set(190, 255);
+        settings.hsvHue = List.of(60, 100);
+        settings.hsvSaturation = List.of(100, 255);
+        settings.hsvValue = List.of(190, 255);
         settings.outputShowThresholded = true;
         settings.outputShowMultipleTargets = true;
         settings.contourGroupingMode = ContourGroupingMode.Dual;

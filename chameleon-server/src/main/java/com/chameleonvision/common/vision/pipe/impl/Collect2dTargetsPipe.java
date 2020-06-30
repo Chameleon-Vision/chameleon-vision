@@ -1,6 +1,5 @@
 package com.chameleonvision.common.vision.pipe.impl;
 
-import com.chameleonvision.common.util.numbers.DoubleCouple;
 import com.chameleonvision.common.vision.frame.FrameStaticProperties;
 import com.chameleonvision.common.vision.pipe.CVPipe;
 import com.chameleonvision.common.vision.target.*;
@@ -29,7 +28,7 @@ public class Collect2dTargetsPipe
                         params.getOffsetPointRegion(),
                         params.getUserOffsetPoint(),
                         params.getFrameStaticProperties().centerPoint,
-                        new DoubleCouple(params.getCalibrationB(), params.getCalibrationM()),
+                        List.of(params.getCalibrationB(), params.getCalibrationM()),
                         params.getOffsetMode(),
                         params.getFrameStaticProperties().horizontalFocalLength,
                         params.getFrameStaticProperties().verticalFocalLength,

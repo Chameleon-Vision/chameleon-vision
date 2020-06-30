@@ -56,6 +56,25 @@ public class CameraConfiguration {
         this.CameraLEDs = cameraLEDs;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj.getClass() != CameraConfiguration.class) {
+            return false;
+        }
+        CameraConfiguration tmp = (CameraConfiguration) obj;
+        boolean name =
+                tmp.baseName.equals(this.baseName)
+                        && tmp.nickname.equals(this.nickname)
+                        && tmp.uniqueName.equals(this.uniqueName)
+                        && tmp.cameraType.equals(this.cameraType)
+                        && tmp.FOV == this.FOV
+                        && tmp.pipelineSettings.equals(this.pipelineSettings)
+                        && tmp.driveModeSettings.equals(this.driveModeSettings)
+                        && tmp.CameraLEDs.equals(this.CameraLEDs);
+
+        return name;
+    }
+
     @JsonIgnore // this ignores the pipes as we serialize them to their own subfolder
     public final List<CVPipelineSettings> pipelineSettings = new ArrayList<>();
 

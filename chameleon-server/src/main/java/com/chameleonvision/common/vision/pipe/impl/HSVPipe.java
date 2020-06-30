@@ -1,7 +1,7 @@
 package com.chameleonvision.common.vision.pipe.impl;
 
-import com.chameleonvision.common.util.numbers.IntegerCouple;
 import com.chameleonvision.common.vision.pipe.CVPipe;
+import java.util.List;
 import org.opencv.core.Core;
 import org.opencv.core.CvException;
 import org.opencv.core.Mat;
@@ -29,9 +29,17 @@ public class HSVPipe extends CVPipe<Mat, Mat, HSVPipe.HSVParams> {
         private Scalar m_hsvLower;
         private Scalar m_hsvUpper;
 
-        public HSVParams(IntegerCouple hue, IntegerCouple saturation, IntegerCouple value) {
-            m_hsvLower = new Scalar(hue.getFirst(), saturation.getFirst(), value.getFirst());
-            m_hsvUpper = new Scalar(hue.getSecond(), saturation.getSecond(), value.getSecond());
+        public HSVParams(List<Number> hue, List<Number> saturation, List<Number> value) {
+            m_hsvLower =
+                    new Scalar(
+                            hue.get(0).doubleValue(),
+                            saturation.get(0).doubleValue(),
+                            value.get(0).doubleValue());
+            m_hsvUpper =
+                    new Scalar(
+                            hue.get(1).doubleValue(),
+                            saturation.get(1).doubleValue(),
+                            value.get(1).doubleValue());
         }
 
         public HSVParams(Scalar hsvLower, Scalar hsvUpper) {

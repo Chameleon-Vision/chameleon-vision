@@ -3,12 +3,14 @@ package com.chameleonvision.common.vision.processes;
 import com.chameleonvision.common.dataflow.consumer.UIConsumer;
 import com.chameleonvision.common.dataflow.providers.Provider;
 import com.chameleonvision.common.dataflow.providers.UIProvider;
+import com.chameleonvision.common.util.VideoModeHelper;
 import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.FrameConsumer;
 import com.chameleonvision.common.vision.frame.consumer.MJPGFrameConsumer;
 import com.chameleonvision.common.vision.pipeline.CVPipelineResult;
 import io.reactivex.rxjava3.core.Observer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -23,7 +25,7 @@ public class VisionModule {
     private final VisionRunner visionRunner;
     private final List<Observer<CVPipelineResult>> dataConsumers = new ArrayList<>();
     private final List<Provider> dataProviders = new ArrayList<>();
-    private final List<FrameConsumer> frameConsumers = new ArrayList<>();
+    private FrameConsumer frameConsumer;
 
     public VisionModule(PipelineManager pipelineManager, VisionSource visionSource) {
         this.pipelineManager = pipelineManager;
@@ -45,7 +47,7 @@ public class VisionModule {
         int width = visionSource.getSettables().getCurrentVideoMode().width;
         int height = visionSource.getSettables().getCurrentVideoMode().height;
         MJPGFrameConsumer mjpgFrameConsumer = new MJPGFrameConsumer(name, width, height);
-        addFrameConsumer(mjpgFrameConsumer);
+        setFrameConsumer(mjpgFrameConsumer);
     }
 
     public void start() {
@@ -68,14 +70,16 @@ public class VisionModule {
         dataConsumers.add(dataConsumer);
     }
 
-    public void addFrameConsumer(FrameConsumer frameConsumer) {
-        frameConsumers.add(frameConsumer);
+    public void setFrameConsumer(FrameConsumer frameConsumer) {
+        this.frameConsumer = frameConsumer;
+    }
+
+    public FrameConsumer getFrameConsumer() {
+        return frameConsumer;
     }
 
     void consumeFrame(Frame frame) {
-        for (var frameConsumer : frameConsumers) {
-            frameConsumer.accept(frame);
-        }
+        frameConsumer.accept(frame);
     }
 
     public String getSourceNickname() {
@@ -93,5 +97,18 @@ public class VisionModule {
 
     public VisionSource getVisionSource() {
         return visionSource;
+    }
+
+    public HashMap<String, Object> getOrdinalCamera() {
+        HashMap<String, Object> tmp = new HashMap<>();
+        tmp.put("fov", getVisionSource().getCameraConfiguration().FOV);
+        //        tmp.put("tilt", getVisionSource().getCameraConfiguration().);
+        tmp.put("calibration", getVisionSource().getCameraConfiguration().calibration);
+        tmp.put("port", getFrameConsumer().getPort());
+        tmp.put(
+                "resolutionList",
+                VideoModeHelper.videoModeToHashMapList(
+                        new ArrayList<>(getVisionSource().getSettables().getAllVideoModes().values())));
+        return tmp;
     }
 }

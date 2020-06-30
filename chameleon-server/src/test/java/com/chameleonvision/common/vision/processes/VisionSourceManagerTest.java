@@ -2,7 +2,6 @@ package com.chameleonvision.common.vision.processes;
 
 import com.chameleonvision.common.configuration.CameraConfiguration;
 import com.chameleonvision.common.util.TestUtils;
-import com.chameleonvision.common.vision.camera.USBCameraSource;
 import edu.wpi.cscore.UsbCameraInfo;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -32,23 +31,22 @@ public class VisionSourceManagerTest {
                     new CameraConfiguration("cameraById", "camera", "my camera", "2"),
                     new CameraConfiguration("cameraById", "camera2", "my camera", "3"));
 
-    final List<USBCameraSource> usbCameraSources =
+    final List<CameraConfiguration> allUsbCameraSources =
             List.of(
-                    new USBCameraSource(camConfig.get(0)),
-                    new USBCameraSource(camConfig.get(1)),
-                    new USBCameraSource(camConfig.get(2)),
-                    new USBCameraSource(camConfig.get(3)),
-                    new USBCameraSource(
-                            new CameraConfiguration("notExisting", "notExisting", "notExisting", "4")),
-                    new USBCameraSource(
-                            new CameraConfiguration("notExisting", "notExisting (1)", "notExisting (1)", "5")));
+                    camConfig.get(0),
+                    camConfig.get(1),
+                    camConfig.get(2),
+                    camConfig.get(3),
+                    new CameraConfiguration("notExisting", "notExisting", "notExisting", "4"),
+                    new CameraConfiguration("notExisting", "notExisting (1)", "notExisting (1)", "5"));
 
     @Test
     public void visionSourceTest() {
         VisionSourceManager visionSourceManager = new VisionSourceManager();
-        List<VisionSource> i = visionSourceManager.LoadAllSources(camConfig, usbCameraInfos);
+
+        List<CameraConfiguration> i = visionSourceManager.LoadAllSources(camConfig, usbCameraInfos);
         for (var source : i) {
-            Assertions.assertEquals(source, usbCameraSources.get(i.indexOf(source)));
+            Assertions.assertEquals(source, allUsbCameraSources.get(i.indexOf(source)));
         }
     }
 }

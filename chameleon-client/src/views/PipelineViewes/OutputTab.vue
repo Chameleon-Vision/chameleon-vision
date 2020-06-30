@@ -1,34 +1,34 @@
 <template>
   <div>
     <CVselect
-      v-model="value.sortMode"
+      v-model="value.contourSortMode"
       name="Sort Mode"
       :list="['Largest','Smallest','Highest','Lowest','Rightmost','Leftmost','Centermost']"
-      @input="handleData('sortMode')"
-      @rollback="rollback('sortMode',e)"
+      @input="handleData('contourSortMode')"
+      @rollback="rollback('contourSortMode',e)"
     />
 
     <CVselect
-      v-model="value.targetRegion"
+      v-model="value.contourTargetOffsetPointEdge"
       name="Target Region"
       :list="['Center','Top','Bottom','Left','Right']"
-      @input="handleData('targetRegion')"
-      @rollback="e=> rollback('targetRegion',e)"
+      @input="handleData('contourTargetOffsetPointEdge')"
+      @rollback="e=> rollback('contourTargetOffsetPointEdge',e)"
     />
 
     <CVselect
-      v-model="value.targetOrientation"
+      v-model="value.contourTargetOrientation"
       name="Target Orientation"
       :list="['Portrait', 'Landscape']"
-      @input="handleData('targetOrientation')"
-      @rollback="e=> rollback('targetOrientation',e)"
+      @input="handleData('contourTargetOrientation')"
+      @rollback="e=> rollback('contourTargetOrientation',e)"
     />
 
     <CVswitch
-      v-model="value.multiple"
+      v-model="value.outputMultiple"
       name="Output multiple"
-      @input="handleData('multiple')"
-      @rollback="e=> rollback('multiple',e)"
+      @input="handleData('outputMultiple')"
+      @rollback="e=> rollback('outputMultiple',e)"
     />
     <span>Calibrate:</span>
     <v-divider
@@ -36,11 +36,11 @@
       color="white"
     />
     <CVselect
-      v-model="value.calibrationMode"
+      v-model="value.offsetRobotOffsetMode"
       name="Calibration Mode"
       :list="['None','Single point','Dual point']"
-      @input="handleData('calibrationMode')"
-      @rollback="e=> rollback('calibrationMode',e)"
+      @input="handleData('offsetRobotOffsetMode')"
+      @rollback="e=> rollback('offsetRobotOffsetMode',e)"
     />
     <component
       :is="selectedComponent"

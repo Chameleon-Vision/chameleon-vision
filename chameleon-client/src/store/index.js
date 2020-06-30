@@ -18,10 +18,9 @@ export default new Vuex.Store({
         settings: generalSettings,
         cameraSettings: cameraSettings,
         undoRedo: undoRedo
+
     },
     state: {
-        resolutionList: [],
-        port: 1181,
         currentCameraIndex: 0,
         currentPipelineIndex: 0,
         cameraList: [],
@@ -44,9 +43,6 @@ export default new Vuex.Store({
         saveBar: set("saveBar")
     },
     getters: {
-        streamAddress: state => {
-            return "http://" + location.hostname + ":" + state.port + "/stream.mjpg";
-        },
         targets: state => {
             return state.point['targets']
         },

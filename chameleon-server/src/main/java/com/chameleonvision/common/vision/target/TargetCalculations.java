@@ -1,6 +1,6 @@
 package com.chameleonvision.common.vision.target;
 
-import com.chameleonvision.common.util.numbers.DoubleCouple;
+import java.util.List;
 import org.apache.commons.math3.util.FastMath;
 import org.opencv.core.Point;
 import org.opencv.core.RotatedRect;
@@ -54,7 +54,7 @@ public class TargetCalculations {
     public static Point calculateRobotOffsetPoint(
             Point offsetPoint,
             Point camCenterPoint,
-            DoubleCouple offsetEquationValues,
+            List<Number> offsetEquationValues,
             RobotOffsetPointMode offsetMode) {
         switch (offsetMode) {
             case None:
@@ -69,9 +69,11 @@ public class TargetCalculations {
             case Dual:
                 Point resultPoint = new Point();
                 resultPoint.x =
-                        (offsetPoint.x - offsetEquationValues.getFirst()) / offsetEquationValues.getSecond();
+                        (offsetPoint.x - offsetEquationValues.get(0).doubleValue())
+                                / offsetEquationValues.get(1).doubleValue();
                 resultPoint.y =
-                        (offsetPoint.y * offsetEquationValues.getSecond()) + offsetEquationValues.getFirst();
+                        (offsetPoint.y * offsetEquationValues.get(1).doubleValue())
+                                + offsetEquationValues.get(0).doubleValue();
                 return resultPoint;
         }
     }

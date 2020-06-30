@@ -1,11 +1,10 @@
 package com.chameleonvision.common.vision.pipeline;
 
-import com.chameleonvision.common.util.numbers.DoubleCouple;
-import com.chameleonvision.common.util.numbers.IntegerCouple;
 import com.chameleonvision.common.vision.opencv.ContourSortMode;
 import com.chameleonvision.common.vision.target.RobotOffsetPointMode;
 import com.chameleonvision.common.vision.target.TargetOffsetPointEdge;
 import com.chameleonvision.common.vision.target.TargetOrientation;
+import java.util.List;
 import java.util.Objects;
 
 public class AdvancedPipelineSettings extends CVPipelineSettings {
@@ -14,9 +13,11 @@ public class AdvancedPipelineSettings extends CVPipelineSettings {
         ledMode = true;
     }
 
-    public IntegerCouple hsvHue = new IntegerCouple(50, 180);
-    public IntegerCouple hsvSaturation = new IntegerCouple(50, 255);
-    public IntegerCouple hsvValue = new IntegerCouple(50, 255);
+    public boolean showBinaryImage = false;
+    public boolean outputMultiple = false;
+    public List<Number> hsvHue = List.of(50, 180);
+    public List<Number> hsvSaturation = List.of(50, 255);
+    public List<Number> hsvValue = List.of(50, 255);
 
     public boolean outputShowThresholded = false;
     public boolean outputShowMultipleTargets = false;
@@ -24,9 +25,9 @@ public class AdvancedPipelineSettings extends CVPipelineSettings {
     public boolean erode = false;
     public boolean dilate = false;
 
-    public DoubleCouple contourArea = new DoubleCouple(0.0, 100.0);
-    public DoubleCouple contourRatio = new DoubleCouple(0.0, 20.0);
-    public DoubleCouple contourExtent = new DoubleCouple(0.0, 100.0);
+    public List<Number> contourArea = List.of(0.0, 100.0);
+    public List<Number> contourRatio = List.of(0.0, 20.0);
+    public List<Number> contourExtent = List.of(0.0, 100.0);
     public int contourSpecklePercentage = 5;
 
     // the order in which to sort contours to find the most desirable
@@ -45,7 +46,7 @@ public class AdvancedPipelineSettings extends CVPipelineSettings {
     public RobotOffsetPointMode offsetRobotOffsetMode = RobotOffsetPointMode.None;
 
     // the point set by the user in Single Point Offset mode (maybe double too? idr)
-    public DoubleCouple offsetCalibrationPoint = new DoubleCouple();
+    public List<Number> offsetCalibrationPoint = List.of(0, 0);
 
     // the two values that define the line of the Dual Point Offset calibration (think y=mx+b)
     public double offsetDualLineM = 1;

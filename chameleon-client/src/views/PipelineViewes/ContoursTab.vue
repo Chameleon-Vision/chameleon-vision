@@ -1,53 +1,53 @@
 <template>
   <div>
     <CVrangeSlider
-      v-model="value.area"
+      v-model="value.contourArea"
       name="Area"
       :min="0"
       :max="100"
       :step="0.1"
-      @input="handleData('area')"
-      @rollback="e=> rollback('area',e)"
+      @input="handleData('contourArea')"
+      @rollback="e=> rollback('contourArea',e)"
     />
     <CVrangeSlider
-      v-model="value.ratio"
+      v-model="value.contourRatio"
       name="Ratio (W/H)"
       :min="0"
       :max="100"
       :step="0.1"
-      @input="handleData('ratio')"
-      @rollback="e=> rollback('ratio',e)"
+      @input="handleData('contourRatio')"
+      @rollback="e=> rollback('contourRatio',e)"
     />
     <CVrangeSlider
-      v-model="value.extent"
+      v-model="value.contourExtent"
       name="Extent"
       :min="0"
       :max="100"
-      @input="handleData('extent')"
-      @rollback="e=> rollback('extent',e)"
+      @input="handleData('contourExtent')"
+      @rollback="e=> rollback('contourExtent',e)"
     />
     <CVslider
-      v-model="value.speckle"
+      v-model="value.contourSpecklePercentage"
       name="Speckle Rejection"
       :min="0"
       :max="100"
-      @input="handleData('speckle')"
-      @rollback="e=> rollback('speckle',e)"
+      @input="handleData('contourSpecklePercentage')"
+      @rollback="e=> rollback('contourSpecklePercentage',e)"
     />
     <CVselect
-      v-model="value.targetGroup"
+      v-model="value.contourGroupingMode"
       name="Target Group"
       :list="['Single','Dual']"
-      @input="handleData('targetGroup')"
-      @rollback="e=> rollback('targetGroup',e)"
+      @input="handleData('contourGroupingMode')"
+      @rollback="e=> rollback('contourGroupingMode',e)"
     />
     <CVselect
-      v-model="value.targetIntersection"
+      v-model="value.contourIntersection"
       name="Target Intersection"
       :list="['None','Up','Down','Left','Right']"
       :disabled="isDisabled"
-      @input="handleData('targetIntersection')"
-      @rollback="e=> rollback('targetIntersection',e)"
+      @input="handleData('contourIntersection')"
+      @rollback="e=> rollback('contourIntersection',e)"
     />
   </div>
 </template>

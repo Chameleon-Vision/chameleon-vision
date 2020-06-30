@@ -1,28 +1,28 @@
 <template>
   <div>
     <CVrangeSlider
-      v-model="value.hue"
+      v-model="value.hsvHue"
       name="Hue"
       :min="0"
       :max="180"
-      @input="handleData('hue')"
-      @rollback="e => rollback('hue',e)"
+      @input="handleData('hsvHue')"
+      @rollback="e => rollback('hsvHue',e)"
     />
     <CVrangeSlider
-      v-model="value.saturation"
+      v-model="value.hsvSaturation"
       name="Saturation"
       :min="0"
       :max="255"
-      @input="handleData('saturation')"
-      @rollback="e => rollback('saturation',e)"
+      @input="handleData('hsvSaturation')"
+      @rollback="e => rollback('hsvSaturation',e)"
     />
     <CVrangeSlider
-      v-model="value.value"
+      v-model="value.hsvValue"
       name="Value"
       :min="0"
       :max="255"
-      @input="handleData('value')"
-      @rollback="e => rollback('value',e)"
+      @input="handleData('hsvValue')"
+      @rollback="e => rollback('hsvValue',e)"
     />
     <v-divider
       color="darkgray "

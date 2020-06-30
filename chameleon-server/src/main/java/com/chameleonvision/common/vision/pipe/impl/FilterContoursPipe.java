@@ -1,7 +1,6 @@
 package com.chameleonvision.common.vision.pipe.impl;
 
 import com.chameleonvision.common.util.math.MathUtils;
-import com.chameleonvision.common.util.numbers.DoubleCouple;
 import com.chameleonvision.common.vision.frame.FrameStaticProperties;
 import com.chameleonvision.common.vision.opencv.Contour;
 import com.chameleonvision.common.vision.pipe.CVPipe;
@@ -33,35 +32,35 @@ public class FilterContoursPipe
         // Area Filtering.
         double contourArea = contour.getArea();
         double areaRatio = (contourArea / params.getCamProperties().imageArea);
-        double minArea = MathUtils.sigmoid(params.getArea().getFirst());
-        double maxArea = MathUtils.sigmoid(params.getArea().getSecond());
+        double minArea = MathUtils.sigmoid(params.getArea().get(0));
+        double maxArea = MathUtils.sigmoid(params.getArea().get(1));
         if (areaRatio < minArea || areaRatio > maxArea) return;
 
         // Extent Filtering.
         RotatedRect minAreaRect = contour.getMinAreaRect();
-        double minExtent = params.getExtent().getFirst() * minAreaRect.size.area() / 100;
-        double maxExtent = params.getExtent().getSecond() * minAreaRect.size.area() / 100;
+        double minExtent = params.getExtent().get(0).doubleValue() * minAreaRect.size.area() / 100;
+        double maxExtent = params.getExtent().get(1).doubleValue() * minAreaRect.size.area() / 100;
         if (contourArea <= minExtent || contourArea >= maxExtent) return;
 
         // Aspect Ratio Filtering.
         Rect boundingRect = contour.getBoundingRect();
         double aspectRatio = (double) boundingRect.width / boundingRect.height;
-        if (aspectRatio < params.getRatio().getFirst() || aspectRatio > params.getRatio().getSecond())
-            return;
+        if (aspectRatio < params.getRatio().get(0).doubleValue()
+                || aspectRatio > params.getRatio().get(1).doubleValue()) return;
 
         m_filteredContours.add(contour);
     }
 
     public static class FilterContoursParams {
-        private DoubleCouple m_area;
-        private DoubleCouple m_ratio;
-        private DoubleCouple m_extent;
+        private List<Number> m_area;
+        private List<Number> m_ratio;
+        private List<Number> m_extent;
         private FrameStaticProperties m_camProperties;
 
         public FilterContoursParams(
-                DoubleCouple area,
-                DoubleCouple ratio,
-                DoubleCouple extent,
+                List<Number> area,
+                List<Number> ratio,
+                List<Number> extent,
                 FrameStaticProperties camProperties) {
             this.m_area = area;
             this.m_ratio = ratio;
@@ -69,15 +68,15 @@ public class FilterContoursPipe
             this.m_camProperties = camProperties;
         }
 
-        public DoubleCouple getArea() {
+        public List<Number> getArea() {
             return m_area;
         }
 
-        public DoubleCouple getRatio() {
+        public List<Number> getRatio() {
             return m_ratio;
         }
 
-        public DoubleCouple getExtent() {
+        public List<Number> getExtent() {
             return m_extent;
         }
 
