@@ -30,9 +30,13 @@ public class Calibrate3dPipeline
     private List<Mat> objpoints = new ArrayList<>();
     private List<Mat> imgpoints = new ArrayList<>();
 
+    private Mat stdDeviationsIntrinsics = new Mat();
+    private Mat stdDeviationsExtrinsics = new Mat();
+    private Mat perViewErrors = new Mat();
+
     public static double checkerboardSquareSizeUnits = Units.inchesToMeters(1.0);
 
-    public static final int MIN_COUNT = 15;
+    public static final int MIN_COUNT = 20;
     private VideoMode calibrationMode;
     private final Size windowSize = new Size(11, 11);
     private final Size zeroZone = new Size(-1, -1);
@@ -44,6 +48,8 @@ public class Calibrate3dPipeline
     private double calibrationAccuracy = 0;
     private boolean wantsSnapshot = false;
     private double squareSizeInches;
+
+
 
     public Calibrate3dPipeline(StandardCVPipelineSettings settings) {
         super(settings);
@@ -74,6 +80,14 @@ public class Calibrate3dPipeline
 
     public boolean hasEnoughSnapshots() {
         return captureCount >= MIN_COUNT - 1;
+    }
+
+    //Remove a snapshot at given index and returns false if the index is out of bounds
+    public boolean removeSnapShot(int index){
+        if(index >= imgpoints.size()){return false;}
+        imgpoints.remove(index);
+        captureCount--;
+        return true;
     }
 
     @Override
@@ -133,13 +147,9 @@ public class Calibrate3dPipeline
         List<Mat> tvecs = new ArrayList<>();
 
         try {
-            calibrationAccuracy =
-                    Calib3d.calibrateCamera(
-                            objpoints, imgpoints, imageSize, cameraMatrix, distortionCoeffs, rvecs, tvecs);
-        } catch (Exception e) {
-            System.err.println("Camera calibration failed!");
-            initPipeline(cameraCapture);
-            return false;
+           calibrationAccuracy = Calib3d.calibrateCameraExtended(objpoints, imgpoints, imageSize, cameraMatrix, distortionCoeffs, rvecs, tvecs, stdDeviationsIntrinsics, stdDeviationsExtrinsics, perViewErrors);
+        } catch(Exception e) {
+            e.printStackTrace();
         }
 
         VideoMode currentVidMode = cameraCapture.getCurrentVideoMode();
@@ -175,4 +185,10 @@ public class Calibrate3dPipeline
     public double getCalibrationAccuracy() {
         return calibrationAccuracy;
     }
+
+    public Mat getStdDeviationsIntrinsics() { return stdDeviationsIntrinsics;}
+
+    public Mat getStdDeviationsExtrinsics() { return stdDeviationsExtrinsics; }
+
+    public Mat getPerViewErrors() { return perViewErrors; }
 }
