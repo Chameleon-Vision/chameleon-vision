@@ -12,12 +12,14 @@ import java.util.List;
 
 /** VisionModuleManager has many VisionModules, and provides camera configuration data to them. */
 public class VisionModuleManager {
-    protected final List<VisionModule> visionModules = new ArrayList<>();
+    public static final List<VisionModule> visionModules = new ArrayList<>();
+    public static VisionModule UIvisionModule;
     private final ConfigManager configManager = ConfigManager.getInstance();
 
     public VisionModuleManager(List<VisionSource> visionSources) {
         for (var visionSource : visionSources) {
-            HashMap<String, CameraConfiguration> cameraConfigs = configManager.loadCameraConfigs();
+
+            // TODO: loading existing pipelines from config
             var pipelineManager = new PipelineManager();
 
             for (CameraConfiguration cameraConfig : cameraConfigs.values()) {
@@ -32,12 +34,21 @@ public class VisionModuleManager {
 
             visionModules.add(new VisionModule(pipelineManager, visionSource));
         }
+        UIvisionModule = visionModules.get(0);
     }
 
     public void startModules() {
         for (var visionModule : visionModules) {
             visionModule.start();
         }
+    }
+
+    public static VisionModule getUIvisionModule() {
+        return UIvisionModule;
+    }
+
+    public static void changeCamera(int index) {
+        UIvisionModule = visionModules.get(index);
     }
 
 }

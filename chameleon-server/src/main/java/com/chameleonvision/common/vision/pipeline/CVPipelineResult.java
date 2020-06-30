@@ -8,11 +8,13 @@ import java.util.List;
 public class CVPipelineResult implements Releasable {
     private double latencyMillis;
     public final double processingMillis;
+    public final boolean hasTargets;
     public final List<TrackedTarget> targets;
     public final Frame outputFrame;
 
     public CVPipelineResult(double processingMillis, List<TrackedTarget> targets, Frame outputFrame) {
         this.processingMillis = processingMillis;
+        this.hasTargets = !targets.isEmpty();
         this.targets = targets;
 
         this.outputFrame = Frame.copyFrom(outputFrame);

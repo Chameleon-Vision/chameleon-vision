@@ -1,5 +1,6 @@
 package com.chameleonvision.common.vision.processes;
 
+import com.chameleonvision.common.configuration.CameraConfiguration;
 import com.chameleonvision.common.vision.frame.FrameProvider;
 
 public interface VisionSource {
@@ -7,4 +8,6 @@ public interface VisionSource {
     FrameProvider getFrameProvider();
 
     VisionSourceSettables getSettables();
+
+    CameraConfiguration getCameraConfiguration();
 }

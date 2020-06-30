@@ -1,12 +1,14 @@
 package com.chameleonvision.common.vision.processes;
 
 import com.chameleonvision.common.configuration.CameraConfiguration;
-import com.chameleonvision.common.datatransfer.DataConsumer;
 import com.chameleonvision.common.util.TestUtils;
 import com.chameleonvision.common.vision.frame.FrameProvider;
 import com.chameleonvision.common.vision.frame.provider.FileFrameProvider;
 import com.chameleonvision.common.vision.pipeline.CVPipelineResult;
 import edu.wpi.cscore.VideoMode;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.disposables.Disposable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.junit.jupiter.api.*;
@@ -35,6 +37,11 @@ public class VisionModuleManagerTest {
         @Override
         public VisionSourceSettables getSettables() {
             return new TestSettables(new CameraConfiguration("", "", "", ""));
+        }
+
+        @Override
+        public CameraConfiguration getCameraConfiguration() {
+            return null;
         }
     }
 
@@ -82,17 +89,22 @@ public class VisionModuleManagerTest {
         }
     }
 
-    private static class TestDataConsumer implements DataConsumer {
-        private Data data;
+    private static class TestDataConsumer implements Observer<CVPipelineResult> {
+        CVPipelineResult result;
 
         @Override
-        public void accept(Data data) {
-            this.data = data;
+        public void onSubscribe(@NonNull Disposable d) {}
+
+        @Override
+        public void onNext(@NonNull CVPipelineResult o) {
+            this.result = o;
         }
 
-        public Data getData() {
-            return data;
-        }
+        @Override
+        public void onError(@NonNull Throwable e) {}
+
+        @Override
+        public void onComplete() {}
     }
 
     @Test
@@ -113,9 +125,9 @@ public class VisionModuleManagerTest {
 
         sleep(500);
 
-        Assertions.assertNotNull(module0DataConsumer.data);
-        Assertions.assertNotNull(module0DataConsumer.data.result);
-        printTestResults(module0DataConsumer.data.result);
+        Assertions.assertNotNull(module0DataConsumer.result);
+        Assertions.assertNotNull(module0DataConsumer.result);
+        printTestResults(module0DataConsumer.result);
     }
 
     private static void printTestResults(CVPipelineResult pipelineResult) {

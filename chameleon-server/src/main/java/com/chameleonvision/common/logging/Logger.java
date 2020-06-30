@@ -96,6 +96,10 @@ public class Logger {
         }
     }
 
+    public boolean shouldLog(Level logLevel) {
+        return shouldLog(logLevel, group);
+    }
+
     private static boolean shouldLog(Level logLevel, LogGroup group) {
         return logLevel.code <= levelMap.get(group).code;
     }
