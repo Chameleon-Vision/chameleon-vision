@@ -13,7 +13,7 @@ import com.chameleonvision._2.vision.pipeline.impl.Calibrate3dPipeline;
 import com.chameleonvision._2.vision.pipeline.impl.StandardCVPipelineSettings;
 import com.chameleonvision.common.datatransfer.networktables.NetworkTablesManager;
 import com.chameleonvision.common.networking.NetworkMode;
-import com.chameleonvision.common.util.Platform;
+import com.chameleonvision.common.hardware.Platform;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;

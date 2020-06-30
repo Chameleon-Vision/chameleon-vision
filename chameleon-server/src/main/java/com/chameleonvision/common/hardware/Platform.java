@@ -1,5 +1,6 @@
-package com.chameleonvision.common.util;
+package com.chameleonvision.common.hardware;
 
+import com.chameleonvision.common.util.ShellExec;
 import edu.wpi.first.wpiutil.RuntimeDetector;
 import java.io.IOException;
 

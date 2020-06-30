@@ -2,7 +2,7 @@ package com.chameleonvision._2.vision.camera;
 
 import com.chameleonvision._2.config.CameraJsonConfig;
 import com.chameleonvision._2.vision.image.CaptureProperties;
-import com.chameleonvision.common.util.Platform;
+import com.chameleonvision.common.hardware.Platform;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;

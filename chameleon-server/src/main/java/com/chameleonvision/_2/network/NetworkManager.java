@@ -1,7 +1,7 @@
 package com.chameleonvision._2.network;
 
 import com.chameleonvision._2.config.ConfigManager;
-import com.chameleonvision.common.util.Platform;
+import com.chameleonvision.common.hardware.Platform;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
