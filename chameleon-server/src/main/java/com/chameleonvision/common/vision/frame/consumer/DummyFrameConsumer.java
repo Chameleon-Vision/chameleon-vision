@@ -13,4 +13,7 @@ public class DummyFrameConsumer implements FrameConsumer {
     public int getPort() {
         return 0;
     }
+
+    @Override
+    public void setResolution(int width, int height) {}
 }

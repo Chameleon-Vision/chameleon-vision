@@ -33,9 +33,12 @@ public class Collect2dTargetsPipe
                         params.getFrameStaticProperties().horizontalFocalLength,
                         params.getFrameStaticProperties().verticalFocalLength,
                         params.getFrameStaticProperties().imageArea);
-
-        for (PotentialTarget target : in) {
-            targets.add(new TrackedTarget(target, calculationParams));
+        int amt = params.m_showMultipleTargets ? 5 : 1;
+        for (int i = 0; i < amt; i++) {
+            if (i >= in.size()) {
+                break;
+            }
+            targets.add(new TrackedTarget(in.get(i), calculationParams));
         }
 
         return targets;
@@ -48,6 +51,7 @@ public class Collect2dTargetsPipe
         private Point m_userOffsetPoint;
         private TargetOffsetPointEdge m_region;
         private TargetOrientation m_orientation;
+        private boolean m_showMultipleTargets;
 
         public Collect2dTargetsParams(
                 FrameStaticProperties captureStaticProperties,
@@ -56,7 +60,8 @@ public class Collect2dTargetsPipe
                 double calibrationB,
                 Point calibrationPoint,
                 TargetOffsetPointEdge region,
-                TargetOrientation orientation) {
+                TargetOrientation orientation,
+                boolean showMultipleTargets) {
             m_captureStaticProperties = captureStaticProperties;
             m_offsetMode = offsetMode;
             m_calibrationM = calibrationM;
@@ -64,6 +69,7 @@ public class Collect2dTargetsPipe
             m_userOffsetPoint = calibrationPoint;
             m_region = region;
             m_orientation = orientation;
+            m_showMultipleTargets = showMultipleTargets;
         }
 
         public FrameStaticProperties getFrameStaticProperties() {

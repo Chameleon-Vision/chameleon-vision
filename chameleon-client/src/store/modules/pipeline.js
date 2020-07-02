@@ -2,7 +2,7 @@ import Vue from 'vue'
 
 export default {
     state: {
-        showBinaryImage: 0,
+        outputShowThresholded: 0,
 
         cameraExposure: 0,
         cameraBrightness: 0,
@@ -26,7 +26,7 @@ export default {
 
         contourSortMode: 0,
         contourTargetOrientation: 1,
-        outputMultiple: false,
+        outputShowMultipleTargets: false,
         offsetRobotOffsetMode: 0,
         contourTargetOffsetPointEdge: 0,
 
@@ -35,7 +35,7 @@ export default {
     },
     mutations: {
         isBinary: (state, value) => {
-            state.isBinary = value
+            state.outputShowThresholded = value
         },
         mutatePipeline: (state, {key, value}) => {
             Vue.set(state, key, value)

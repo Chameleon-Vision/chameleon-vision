@@ -114,7 +114,8 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
                                 settings.offsetCalibrationPoint.get(0).doubleValue(),
                                 settings.offsetCalibrationPoint.get(1).doubleValue()),
                         settings.contourTargetOffsetPointEdge,
-                        settings.contourTargetOrientation);
+                        settings.contourTargetOrientation,
+                        settings.outputShowMultipleTargets);
         collect2dTargetsPipe.setParams(collect2dTargetsParams);
 
         var params =
@@ -173,8 +174,10 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
         CVPipeResult<List<Contour>> findContoursResult = findContoursPipe.apply(hsvPipeResult.result);
         sumPipeNanosElapsed += findContoursResult.nanosElapsed;
 
+        CVPipeResult<List<Contour>> filterContoursResult =
+                filterContoursPipe.apply(findContoursResult.result);
         CVPipeResult<List<Contour>> speckleRejectResult =
-                speckleRejectPipe.apply(findContoursResult.result);
+                speckleRejectPipe.apply(filterContoursResult.result);
         sumPipeNanosElapsed += speckleRejectResult.nanosElapsed;
 
         CVPipeResult<List<PotentialTarget>> groupContoursResult =
@@ -224,12 +227,6 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
             result = draw2dContoursResult;
         }
 
-        // TODO: better way?
-        if (settings.outputShowThresholded) {
-            rawInputMat.release();
-        }
-
-        // TODO: Implement all the things
         return new CVPipelineResult(
                 MathUtils.nanosToMillis(sumPipeNanosElapsed),
                 collect2dTargetsResult.result,

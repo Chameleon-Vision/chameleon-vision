@@ -125,7 +125,8 @@ public class ColoredShapePipeline
                                 settings.offsetCalibrationPoint.get(0).doubleValue(),
                                 settings.offsetCalibrationPoint.get(1).doubleValue()),
                         settings.contourTargetOffsetPointEdge,
-                        settings.contourTargetOrientation);
+                        settings.contourTargetOrientation,
+                        settings.outputShowMultipleTargets);
         collect2dTargetsPipe.setParams(collect2dTargetsParams);
 
         var params =

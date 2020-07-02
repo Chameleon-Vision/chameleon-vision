@@ -13,8 +13,6 @@ public class AdvancedPipelineSettings extends CVPipelineSettings {
         ledMode = true;
     }
 
-    public boolean showBinaryImage = false;
-    public boolean outputMultiple = false;
     public List<Number> hsvHue = List.of(50, 180);
     public List<Number> hsvSaturation = List.of(50, 255);
     public List<Number> hsvValue = List.of(50, 255);

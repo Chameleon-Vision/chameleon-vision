@@ -53,7 +53,7 @@
             slider-color="#4baf62"
             centered
             style="padding-bottom:10px"
-            @change="handleInput('isBinary',$store.getters.pipeline.isBinary)"
+            @change="handleInput('outputShowThresholded',$store.getters.pipeline.outputShowThresholded)"
           >
             <v-tab>Normal</v-tab>
             <v-tab>Threshold</v-tab>
@@ -164,7 +164,7 @@
         computed: {
             isBinaryNumber: {
                 get() {
-                    return this.$store.getters.pipeline.isBinary ? 1 : 0
+                    return this.$store.getters.pipeline.outputShowThresholded ? 1 : 0
                 },
                 set(value) {
                     this.$store.commit('isBinary', !!value);

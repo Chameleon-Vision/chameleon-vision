@@ -25,10 +25,10 @@
     />
 
     <CVswitch
-      v-model="value.outputMultiple"
+      v-model="value.outputShowMultipleTargets"
       name="Output multiple"
-      @input="handleData('outputMultiple')"
-      @rollback="e=> rollback('outputMultiple',e)"
+      @input="handleData('outputShowMultipleTargets')"
+      @rollback="e=> rollback('outputShowMultipleTargets',e)"
     />
     <span>Calibrate:</span>
     <v-divider

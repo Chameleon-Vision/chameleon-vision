@@ -8,6 +8,7 @@ import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.FrameConsumer;
 import com.chameleonvision.common.vision.frame.consumer.MJPGFrameConsumer;
 import com.chameleonvision.common.vision.pipeline.CVPipelineResult;
+import edu.wpi.cscore.VideoMode;
 import io.reactivex.rxjava3.core.Observer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,5 +111,13 @@ public class VisionModule {
                 VideoModeHelper.videoModeToHashMapList(
                         new ArrayList<>(getVisionSource().getSettables().getAllVideoModes().values())));
         return tmp;
+    }
+
+    public void setStreamResolution() {
+        int divisor = pipelineManager.getCurrentPipeline().getSettings().outputFrameDivisor.value;
+        VideoMode mode = visionSource.getSettables().getCurrentVideoMode();
+        int newWidth = mode.width / divisor;
+        int newHeight = mode.height / divisor;
+        frameConsumer.setResolution(newWidth, newHeight);
     }
 }
