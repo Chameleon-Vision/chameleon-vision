@@ -50,7 +50,7 @@ public class UIConsumer implements Observer<CVPipelineResult> {
                     center.add(null);
                     center.add(null);
                 }
-                point.put("fps", 1 / result.processingMillis);
+                point.put("fps", result.fps);
                 point.put("targets", webTargets);
                 point.put("rawPoint", center);
                 WebSend.put("point", point);

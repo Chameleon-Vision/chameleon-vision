@@ -1,6 +1,7 @@
 package com.chameleonvision.common.vision.processes;
 
 import com.chameleonvision.common.configuration.CameraConfiguration;
+import com.chameleonvision.common.configuration.ConfigManager;
 import com.chameleonvision.common.vision.camera.CameraType;
 import com.chameleonvision.common.vision.camera.USBCameraSource;
 import com.chameleonvision.common.vision.frame.provider.NetworkFrameProvider;
@@ -74,6 +75,7 @@ public class VisionSourceManager {
 
             CameraConfiguration configuration =
                     new CameraConfiguration(name, uniqueName, uniqueName, ((Integer) info.dev).toString());
+            ConfigManager.getInstance().getConfig().addCameraConfig(configuration);
             cameraConfigurations.add(configuration);
         }
 

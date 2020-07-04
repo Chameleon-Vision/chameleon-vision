@@ -165,7 +165,7 @@ public class ReflectivePipeline extends CVPipeline<CVPipelineResult, ReflectiveP
         sumPipeNanosElapsed += hsvPipeResult.nanosElapsed;
 
         // mat leak fix attempt
-        outputMats.first = rawInputMat;
+        outputMats.first = rotateImageResult.result;
         outputMats.second = hsvPipeResult.result;
 
         CVPipeResult<Mat> outputMatResult = outputMatPipe.apply(outputMats);

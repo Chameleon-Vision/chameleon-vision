@@ -24,7 +24,7 @@ public class Main {
 
         HashMap<String, CameraConfiguration> camConfigs =
                 ConfigManager.getInstance().getConfig().getCameraConfigurations();
-        var matchedCameras =
+        List<CameraConfiguration> matchedCameras =
                 visionSourceManager.LoadAllSources(new ArrayList<CameraConfiguration>(camConfigs.values()));
 
         List<VisionSource> sources = visionSourceManager.loadUSBCameraSources(matchedCameras);

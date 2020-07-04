@@ -6,6 +6,7 @@ import com.chameleonvision.common.logging.Logger;
 import com.chameleonvision.common.vision.frame.FrameDivisor;
 import com.chameleonvision.common.vision.pipeline.ReflectivePipelineSettings;
 import com.chameleonvision.common.vision.processes.VisionModule;
+import com.chameleonvision.server.SocketHandler;
 import java.lang.reflect.Field;
 
 public class UIProvider extends Provider {
@@ -21,6 +22,7 @@ public class UIProvider extends Provider {
                 {
                     parentModule.pipelineManager.getCurrentPipeline().getSettings().pipelineNickname =
                             (String) value;
+                    SocketHandler.sendFullSettings();
                     break;
                 }
             case "addNewPipeline":
@@ -28,11 +30,21 @@ public class UIProvider extends Provider {
                     ReflectivePipelineSettings pipe = new ReflectivePipelineSettings();
                     pipe.pipelineNickname = (String) value;
                     parentModule.pipelineManager.addPipeline(pipe);
+                    SocketHandler.sendFullSettings();
                     break;
                 }
             case "currentPipeline":
                 {
-                    parentModule.pipelineManager.changeCurrentPipeline((Integer) value);
+                    parentModule.setPipeline((Integer) value);
+                    SocketHandler.sendFullSettings();
+                    break;
+                }
+            case "changeCameraName":
+                {
+                    parentModule.getVisionSource().getCameraConfiguration().nickname = (String) value;
+                    //                TODO: 2. set data consumers name
+
+                    SocketHandler.sendFullSettings();
                     break;
                 }
             case "command":
@@ -40,6 +52,7 @@ public class UIProvider extends Provider {
                     switch ((String) value) {
                         case "deleteCurrentPipeline":
                             parentModule.pipelineManager.removeCurrentPipeline();
+                            SocketHandler.sendFullSettings();
                             break;
                         case "save":
                             ConfigManager.getInstance().save();

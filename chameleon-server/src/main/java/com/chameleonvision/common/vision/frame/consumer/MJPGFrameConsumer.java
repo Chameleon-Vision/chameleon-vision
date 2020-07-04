@@ -10,7 +10,7 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 public class MJPGFrameConsumer implements FrameConsumer {
-    private final CvSource cvSource;
+    private CvSource cvSource;
     private final MjpegServer cvServer;
     private Size res;
 

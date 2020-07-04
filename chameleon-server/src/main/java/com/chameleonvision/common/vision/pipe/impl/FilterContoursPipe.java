@@ -31,7 +31,7 @@ public class FilterContoursPipe
     private void filterContour(Contour contour) {
         // Area Filtering.
         double contourArea = contour.getArea();
-        double areaRatio = (contourArea / params.getCamProperties().imageArea);
+        double areaRatio = (contourArea / params.getCamProperties().imageArea) * 100;
         double minArea = MathUtils.sigmoid(params.getArea().get(0));
         double maxArea = MathUtils.sigmoid(params.getArea().get(1));
         if (areaRatio < minArea || areaRatio > maxArea) return;
@@ -44,7 +44,7 @@ public class FilterContoursPipe
 
         // Aspect Ratio Filtering.
         Rect boundingRect = contour.getBoundingRect();
-        double aspectRatio = (double) boundingRect.width / boundingRect.height;
+        double aspectRatio = ((double) boundingRect.width / boundingRect.height);
         if (aspectRatio < params.getRatio().get(0).doubleValue()
                 || aspectRatio > params.getRatio().get(1).doubleValue()) return;
 

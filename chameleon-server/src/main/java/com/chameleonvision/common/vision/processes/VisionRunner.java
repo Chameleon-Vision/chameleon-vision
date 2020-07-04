@@ -6,6 +6,7 @@ import com.chameleonvision.common.vision.frame.Frame;
 import com.chameleonvision.common.vision.frame.FrameProvider;
 import com.chameleonvision.common.vision.pipeline.CVPipeline;
 import com.chameleonvision.common.vision.pipeline.CVPipelineResult;
+import edu.wpi.first.wpiutil.CircularBuffer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -18,8 +19,9 @@ public class VisionRunner {
     private final Supplier<CVPipeline> pipelineSupplier;
     private final Consumer<CVPipelineResult> pipelineResultConsumer;
     private static final Logger logger = new Logger(VisionRunner.class, LogGroup.VisionProcess);
-
     private long loopCount;
+    volatile Double fps = 0.0;
+    private CircularBuffer fpsAveragingBuffer = new CircularBuffer(7);
 
     /**
     * VisionRunner contains a <see cref="Thread">Thread</see> to run a pipeline, given a frame, and
@@ -49,21 +51,37 @@ public class VisionRunner {
 
     private void update() {
         while (!Thread.interrupted()) {
+            var lastUpdateTimeNanos = System.nanoTime();
             loopCount++;
             var pipeline = pipelineSupplier.get();
             var frame = frameSupplier.get();
-
-            try {
-                var pipelineResult = pipeline.run(frame);
-                pipelineResultConsumer.accept(pipelineResult);
-            } catch (Exception ex) {
-                if (hasThrown) {
-                    logger.error(
-                            "Exception in thread \"" + visionProcessThread.getName() + "\", loop " + loopCount);
-                    ex.printStackTrace();
-                    hasThrown = true;
+            if (frame.image.getMat().cols() > 0 && frame.image.getMat().rows() > 0) {
+                try {
+                    var pipelineResult = pipeline.run(frame);
+                    pipelineResult.fps = fps;
+                    pipelineResultConsumer.accept(pipelineResult);
+                    pipelineResult.release();
+                } catch (Exception ex) {
+                    if (hasThrown) {
+                        logger.error(
+                                "Exception in thread \"" + visionProcessThread.getName() + "\", loop " + loopCount);
+                        ex.printStackTrace();
+                        hasThrown = true;
+                    }
                 }
             }
+            var deltaTimeNanos = System.nanoTime() - lastUpdateTimeNanos;
+            fpsAveragingBuffer.addFirst(1.0 / (deltaTimeNanos * 1E-09));
+            fps = getAverageFPS();
         }
+    }
+
+    double getAverageFPS() {
+        var temp = 0.0;
+        for (int i = 0; i < 7; i++) {
+            temp += fpsAveragingBuffer.get(i);
+        }
+        temp /= 7.0;
+        return temp;
     }
 }

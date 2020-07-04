@@ -72,6 +72,9 @@ public class VisionModule {
     }
 
     public void setFrameConsumer(FrameConsumer frameConsumer) {
+        if (this.frameConsumer != null) {
+            this.frameConsumer = null;
+        }
         this.frameConsumer = frameConsumer;
     }
 
@@ -119,5 +122,10 @@ public class VisionModule {
         int newWidth = mode.width / divisor;
         int newHeight = mode.height / divisor;
         frameConsumer.setResolution(newWidth, newHeight);
+    }
+
+    public void setPipeline(Integer value) {
+        pipelineManager.changeCurrentPipeline(value);
+        visionSource.getSettables().setByPipeline(pipelineManager.getCurrentPipelineSettings());
     }
 }

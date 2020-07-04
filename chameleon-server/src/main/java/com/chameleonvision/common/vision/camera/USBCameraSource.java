@@ -14,6 +14,13 @@ import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 
 public class USBCameraSource implements VisionSource {
+    private static final int MINIMUM_FPS = 20;
+    private static final int MINIMUM_WIDTH = 320;
+    private static final int MINIMUM_HEIGHT = 200;
+    private static final List<VideoMode.PixelFormat> ALLOWED_PIXEL_FORMATS =
+            Arrays.asList(
+                    VideoMode.PixelFormat.kYUYV, VideoMode.PixelFormat.kMJPEG, VideoMode.PixelFormat.kBGR);
+
     private final UsbCamera camera;
     private final USBCameraSettables usbCameraSettables;
     private final USBFrameProvider usbFrameProvider;
@@ -122,11 +129,16 @@ public class USBCameraSource implements VisionSource {
 
         @Override
         public HashMap<Integer, VideoMode> getAllVideoModes() {
+            //            TODO ADD FILTERING
             if (videoModes == null) {
                 videoModes = new HashMap<>();
                 List<VideoMode> videoModesList = Arrays.asList(camera.enumerateVideoModes());
                 for (VideoMode videoMode : videoModesList) {
-                    videoModes.put(videoModesList.indexOf(videoMode), videoMode);
+                    if (videoMode.fps >= MINIMUM_FPS
+                            && ALLOWED_PIXEL_FORMATS.contains(videoMode.pixelFormat)
+                            && videoMode.height >= MINIMUM_HEIGHT
+                            && videoMode.width >= MINIMUM_WIDTH)
+                        videoModes.put(videoModesList.indexOf(videoMode), videoMode);
                 }
             }
             return videoModes;

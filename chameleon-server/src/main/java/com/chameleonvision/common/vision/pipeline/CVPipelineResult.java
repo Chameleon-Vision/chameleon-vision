@@ -6,6 +6,7 @@ import com.chameleonvision.common.vision.target.TrackedTarget;
 import java.util.List;
 
 public class CVPipelineResult implements Releasable {
+    public double fps;
     private double latencyMillis;
     public final double processingMillis;
     public final boolean hasTargets;

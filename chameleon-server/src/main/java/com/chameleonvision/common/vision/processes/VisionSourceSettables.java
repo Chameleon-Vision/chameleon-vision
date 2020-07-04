@@ -2,6 +2,7 @@ package com.chameleonvision.common.vision.processes;
 
 import com.chameleonvision.common.configuration.CameraConfiguration;
 import com.chameleonvision.common.vision.frame.FrameStaticProperties;
+import com.chameleonvision.common.vision.pipeline.CVPipelineSettings;
 import edu.wpi.cscore.VideoMode;
 import java.util.HashMap;
 
@@ -45,5 +46,12 @@ public abstract class VisionSourceSettables {
 
     public FrameStaticProperties getFrameStaticProperties() {
         return frameStaticProperties;
+    }
+
+    public void setByPipeline(CVPipelineSettings settings) {
+        setBrightness(((Double) settings.cameraBrightness).intValue());
+        setExposure(((Double) settings.cameraExposure).intValue());
+        setGain(((Double) settings.cameraGain).intValue());
+        setCurrentVideoMode(getAllVideoModes().get(settings.cameraVideoModeIndex));
     }
 }
