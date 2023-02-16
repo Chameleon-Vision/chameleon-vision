@@ -2,11 +2,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<!--    <parent>-->
+<!--        <groupId>org.springframework.boot</groupId>-->
+<!--        <artifactId>spring-boot-starter-parent</artifactId>-->
+<!--        <version>3.0.2</version>-->
+<!--        <relativePath/> &lt;!&ndash; lookup parent from repository &ndash;&gt;-->
+<!--    </parent>-->
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.chameleon-vision.main</groupId>
     <artifactId>chameleon-vision</artifactId>
 
+    <packaging>jar</packaging>
+
+
     <version>2.3.2</version>
+
     <build>
         <plugins>
             <!--setup for java jdk 12-->
@@ -47,9 +58,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <wpilib.version>2020.2.2</wpilib.version>
         <opencv.version>3.4.7-2</opencv.version>
-<!--        <maven.compiler.source>12.0.2</maven.compiler.source>-->
-<!--        <maven.compiler.target>12.0.2</maven.compiler.target>-->
-        <maven.compiler.release>12</maven.compiler.release>
+        <maven.compiler.source>12.0.2</maven.compiler.source>
+        <maven.compiler.target>12.0.2</maven.compiler.target>
+<!--        <maven.compiler.release>12</maven.compiler.release>-->
     </properties>
     <repositories>
         <repository>
@@ -60,10 +71,18 @@
     </repositories>
     <dependencies>
         <!--javalin micro webservices framework-->
+<!--        <dependency>-->
+<!--            <groupId>io.javalin</groupId>-->
+<!--            <artifactId>javalin</artifactId>-->
+<!--            <version>RELEASE</version>-->
+<!--        </dependency>-->
+
+        <!--fixed-->
+        <!-- https://mvnrepository.com/artifact/io.javalin/javalin -->
         <dependency>
             <groupId>io.javalin</groupId>
             <artifactId>javalin</artifactId>
-            <version>RELEASE</version>
+            <version>4.6.7</version>
         </dependency>
 
         <!--org.json from saving and loading data-->
@@ -265,5 +284,12 @@
             <version>${opencv.version}</version>
             <classifier>windowsx86-64</classifier>
         </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.22</version>
+        </dependency>
+
     </dependencies>
 </project>

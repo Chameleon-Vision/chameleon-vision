@@ -2,6 +2,8 @@ package com.chameleonvision.web;
 
 import com.chameleonvision.config.ConfigManager;
 import io.javalin.Javalin;
+import io.javalin.http.staticfiles.Location;
+
 
 public class Server {
     private static SocketHandler socketHandler;
@@ -11,7 +13,8 @@ public class Server {
 
         Javalin app = Javalin.create(javalinConfig -> {
             javalinConfig.showJavalinBanner = false;
-            javalinConfig.addStaticFiles("web");
+            /*fixed*/
+            javalinConfig.addStaticFiles("web", Location.CLASSPATH);
             javalinConfig.enableCorsForAllOrigins();
         });
         app.ws("/websocket", ws -> {
